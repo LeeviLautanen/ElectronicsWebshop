@@ -1,0 +1,65 @@
+name: Webshop CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test-build:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "node" # Latest
+
+      - name: Install dependencies
+        run: |
+          cd ./server
+          npm ci
+
+      # Add tests later
+      #- name: Run tests
+      #  run: npm test
+
+  docker-build-push:
+    needs: test-build
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        run: |
+          cd ./server
+          docker build -t leevil/webshop-backend-image:latest .
+          docker push leevil/webshop-backend-image:latest
+
+  deploy:
+    needs: docker-build-push
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Connect SSH Agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+
+      - name: SSH into server and deploy Docker image
+        run: |
+          ssh -p 2222 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker stop webshop-backend-container || true; docker rm webshop-backend-container || true; docker pull leevil/webshop-backend-image:latest; docker run -d --name webshop-backend-container -p 3000:3000 leevil/webshop-backend-image:latest"
