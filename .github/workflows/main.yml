@@ -46,6 +46,7 @@ jobs:
           cd ./server
           docker build -t leevil/webshop-backend-image:latest .
           docker push leevil/webshop-backend-image:latest
+          docker image prune
 
   deploy:
     needs: docker-build-push
@@ -62,4 +63,8 @@ jobs:
 
       - name: SSH into server and deploy Docker image
         run: |
-          ssh -p 2222 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker stop webshop-backend-container || true; docker rm webshop-backend-container || true; docker pull leevil/webshop-backend-image:latest; docker run -d --name webshop-backend-container -p 3000:3000 leevil/webshop-backend-image:latest"
+          ssh -p 2222 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
+          docker stop webshop-backend-container || true; 
+          docker rm webshop-backend-container || true; 
+          docker pull leevil/webshop-backend-image:latest; 
+          docker run -d --name webshop-backend-container -p 3000:3000 leevil/webshop-backend-image:latest"
