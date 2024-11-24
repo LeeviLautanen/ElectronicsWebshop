@@ -46,7 +46,7 @@ jobs:
           cd ./server
           docker build -t leevil/webshop-backend-image:latest .
           docker push leevil/webshop-backend-image:latest
-          docker image prune
+          docker image prune -f
 
   deploy:
     needs: docker-build-push
