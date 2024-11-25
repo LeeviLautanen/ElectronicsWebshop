@@ -1,0 +1,33 @@
+<nav class="bg-gray-800 text-white p-3 flex justify-between items-center">
+  <!-- Name -->
+  <div class="flex items-center space-x-4">
+    <span class="text-xl font-bold">BittiBoksi</span>
+  </div>
+
+  <!-- Navbar links -->
+  <div class="flex items-center space-x-5 px-6">
+    <a href="/" class="text-md hover:text-gray-300">Koti</a>
+    <a href="/" class="text-md hover:text-gray-300">Kauppa</a>
+    <a href="/" class="text-md hover:text-gray-300">Tietoa</a>
+    <a href="/" class="text-md hover:text-gray-300">Ota yhteyttä</a>
+  </div>
+
+  <!-- Search bar -->
+  <div class="flex flex-grow justify-center items-center space-x-2">
+    <div class="relative flex items-center bg-gray-700 rounded-lg">
+      <input
+        type="text"
+        placeholder="Etsi tuotteita..."
+        class="p-2 pl-3 pr-3 w-80 bg-transparent text-white focus:outline-none"
+      />
+      <div class="h-6 border-l-2 border-gray-500"></div>
+      <ng-icon name="bootstrapSearch" class="text-white text-lg mx-2"></ng-icon>
+    </div>
+  </div>
+
+  <!-- Shopping cart -->
+  <a href="/" class="flex items-center">
+    <ng-icon name="bootstrapCart4" class="text-2xl"></ng-icon>
+    <span class="text-gray-300 text-sm pl-2">1 Tuote - 0,00 €</span>
+  </a>
+</nav>
