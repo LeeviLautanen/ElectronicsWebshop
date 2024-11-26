@@ -9,7 +9,7 @@ import { Component } from '@angular/core';
   styleUrl: './category-list.component.css',
 })
 export class CategoryListComponent {
-  categories = ['Kategoria 1', 'Kategoria 2', 'Kategoria 3', 'Kategoria 4'];
+  categories = ['Mikrokontrollerit', 'Sensorit', 'Transistorit', 'Muut'];
   selectedCategory: number | null = null;
 
   selectCategory(index: number) {

@@ -1,0 +1,57 @@
+<div class="grid lg:grid-cols-3 gap-4">
+  <div
+    *ngFor="let product of products"
+    class="bg-gray-800 p-4 rounded-lg shadow-lg w-60 flex flex-col relative"
+  >
+    <!-- Stock indicator -->
+    <div class="group absolute top-2 right-2 flex items-center">
+      <div
+        class="w-5 h-5 rounded-full"
+        [class.bg-green-500]="product.inStock"
+        [class.bg-red-500]="!product.inStock"
+      ></div>
+
+      <span
+        class="absolute right-6 mt-1 opacity-0 group-hover:opacity-100 group-hover:block px-2 py-1 text-xs text-white bg-gray-600 rounded-lg transition-all"
+      >
+        {{ product.inStock ? "Varastossa" : "Loppu varastosta" }}
+      </span>
+    </div>
+
+    <!-- Image of product -->
+    <img
+      [src]="product.imageUrl"
+      alt="Product image"
+      class="w-full h-48 object-cover rounded-t-lg"
+    />
+
+    <!-- Product name -->
+    <div class="mt-4 text-white flex-grow">
+      <h3 class="text-xl font-semibold">{{ product.name }}</h3>
+    </div>
+
+    <!-- Price and cart buttons -->
+    <div class="mt-3 text-white flex justify-between items-center">
+      <p class="text-lg font-bold">{{ product.price }} €</p>
+
+      <div class="flex items-center space-x-2">
+        <button class="mt-2" (click)="decreaseQuantity(product)">
+          <ng-icon name="bootstrapDashCircleFill" class="text-2xl"></ng-icon>
+        </button>
+
+        <span class="text-white">{{ product.quantity || 1 }}</span>
+
+        <button class="mt-2" (click)="increaseQuantity(product)">
+          <ng-icon name="bootstrapPlusCircleFill" class="text-2xl"></ng-icon>
+        </button>
+
+        <button
+          class="bg-green-600 px-2 pb-1 pt-1.5 rounded-xl hover:bg-green-700 transition-colors"
+          (click)="addToCart(product)"
+        >
+          <ng-icon name="bootstrapCartPlus" class="text-2xl"></ng-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
