@@ -6,16 +6,18 @@ require("dotenv").config();
 const app = express();
 app.use(express.json());
 
-app.use(
-  cors({
-    origin: ["http://localhost:4200"],
-  })
-);
+if (process.env.NODE_ENV === "development") {
+  app.use(
+    cors({
+      origin: "http://localhost:4200",
+    })
+  );
+}
 
-app.use(express.static(path.join(__dirname, "./dist/")));
+app.use(express.static(path.join(__dirname, "./dist/browser")));
 
 // Mock response
-app.get("/products/:slug", (req, res) => {
+app.get("/api/products/:slug", (req, res) => {
   slug = req.params.slug;
   console.log(slug);
   res.send({
@@ -30,7 +32,8 @@ app.get("/products/:slug", (req, res) => {
   });
 });
 
-app.get("/all", (req, res) => {
+// Mock data
+app.get("/api/allProducts", (req, res) => {
   res.send([
     {
       id: 192056,
@@ -76,7 +79,7 @@ app.get("/all", (req, res) => {
 });
 
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "./dist/index.html"));
+  res.sendFile(path.join(__dirname, "./dist/browser/index.html"));
 });
 
 const PORT = process.env.PORT || 3000;
