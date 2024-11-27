@@ -1,3 +1,11 @@
+# Building frontend
+FROM node:latest AS frontend-stage
+
+WORKDIR /app
+
+COPY ./client ./client
+RUN cd client && npm ci && npm run build-prod
+
 # Building backend
 FROM node:latest AS backend-stage
 
@@ -7,15 +15,9 @@ COPY ./server ./server
 
 RUN cd server && npm ci
 
-# Building frontend
-FROM node:latest AS frontend-stage
-
-WORKDIR /app
-
-COPY ./client ./client
-RUN cd client && npm ci && npm run build-prod
-
 # Running backend
+COPY --from=build-stage /app/client/dist /app/server/dist
+
 EXPOSE 3000
 
 WORKDIR /app/server
