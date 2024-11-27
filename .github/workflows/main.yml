@@ -44,5 +44,5 @@ jobs:
           docker stop webshop-backend-container || true;
           docker rm webshop-backend-container || true;
           docker pull leevil/webshop-backend-image:latest;
-          docker image prune -f;
-          docker run -d --name webshop-backend-container -p 3000:3000 leevil/webshop-backend-image:latest"
+          docker run -d --name webshop-backend-container -p 3000:3000 leevil/webshop-backend-image:latest;
+          docker image prune -f"
