@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 require("dotenv").config();
 
 const app = express();
@@ -11,10 +12,7 @@ app.use(
   })
 );
 
-// Test route
-app.get("/", (req, res) => {
-  res.send("Webshop backend");
-});
+app.use(express.static(path.join(__dirname, "./dist/")));
 
 // Mock response
 app.get("/products/:slug", (req, res) => {
@@ -75,6 +73,10 @@ app.get("/all", (req, res) => {
       stock: 7,
     },
   ]);
+});
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "./dist/index.html"));
 });
 
 const PORT = process.env.PORT || 3000;
