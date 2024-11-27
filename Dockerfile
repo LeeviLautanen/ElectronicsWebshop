@@ -16,7 +16,7 @@ COPY ./server ./server
 RUN cd server && npm ci
 
 # Running backend
-COPY --from=build-stage /app/client/dist /app/server/dist
+COPY --from=frontend-stage /app/client/dist /app/server/dist
 
 EXPOSE 3000
 
