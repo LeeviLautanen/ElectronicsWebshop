@@ -1,16 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import {
   bootstrapCartPlus,
   bootstrapDashCircleFill,
   bootstrapPlusCircleFill,
 } from '@ng-icons/bootstrap-icons';
 import { NgIconComponent, provideIcons } from '@ng-icons/core';
+import { Product } from '../models/ProductModel';
+import { ProductDataService } from '../product-data.service';
 
 @Component({
   selector: 'app-product-grid',
   standalone: true,
-  imports: [CommonModule, NgIconComponent],
+  imports: [CommonModule, NgIconComponent, RouterLink],
   templateUrl: './product-grid.component.html',
   styleUrl: './product-grid.component.css',
   providers: [
@@ -21,21 +24,29 @@ import { NgIconComponent, provideIcons } from '@ng-icons/core';
     }),
   ],
 })
-export class ProductGridComponent {
-  @Input() products: any[] = [];
+export class ProductGridComponent implements OnInit {
+  products: Product[] = [];
 
-  increaseQuantity(product: any) {
-    product.quantity = (product.quantity || 1) + 1;
+  constructor(
+    private router: Router,
+    private productDataService: ProductDataService
+  ) {}
+
+  // Fetch all product data
+  ngOnInit(): void {
+    this.productDataService.getAllProducts().subscribe((data) => {
+      console.log(data);
+      this.products = data;
+    });
   }
 
-  decreaseQuantity(product: any) {
-    if (product.quantity > 1) {
-      product.quantity -= 1;
-    }
-  }
+  increaseQuantity(product: Product) {}
 
-  addToCart(product: any) {
-    console.log(`Added ${product.quantity} of ${product.name} to the cart.`);
-    product.quantity = 1;
+  decreaseQuantity(product: Product) {}
+
+  addToCart(product: Product) {}
+
+  goToProductPage(product: Product) {
+    this.router.navigate([`/${product.slug}`]);
   }
 }
