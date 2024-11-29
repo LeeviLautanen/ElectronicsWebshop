@@ -4,11 +4,12 @@ import { ActivatedRoute } from '@angular/router';
 import { ProductDataService } from '../product-data.service';
 import { CommonModule } from '@angular/common';
 import { NgIcon } from '@ng-icons/core';
+import { CartControlsComponent } from '../cart-controls/cart-controls.component';
 
 @Component({
   selector: 'app-product-page',
   standalone: true,
-  imports: [CommonModule, NgIcon],
+  imports: [CommonModule, NgIcon, CartControlsComponent],
   templateUrl: './product-page.component.html',
   styleUrl: './product-page.component.css',
 })
@@ -31,5 +32,13 @@ export class ProductPageComponent implements OnInit {
     this.productDataService.getProductBySlug(slug).subscribe((data) => {
       this.product = data;
     });
+  }
+
+  increaseQuantity(product: Product) {}
+
+  decreaseQuantity(product: Product) {}
+
+  addToCart(product: Product) {
+    console.log(product);
   }
 }

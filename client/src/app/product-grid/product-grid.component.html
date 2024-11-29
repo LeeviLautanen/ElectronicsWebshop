@@ -1,8 +1,10 @@
-<div class="grid lg:grid-cols-3 gap-4">
+<div
+  class="grid grid-cols-3 gap-4"
+  style="grid-template-columns: repeat(3, 15.5rem)"
+>
   <div
     *ngFor="let product of products"
-    class="bg-gray-800 p-3 rounded-lg shadow-lg w-60 flex flex-col relative cursor-pointer"
-    (click)="goToProductPage(product)"
+    class="bg-gray-800 p-3 rounded-lg shadow-lg w-[15.5rem]] flex flex-col relative"
   >
     <!-- Stock indicator -->
     <div class="group absolute top-5 right-5 flex items-center">
@@ -20,39 +22,28 @@
     </div>
 
     <!-- Image of product -->
-    <img
-      [src]="product.imageUrl"
-      alt="Product image"
-      class="w-full h-48 object-cover rounded-t-lg"
-    />
+    <a [routerLink]="'/tuote/' + product.slug">
+      <img
+        [src]="product.imageUrl"
+        alt="Product image"
+        class="w-full h-48 object-cover rounded-t-lg"
+      />
+    </a>
 
     <!-- Product name -->
     <div class="mt-4 text-white flex-grow">
-      <h3 class="text-xl font-semibold">{{ product.name }}</h3>
+      <a
+        [routerLink]="'/tuote/' + product.slug"
+        class="hover:underline inline-block"
+      >
+        <h3 class="text-xl font-semibold">{{ product.name }}</h3>
+      </a>
     </div>
 
     <!-- Price and cart buttons -->
     <div class="mt-3 text-white flex justify-between items-center">
-      <p class="text-lg font-bold">{{ product.price }} €</p>
-
-      <div class="flex items-center space-x-2">
-        <button class="mt-2" (click)="decreaseQuantity(product)">
-          <ng-icon name="bootstrapDashCircleFill" class="text-2xl"></ng-icon>
-        </button>
-
-        <span class="text-white">Luku</span>
-
-        <button class="mt-2" (click)="increaseQuantity(product)">
-          <ng-icon name="bootstrapPlusCircleFill" class="text-2xl"></ng-icon>
-        </button>
-
-        <button
-          class="bg-green-600 px-2 pb-1 pt-1.5 rounded-xl hover:bg-green-700 transition-colors"
-          (click)="addToCart(product)"
-        >
-          <ng-icon name="bootstrapCartPlus" class="text-2xl"></ng-icon>
-        </button>
-      </div>
+      <p class="text-xl font-bold">{{ product.price }} €</p>
+      <app-cart-controls></app-cart-controls>
     </div>
   </div>
 </div>

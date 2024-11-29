@@ -1,26 +1,60 @@
-<div *ngIf="product" class="flex w-screen justify-center pt-4">
-  <div
-    class="flex flex-col max-w-[900px] items-center space-x-8 p-4 bg-gray-800 rounded-lg"
-  >
+<div *ngIf="product" class="flex flex-col items-center">
+  <!-- Main Product Section -->
+  <div class="flex w-full space-x-8 p-4 bg-gray-800 rounded-lg">
     <!-- Product Image -->
     <img
       [src]="product.imageUrl"
       alt="Product image"
-      class="w-64 h-64 object-cover rounded-lg"
+      class="w-96 h-96 object-cover rounded-lg"
     />
 
     <!-- Product Info -->
-    <div class="text-white">
-      <h2 class="text-2xl font-semibold">{{ product.name }}</h2>
-      <p class="mt-2 text-gray-400">{{ product.description }}</p>
-      <p class="mt-4 text-lg font-bold">{{ product.price }} €</p>
+    <div class="flex flex-col justify-between text-white">
+      <!-- Part Name -->
+      <h2 class="mt-4 text-3xl font-bold">{{ product.name }}</h2>
 
-      <!-- Add to Cart Button -->
-      <button
-        class="mt-4 bg-green-600 px-4 py-2 rounded-xl hover:bg-green-700 transition-colors"
-      >
-        Add to Cart
-      </button>
+      <!-- Part Price -->
+      <p class="mt-4 text-3xl font-semibold">
+        {{ product.price }} €
+        <span class="text-lg font-normal">(sis alv.)</span>
+      </p>
+
+      <!-- Items in Stock -->
+      <p class="mt-2 text-base">
+        <span class="font-medium">Saatavuus:</span>
+        <span class="text-white">
+          {{
+            product.stock > 0
+              ? product.stock + " kpl varastossa"
+              : "Ei varastossa"
+          }}
+        </span>
+      </p>
+
+      <!-- Cart Elements -->
+      <app-cart-controls></app-cart-controls>
+    </div>
+  </div>
+
+  <!-- Product Description and Features -->
+  <div
+    class="flex flex-col w-full max-w-[900px] mt-4 p-4 bg-gray-700 rounded-lg"
+  >
+    <!-- Description -->
+    <h3 class="text-xl font-bold text-white">Tuotekuvaus</h3>
+    <p class="mt-2 text-gray-300">{{ product.description }}</p>
+
+    <!-- Features -->
+    <div class="mt-6">
+      <h3 class="text-xl font-bold text-white">Ominaisuudet</h3>
+      <ul class="mt-2 list-disc list-inside text-gray-300">
+        <li>Jotain</li>
+        <li>Jotain</li>
+        <li>Jotain</li>
+        <li>Jotain</li>
+        <li>Jotain</li>
+        <li>Jotain</li>
+      </ul>
     </div>
   </div>
 </div>

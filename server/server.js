@@ -20,16 +20,29 @@ app.use(express.static(path.join(__dirname, "./dist/browser")));
 app.get("/api/products/:slug", (req, res) => {
   slug = req.params.slug;
   console.log(slug);
-  res.send({
-    id: 192056,
-    slug: "arduino-nano",
-    name: "Arduino Nano",
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent interdum non dolor eget consectetur. Donec dictum vitae risus quis congue.",
-    price: 4.99,
-    imageUrl: "assets/test.jpg",
-    stock: 1,
-  });
+  if (slug == "arduino-nano")
+    res.send({
+      id: 192056,
+      slug: "arduino-nano",
+      name: "Arduino Nano",
+      description:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent interdum non dolor eget consectetur. Donec dictum vitae risus quis congue.",
+      price: 4.99,
+      imageUrl: "assets/test.jpg",
+      stock: 1,
+    });
+  else {
+    res.send({
+      name: "Ultraäänisensori",
+      slug: "ultraäänisensori",
+      description:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent interdum non dolor eget consectetur. Donec dictum vitae risus quis congue. Donec sed imperdiet lacus.Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      id: 582454,
+      price: 3.49,
+      imageUrl: "assets/test.jpg",
+      stock: 0,
+    });
+  }
 });
 
 // Mock data

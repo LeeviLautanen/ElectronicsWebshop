@@ -1,28 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import {
-  bootstrapCartPlus,
-  bootstrapDashCircleFill,
-  bootstrapPlusCircleFill,
-} from '@ng-icons/bootstrap-icons';
-import { NgIconComponent, provideIcons } from '@ng-icons/core';
 import { Product } from '../models/ProductModel';
 import { ProductDataService } from '../product-data.service';
+import { CartControlsComponent } from '../cart-controls/cart-controls.component';
 
 @Component({
   selector: 'app-product-grid',
   standalone: true,
-  imports: [CommonModule, NgIconComponent, RouterLink],
+  imports: [CommonModule, RouterLink, CartControlsComponent],
   templateUrl: './product-grid.component.html',
   styleUrl: './product-grid.component.css',
-  providers: [
-    provideIcons({
-      bootstrapCartPlus,
-      bootstrapPlusCircleFill,
-      bootstrapDashCircleFill,
-    }),
-  ],
 })
 export class ProductGridComponent implements OnInit {
   products: Product[] = [];
@@ -40,13 +28,7 @@ export class ProductGridComponent implements OnInit {
     });
   }
 
-  increaseQuantity(product: Product) {}
-
-  decreaseQuantity(product: Product) {}
-
-  addToCart(product: Product) {}
-
   goToProductPage(product: Product) {
-    this.router.navigate([`/${product.slug}`]);
+    this.router.navigate([`/tuote/${product.slug}`]);
   }
 }
