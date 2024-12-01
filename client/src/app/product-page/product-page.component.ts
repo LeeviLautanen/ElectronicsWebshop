@@ -33,12 +33,4 @@ export class ProductPageComponent implements OnInit {
       this.product = data;
     });
   }
-
-  increaseQuantity(product: Product) {}
-
-  decreaseQuantity(product: Product) {}
-
-  addToCart(product: Product) {
-    console.log(product);
-  }
 }

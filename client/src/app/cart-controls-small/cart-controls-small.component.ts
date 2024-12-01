@@ -9,6 +9,7 @@ import { Product } from '../models/Product.model';
 import { CommonModule } from '@angular/common';
 import { ShoppingCartService } from '../shopping-cart.service';
 import { FormsModule } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-cart-controls-small',
@@ -28,7 +29,10 @@ export class CartControlsSmallComponent {
   @Input() product!: Product;
   quantity = 1;
 
-  constructor(private shoppingCartService: ShoppingCartService) {}
+  constructor(
+    private shoppingCartService: ShoppingCartService,
+    private toastrService: ToastrService
+  ) {}
 
   increaseQuantity(): void {
     this.quantity++;
@@ -39,7 +43,22 @@ export class CartControlsSmallComponent {
   }
 
   addToCart() {
-    this.shoppingCartService.addItem(this.product, this.quantity);
     this.quantity = 1;
+
+    if (this.quantity <= 0) {
+      this.toastrService.error(
+        `Määrän täytyy olla positiivinen luku, ${this.quantity} ei kelpaa.`,
+        'Ostoskoriin lisääminen epäonnistui'
+      );
+      return;
+    } else if (this.product.stock < this.quantity) {
+      this.toastrService.error(
+        `Vain ${this.product.stock} kappaletta varastossa.`,
+        'Ostoskoriin lisääminen epäonnistui'
+      );
+      return;
+    }
+
+    this.shoppingCartService.addItem(this.product, this.quantity);
   }
 }

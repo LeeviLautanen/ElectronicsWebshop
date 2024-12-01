@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Product } from './models/Product.model';
 import { CartItem } from './models/CartItem.model';
+import { ToastrService } from 'ngx-toastr';
 
 @Injectable({
   providedIn: 'root',
@@ -10,10 +11,9 @@ export class ShoppingCartService {
   private cart = new BehaviorSubject<CartItem[]>(this.loadCart());
   cart$ = this.cart.asObservable();
 
-  addItem(product: Product, quantity: number): void {
-    if (product.stock < quantity) {
-    }
+  constructor(private toastrService: ToastrService) {}
 
+  addItem(product: Product, quantity: number): void {
     const currentCart = this.cart.value;
     const existingItem = currentCart.find(
       (item) => item.product.id === product.id
