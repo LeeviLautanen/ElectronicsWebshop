@@ -1,0 +1,46 @@
+<div class="flex flex-row max-w-[1000px] items-center">
+  <!-- Image -->
+  <img
+    [src]="cartItem.product.imageUrl"
+    alt="Product image"
+    class="w-24 h-24 object-cover rounded-lg"
+  />
+
+  <!-- Name and price -->
+  <div class="flex flex-col ml-4">
+    <h3 class="text-lg font-semibold text-white">
+      {{ cartItem.product.name }}
+    </h3>
+    <p class="text-gray-400 text-sm">Hinta: {{ cartItem.product.price }} €</p>
+  </div>
+
+  <!-- Cart controls -->
+  <div class="flex flex-row ml-auto items-center space-x-2">
+    <button class="mt-2" (click)="decreaseQuantity()">
+      <ng-icon
+        name="bootstrapDashCircleFill"
+        class="text-2xl text-white"
+      ></ng-icon>
+    </button>
+
+    <input
+      type="number"
+      [(ngModel)]="cartItem.quantity"
+      class="w-10 text-center text-black rounded-lg py-1 no-spinner"
+    />
+
+    <button class="mt-2" (click)="increaseQuantity()">
+      <ng-icon
+        name="bootstrapPlusCircleFill"
+        class="text-2xl text-white"
+      ></ng-icon>
+    </button>
+
+    <button
+      (click)="removeFromCart()"
+      class="bg-red-600 px-2 pt-1 rounded-lg hover:bg-red-700 transition-colors"
+    >
+      <ng-icon name="bootstrapTrash3" class="text-2xl"></ng-icon>
+    </button>
+  </div>
+</div>

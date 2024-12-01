@@ -1,25 +1,24 @@
 <div *ngIf="product" class="flex flex-col items-center">
-  <!-- Main Product Section -->
   <div class="flex w-full space-x-8 p-4 bg-gray-800 rounded-lg">
-    <!-- Product Image -->
+    <!-- Image -->
     <img
       [src]="product.imageUrl"
       alt="Product image"
       class="w-96 h-96 object-cover rounded-lg"
     />
 
-    <!-- Product Info -->
+    <!-- Info -->
     <div class="flex flex-col justify-between text-white">
-      <!-- Part Name -->
+      <!-- Name -->
       <h2 class="mt-4 text-3xl font-bold">{{ product.name }}</h2>
 
-      <!-- Part Price -->
+      <!-- Price -->
       <p class="mt-4 text-3xl font-semibold">
         {{ product.price }} €
         <span class="text-lg font-normal">(sis alv.)</span>
       </p>
 
-      <!-- Items in Stock -->
+      <!-- Stock quantity -->
       <p class="mt-2 text-base">
         <span class="font-medium">Saatavuus:</span>
         <span class="text-white">
@@ -31,12 +30,12 @@
         </span>
       </p>
 
-      <!-- Cart Elements -->
-      <app-cart-controls></app-cart-controls>
+      <!-- Cart controls -->
+      <app-cart-controls-large [product]="product"></app-cart-controls-large>
     </div>
   </div>
 
-  <!-- Product Description and Features -->
+  <!-- Description and features -->
   <div
     class="flex flex-col w-full max-w-[900px] mt-4 p-4 bg-gray-700 rounded-lg"
   >

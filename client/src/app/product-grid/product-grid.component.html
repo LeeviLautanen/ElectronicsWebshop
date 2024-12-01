@@ -1,7 +1,4 @@
-<div
-  class="grid grid-cols-3 gap-4"
-  style="grid-template-columns: repeat(3, 15.5rem)"
->
+<div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
   <div
     *ngFor="let product of products"
     class="bg-gray-800 p-3 rounded-lg shadow-lg w-[15.5rem]] flex flex-col relative"
@@ -41,9 +38,9 @@
     </div>
 
     <!-- Price and cart buttons -->
-    <div class="mt-3 text-white flex justify-between items-center">
-      <p class="text-xl font-bold">{{ product.price }} €</p>
-      <app-cart-controls></app-cart-controls>
+    <div class="mt-3 flex justify-between items-center">
+      <p class="text-xl font-bold text-white">{{ product.price }} €</p>
+      <app-cart-controls-small [product]="product"></app-cart-controls-small>
     </div>
   </div>
 </div>

@@ -1,0 +1,25 @@
+<div class="flex items-center space-x-2">
+  <button class="mt-2" (click)="decreaseQuantity()">
+    <ng-icon
+      name="bootstrapDashCircleFill"
+      class="text-2xl text-white"
+    ></ng-icon>
+  </button>
+  <input
+    type="number"
+    [(ngModel)]="quantity"
+    class="w-10 text-center rounded-lg px-2 py-1 no-spinner"
+  />
+  <button class="mt-2" (click)="increaseQuantity()">
+    <ng-icon
+      name="bootstrapPlusCircleFill"
+      class="text-2xl text-white"
+    ></ng-icon>
+  </button>
+  <button
+    (click)="addToCart()"
+    class="bg-green-500 px-2 py-1 rounded-lg hover:bg-green-700 transition-colors"
+  >
+    <ng-icon name="bootstrapCartPlus" class="text-2xl"></ng-icon>
+  </button>
+</div>

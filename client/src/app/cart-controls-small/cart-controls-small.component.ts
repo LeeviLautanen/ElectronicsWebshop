@@ -5,17 +5,17 @@ import {
   bootstrapPlusCircleFill,
 } from '@ng-icons/bootstrap-icons';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { Product } from '../models/ProductModel';
+import { Product } from '../models/Product.model';
 import { CommonModule } from '@angular/common';
 import { ShoppingCartService } from '../shopping-cart.service';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-cart-controls',
+  selector: 'app-cart-controls-small',
   standalone: true,
   imports: [NgIcon, CommonModule, FormsModule],
-  templateUrl: './cart-controls.component.html',
-  styleUrl: './cart-controls.component.css',
+  templateUrl: './cart-controls-small.component.html',
+  styleUrl: './cart-controls-small.component.css',
   providers: [
     provideIcons({
       bootstrapCartPlus,
@@ -24,8 +24,8 @@ import { FormsModule } from '@angular/forms';
     }),
   ],
 })
-export class CartControlsComponent {
-  //@Input() product!: Product;
+export class CartControlsSmallComponent {
+  @Input() product!: Product;
   quantity = 1;
 
   constructor(private shoppingCartService: ShoppingCartService) {}
@@ -38,5 +38,8 @@ export class CartControlsComponent {
     if (this.quantity > 1) this.quantity--;
   }
 
-  addToCart() {}
+  addToCart() {
+    this.shoppingCartService.addItem(this.product, this.quantity);
+    this.quantity = 1;
+  }
 }

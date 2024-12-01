@@ -88,6 +88,46 @@ app.get("/api/allProducts", (req, res) => {
       imageUrl: "assets/test.jpg",
       stock: 7,
     },
+    {
+      name: "N-mosfet IRF3205",
+      slug: "n-mosfet-irf3205",
+      description:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent interdum non dolor eget consectetur. Donec dictum vitae risus quis congue. Donec sed imperdiet lacus.",
+      id: 748515,
+      price: 1.39,
+      imageUrl: "assets/test.jpg",
+      stock: 5,
+    },
+    {
+      name: "P-mosfet IRF4095",
+      slug: "p-mosfet-irf4905",
+      description:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent interdum non dolor eget consectetur. Donec dictum vitae risus quis congue. Donec sed imperdiet lacus.",
+      id: 748515,
+      price: 1.49,
+      imageUrl: "assets/test.jpg",
+      stock: 7,
+    },
+    {
+      name: "N-mosfet IRF3205",
+      slug: "n-mosfet-irf3205",
+      description:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent interdum non dolor eget consectetur. Donec dictum vitae risus quis congue. Donec sed imperdiet lacus.",
+      id: 748515,
+      price: 1.39,
+      imageUrl: "assets/test.jpg",
+      stock: 5,
+    },
+    {
+      name: "P-mosfet IRF4095",
+      slug: "p-mosfet-irf4905",
+      description:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent interdum non dolor eget consectetur. Donec dictum vitae risus quis congue. Donec sed imperdiet lacus.",
+      id: 748515,
+      price: 1.49,
+      imageUrl: "assets/test.jpg",
+      stock: 7,
+    },
   ]);
 });
 

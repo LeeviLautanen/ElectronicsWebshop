@@ -1,34 +1,26 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
-import { Product } from '../models/ProductModel';
+import { RouterLink } from '@angular/router';
+import { Product } from '../models/Product.model';
 import { ProductDataService } from '../product-data.service';
-import { CartControlsComponent } from '../cart-controls/cart-controls.component';
+import { CartControlsSmallComponent } from '../cart-controls-small/cart-controls-small.component';
 
 @Component({
   selector: 'app-product-grid',
   standalone: true,
-  imports: [CommonModule, RouterLink, CartControlsComponent],
+  imports: [CommonModule, RouterLink, CartControlsSmallComponent],
   templateUrl: './product-grid.component.html',
   styleUrl: './product-grid.component.css',
 })
 export class ProductGridComponent implements OnInit {
   products: Product[] = [];
 
-  constructor(
-    private router: Router,
-    private productDataService: ProductDataService
-  ) {}
+  constructor(private productDataService: ProductDataService) {}
 
   // Fetch all product data
   ngOnInit(): void {
     this.productDataService.getAllProducts().subscribe((data) => {
-      console.log(data);
       this.products = data;
     });
-  }
-
-  goToProductPage(product: Product) {
-    this.router.navigate([`/tuote/${product.slug}`]);
   }
 }
