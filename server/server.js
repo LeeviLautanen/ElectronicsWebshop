@@ -15,6 +15,10 @@ if (process.env.NODE_ENV === "development") {
 }
 
 app.use(express.static(path.join(__dirname, "./dist/browser")));
+app.use(
+  "/images",
+  express.static(path.join(__dirname, "./dist/browser/assets"))
+);
 
 // Mock response
 app.get("/api/products/:slug", (req, res) => {
