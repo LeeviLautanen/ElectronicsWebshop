@@ -2,7 +2,7 @@
   <div class="flex w-full space-x-8 p-4 bg-gray-800 rounded-lg">
     <!-- Image -->
     <img
-      [src]="product.imageUrl"
+      [src]="apiUrl + '/assets/' + product.slug + '.jpg'"
       alt="Product image"
       class="w-96 h-96 object-cover rounded-lg"
     />
