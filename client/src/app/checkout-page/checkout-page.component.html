@@ -1,1 +1,55 @@
-<p>checkout-page works!</p>
+<!-- Content Section -->
+<div class="flex gap-6">
+  <div class="w-full bg-gray-900 p-6 rounded-lg shadow-lg">
+    <!-- Progress Bar -->
+    <div class="flex items-center justify-between text-gray-300 mb-6">
+      <div class="flex flex-col items-center space-y-2">
+        <span>Henkilötiedot</span>
+        <span
+          class="w-8 h-8 flex items-center justify-center rounded-full bg-green-600 text-white"
+          >1</span
+        >
+      </div>
+      <hr class="flex-grow mx-2 border-gray-600" />
+      <div class="flex flex-col items-center space-y-2">
+        <span>Maksu</span>
+        <span
+          class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-600 text-gray-300"
+          >2</span
+        >
+      </div>
+      <hr class="flex-grow mx-2 border-gray-600" />
+      <div class="flex flex-col items-center space-y-2">
+        <span>Varmista</span>
+        <span
+          class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-600 text-gray-300"
+          >3</span
+        >
+      </div>
+    </div>
+
+    <!-- Customer Information Form -->
+    <form class="space-y-4">
+      <input
+        type="text"
+        placeholder="Full Name"
+        class="w-full p-3 bg-gray-800 rounded-lg text-white"
+      />
+      <input
+        type="email"
+        placeholder="Email Address"
+        class="w-full p-3 bg-gray-800 rounded-lg text-white"
+      />
+      <input
+        type="tel"
+        placeholder="Phone Number"
+        class="w-full p-3 bg-gray-800 rounded-lg text-white"
+      />
+      <button
+        class="w-full mt-4 bg-green-600 px-4 py-2 rounded-lg text-white font-semibold hover:bg-green-700"
+      >
+        Continue to Payment
+      </button>
+    </form>
+  </div>
+</div>
