@@ -9,11 +9,13 @@ import {
   bootstrapTrash3,
 } from '@ng-icons/bootstrap-icons';
 import { CartProductCardComponent } from '../cart-product-card/cart-product-card.component';
+import { Subscription } from 'rxjs';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-shopping-cart-page',
   standalone: true,
-  imports: [CommonModule, NgIcon, CartProductCardComponent],
+  imports: [CommonModule, NgIcon, CartProductCardComponent, RouterLink],
   templateUrl: './shopping-cart-page.component.html',
   styleUrls: ['./shopping-cart-page.component.css'],
   providers: [
@@ -25,38 +27,27 @@ import { CartProductCardComponent } from '../cart-product-card/cart-product-card
   ],
 })
 export class ShoppingCartPageComponent implements OnInit {
+  private cartSubscription: Subscription = new Subscription();
   cartItems: CartItem[] = [];
-  totalItems = 0;
-  cartTotal = 0;
+  cartQuantity = 0;
+  cartValue = 0;
 
   constructor(private shoppingCartService: ShoppingCartService) {}
 
   ngOnInit(): void {
-    this.shoppingCartService.cart$.subscribe((items) => {
-      this.cartItems = items;
-      this.calculateSummary();
-    });
-  }
-
-  updateQuantity(item: CartItem, quantity: number): void {
-    if (quantity > 0) {
-      this.shoppingCartService.addItem(item.product, quantity - item.quantity);
-    }
-  }
-
-  removeItem(productId: number): void {
-    this.shoppingCartService.removeItem(productId);
-  }
-
-  calculateSummary(): void {
-    this.totalItems = this.cartItems.reduce(
-      (sum, item) => sum + item.quantity,
-      0
+    // Subscribe to the cart observable and update values
+    this.cartSubscription = this.shoppingCartService.cart$.subscribe(
+      (cartData) => {
+        this.cartItems = cartData.items;
+        this.cartQuantity = cartData.quantity;
+        this.cartValue = cartData.value;
+      }
     );
-    this.cartTotal = this.cartItems.reduce(
-      (sum, item) => sum + item.product.price * item.quantity,
-      0
-    );
+  }
+
+  ngOnDestroy(): void {
+    // For possible memory leaks
+    this.cartSubscription.unsubscribe();
   }
 
   checkout(): void {

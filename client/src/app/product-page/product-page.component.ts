@@ -15,8 +15,8 @@ import { environment } from '../../environments/environment';
   styleUrl: './product-page.component.css',
 })
 export class ProductPageComponent implements OnInit {
-  apiUrl = environment.apiUrl;
   product!: Product;
+  apiUrl = environment.apiUrl;
 
   constructor(
     private route: ActivatedRoute,

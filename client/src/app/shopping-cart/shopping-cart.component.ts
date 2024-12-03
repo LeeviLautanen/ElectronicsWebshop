@@ -18,34 +18,26 @@ import { CommonModule } from '@angular/common';
   providers: [provideIcons({ bootstrapCart4, bootstrapChevronDown })],
 })
 export class ShoppingCartComponent implements OnInit, OnDestroy {
-  cartItems: CartItem[] = [];
-  cartTotal: number = 0.0;
-  cartQuantity: number = 0;
   private cartSubscription: Subscription = new Subscription();
+  cartItems: CartItem[] = [];
+  cartValue: number = 0.0;
+  cartQuantity: number = 0;
 
   constructor(private shoppingCartService: ShoppingCartService) {}
 
   ngOnInit(): void {
-    // Subscribe to the cart observable
-    this.cartSubscription = this.shoppingCartService.cart$.subscribe((cart) => {
-      this.cartItems = cart;
-      this.updateCartSummary();
-    });
+    // Subscribe to the cart observable and update values
+    this.cartSubscription = this.shoppingCartService.cart$.subscribe(
+      (cartData) => {
+        this.cartItems = cartData.items;
+        this.cartQuantity = cartData.quantity;
+        this.cartValue = cartData.value;
+      }
+    );
   }
 
   ngOnDestroy(): void {
     // For possible memory leaks
     this.cartSubscription.unsubscribe();
-  }
-
-  private updateCartSummary(): void {
-    this.cartQuantity = this.cartItems.reduce(
-      (total, item) => total + item.quantity,
-      0
-    );
-    this.cartTotal = this.cartItems.reduce(
-      (total, item) => total + item.product.price * item.quantity,
-      0
-    );
   }
 }

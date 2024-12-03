@@ -1,7 +1,7 @@
-<div class="flex flex-row max-w-[1000px] items-center">
+<div class="flex flex-row items-center">
   <!-- Image -->
   <img
-    [src]="cartItem.product.imageUrl"
+    [src]="apiUrl + '/assets/' + cartItem.product.slug + '.jpg'"
     alt="Product image"
     class="w-24 h-24 object-cover rounded-lg"
   />

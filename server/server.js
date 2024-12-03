@@ -84,7 +84,7 @@ app.get("/api/allProducts", (req, res) => {
       slug: "p-mosfet-irf4905",
       description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent interdum non dolor eget consectetur. Donec dictum vitae risus quis congue. Donec sed imperdiet lacus.",
-      id: 748515,
+      id: 145661,
       price: 1.49,
       imageUrl: "assets/test.jpg",
       stock: 7,
@@ -104,7 +104,7 @@ app.get("/api/allProducts", (req, res) => {
       slug: "p-mosfet-irf4905",
       description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent interdum non dolor eget consectetur. Donec dictum vitae risus quis congue. Donec sed imperdiet lacus.",
-      id: 748515,
+      id: 145661,
       price: 1.49,
       imageUrl: "assets/test.jpg",
       stock: 7,
@@ -124,7 +124,7 @@ app.get("/api/allProducts", (req, res) => {
       slug: "p-mosfet-irf4905",
       description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent interdum non dolor eget consectetur. Donec dictum vitae risus quis congue. Donec sed imperdiet lacus.",
-      id: 748515,
+      id: 145661,
       price: 1.49,
       imageUrl: "assets/test.jpg",
       stock: 7,

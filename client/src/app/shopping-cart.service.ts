@@ -1,17 +1,23 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, map } from 'rxjs';
 import { Product } from './models/Product.model';
 import { CartItem } from './models/CartItem.model';
-import { ToastrService } from 'ngx-toastr';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ShoppingCartService {
   private cart = new BehaviorSubject<CartItem[]>(this.loadCart());
-  cart$ = this.cart.asObservable();
-
-  constructor(private toastrService: ToastrService) {}
+  cart$ = this.cart.asObservable().pipe(
+    map((cart) => ({
+      items: cart,
+      quantity: cart.reduce((total, item) => total + item.quantity, 0),
+      value: cart.reduce(
+        (total, item) => total + item.product.price * item.quantity,
+        0
+      ),
+    }))
+  );
 
   addItem(product: Product, quantity: number): void {
     const currentCart = this.cart.value;
@@ -29,16 +35,27 @@ export class ShoppingCartService {
     this.saveCart();
   }
 
-  removeItem(productId: number): void {
-    const updatedCart = this.cart.value.filter(
-      (item) => item.product.id !== productId
+  removeItem(product: Product, quantity?: number): void {
+    let currentCart = this.cart.value;
+    const existingItem = currentCart.find(
+      (item) => item.product.id === product.id
     );
-    this.cart.next(updatedCart);
-    this.saveCart();
-  }
 
-  getCart(): CartItem[] {
-    return this.cart.value;
+    if (existingItem == undefined) {
+      console.log("ERROR: Item to be deleted wasn't found");
+      return;
+    }
+
+    if (quantity != undefined) {
+      existingItem.quantity -= quantity;
+    } else {
+      currentCart = this.cart.value.filter(
+        (item) => item.product.id !== product.id
+      );
+    }
+
+    this.cart.next([...currentCart]);
+    this.saveCart();
   }
 
   private loadCart(): CartItem[] {

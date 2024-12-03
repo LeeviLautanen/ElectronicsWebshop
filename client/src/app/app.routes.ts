@@ -3,6 +3,7 @@ import { HomeComponent } from './home/home.component';
 import { ProductPageComponent } from './product-page/product-page.component';
 import { ProductGridComponent } from './product-grid/product-grid.component';
 import { ShoppingCartPageComponent } from './shopping-cart-page/shopping-cart-page.component';
+import { CheckoutPageComponent } from './checkout-page/checkout-page.component';
 
 export const routes: Routes = [
   {
@@ -20,4 +21,5 @@ export const routes: Routes = [
     ],
   },
   { path: 'ostoskori', component: ShoppingCartPageComponent },
+  { path: 'kassa', component: CheckoutPageComponent },
 ];
