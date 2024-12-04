@@ -10,7 +10,8 @@ import {
 } from '@ng-icons/bootstrap-icons';
 import { CartProductCardComponent } from '../cart-product-card/cart-product-card.component';
 import { Subscription } from 'rxjs';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-shopping-cart-page',
@@ -32,7 +33,11 @@ export class ShoppingCartPageComponent implements OnInit {
   cartQuantity = 0;
   cartValue = 0;
 
-  constructor(private shoppingCartService: ShoppingCartService) {}
+  constructor(
+    private shoppingCartService: ShoppingCartService,
+    private toastr: ToastrService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     // Subscribe to the cart observable and update values
@@ -48,5 +53,16 @@ export class ShoppingCartPageComponent implements OnInit {
   ngOnDestroy(): void {
     // For possible memory leaks
     this.cartSubscription.unsubscribe();
+  }
+
+  checkout(): void {
+    if (this.cartQuantity <= 0) {
+      this.toastr.error(
+        'Kassalle siirtyminen epäonnistui',
+        'Ostoskori on tyhjä.'
+      );
+    } else {
+      this.router.navigateByUrl('/kassa');
+    }
   }
 }
