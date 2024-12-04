@@ -49,9 +49,4 @@ export class ShoppingCartPageComponent implements OnInit {
     // For possible memory leaks
     this.cartSubscription.unsubscribe();
   }
-
-  checkout(): void {
-    // Implement checkout logic here
-    console.log('Proceeding to checkout...');
-  }
 }

@@ -5,6 +5,7 @@ import { ProductGridComponent } from './product-grid/product-grid.component';
 import { ShoppingCartPageComponent } from './shopping-cart-page/shopping-cart-page.component';
 import { CheckoutPageComponent } from './checkout-page/checkout-page.component';
 import { InfoPageComponent } from './info-page/info-page.component';
+import { TermsPageComponent } from './terms-page/terms-page.component';
 
 export const routes: Routes = [
   {
@@ -24,4 +25,5 @@ export const routes: Routes = [
   { path: 'ostoskori', component: ShoppingCartPageComponent },
   { path: 'kassa', component: CheckoutPageComponent },
   { path: 'tietoa', component: InfoPageComponent },
+  { path: 'toimitusehdot', component: TermsPageComponent },
 ];
