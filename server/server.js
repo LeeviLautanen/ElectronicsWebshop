@@ -30,7 +30,7 @@ app.get("/api/products/:slug", (req, res) => {
       description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent interdum non dolor eget consectetur. Donec dictum vitae risus quis congue.",
       price: 4.99,
-      stock: 1,
+      stock: 0,
     });
   else {
     res.send({
@@ -57,7 +57,7 @@ app.get("/api/allProducts", (req, res) => {
       description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent interdum non dolor eget consectetur. Donec dictum vitae risus quis congue.",
       price: 4.99,
-      stock: 1,
+      stock: 0,
     },
     {
       id: 582454,
@@ -77,7 +77,7 @@ app.get("/api/allProducts", (req, res) => {
       description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent interdum non dolor eget consectetur. Donec dictum vitae risus quis congue. Donec sed imperdiet lacus.",
       price: 1.39,
-      stock: 5,
+      stock: 0,
     },
     {
       id: 145661,
@@ -87,7 +87,7 @@ app.get("/api/allProducts", (req, res) => {
       description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent interdum non dolor eget consectetur. Donec dictum vitae risus quis congue. Donec sed imperdiet lacus.",
       price: 1.49,
-      stock: 7,
+      stock: 0,
     },
   ]);
 });
