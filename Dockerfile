@@ -22,4 +22,4 @@ EXPOSE 3000
 
 WORKDIR /app/server
 
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "prod"]

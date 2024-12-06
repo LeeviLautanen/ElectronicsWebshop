@@ -24,7 +24,7 @@ export class ProductDataService {
 
   // Get all products and add image url prefix
   getAllProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(`${this.apiUrl}/api/allProducts`).pipe(
+    return this.http.get<Product[]>(`${this.apiUrl}/api/products`).pipe(
       map((products) => {
         products.forEach((product) => {
           product.image = `${this.apiUrl}/assets/${product.image}`;

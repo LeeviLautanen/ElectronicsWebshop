@@ -38,86 +38,28 @@ pool.connect((err, client, release) => {
 // Static files
 app.use(express.static(path.join(__dirname, "./dist/browser")));
 
-// Mock response
-app.get("/api/products/:slug", (req, res) => {
-  slug = req.params.slug;
-  console.log(slug);
-  if (slug == "arduino-nano")
-    res.send({
-      id: 192056,
-      slug: "arduino-nano",
-      name: "Arduino Nano",
-      image: "arduino-nano.jpg",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent interdum non dolor eget consectetur. Donec dictum vitae risus quis congue.",
-      price: 4.99,
-      stock: 0,
-    });
-  else {
-    res.send({
-      id: 582454,
-      slug: "ultraäänisensori",
-      name: "Ultraäänisensori",
-      image: "no-image.jpg",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent interdum non dolor eget consectetur. Donec dictum vitae risus quis congue. Donec sed imperdiet lacus.Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      price: 3.49,
-      stock: 0,
-    });
-  }
-});
+// Get product data by slug
+app.get("/api/products/:slug", async (req, res) => {
+  const slug = req.params.slug;
 
-// Mock data
-app.get("/api/allProductsMock", (req, res) => {
-  res.send([
-    {
-      id: 192056,
-      name: "Arduino Nano",
-      slug: "arduino-nano",
-      image: "arduino-nano.jpg",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent interdum non dolor eget consectetur. Donec dictum vitae risus quis congue.",
-      price: 4.99,
-      stock: 0,
-    },
-    {
-      id: 582454,
-      name: "Ultraäänisensori",
-      slug: "ultraäänisensori",
-      image: "no-image.jpg",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent interdum non dolor eget consectetur. Donec dictum vitae risus quis congue. Donec sed imperdiet lacus.Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      price: 3.49,
-      stock: 0,
-    },
-    {
-      id: 748515,
-      name: "N-mosfet IRF3205",
-      slug: "n-mosfet-irf3205",
-      image: "no-image.jpg",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent interdum non dolor eget consectetur. Donec dictum vitae risus quis congue. Donec sed imperdiet lacus.",
-      price: 1.39,
-      stock: 0,
-    },
-    {
-      id: 145661,
-      name: "P-mosfet IRF4095",
-      slug: "p-mosfet-irf4905",
-      image: "no-image.jpg",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent interdum non dolor eget consectetur. Donec dictum vitae risus quis congue. Donec sed imperdiet lacus.",
-      price: 1.49,
-      stock: 0,
-    },
-  ]);
+  try {
+    const result = await pool.query(
+      "SELECT name, slug, description, image, price, stock FROM products WHERE slug = $1",
+      [slug]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Get all products
 app.get("/api/products", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM products");
-    res.status(201).json(result.rows[0]);
+    const result = await pool.query(
+      "SELECT name, slug, description, image, price, stock FROM products"
+    );
+    res.status(201).json(result.rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
