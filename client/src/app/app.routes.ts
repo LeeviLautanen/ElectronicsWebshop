@@ -6,6 +6,7 @@ import { ShoppingCartPageComponent } from './shopping-cart-page/shopping-cart-pa
 import { CheckoutPageComponent } from './checkout-page/checkout-page.component';
 import { InfoPageComponent } from './info-page/info-page.component';
 import { TermsPageComponent } from './terms-page/terms-page.component';
+import { AddProductComponent } from './add-product/add-product.component';
 
 export const routes: Routes = [
   {
@@ -26,4 +27,5 @@ export const routes: Routes = [
   { path: 'kassa', component: CheckoutPageComponent },
   { path: 'tietoa', component: InfoPageComponent },
   { path: 'toimitusehdot', component: TermsPageComponent },
+  { path: 'addProduct', component: AddProductComponent },
 ];

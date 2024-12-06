@@ -33,4 +33,9 @@ export class ProductDataService {
       })
     );
   }
+
+  // Add a product to database
+  addProduct(product: any): Observable<any> {
+    return this.http.post('http://localhost:3000/api/products', product);
+  }
 }

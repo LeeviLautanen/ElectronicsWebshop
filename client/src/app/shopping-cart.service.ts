@@ -22,7 +22,7 @@ export class ShoppingCartService {
   addItem(product: Product, quantity: number): void {
     const currentCart = this.cart.value;
     const existingItem = currentCart.find(
-      (item) => item.product.id === product.id
+      (item) => item.product.slug === product.slug
     );
 
     if (existingItem) {
@@ -38,7 +38,7 @@ export class ShoppingCartService {
   removeItem(product: Product, quantity?: number): void {
     let currentCart = this.cart.value;
     const existingItem = currentCart.find(
-      (item) => item.product.id === product.id
+      (item) => item.product.slug === product.slug
     );
 
     if (existingItem == undefined) {
@@ -50,7 +50,7 @@ export class ShoppingCartService {
       existingItem.quantity -= quantity;
     } else {
       currentCart = this.cart.value.filter(
-        (item) => item.product.id !== product.id
+        (item) => item.product.slug !== product.slug
       );
     }
 
