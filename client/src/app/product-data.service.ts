@@ -8,15 +8,15 @@ import { environment } from '../environments/environment';
   providedIn: 'root',
 })
 export class ProductDataService {
-  private apiUrl = environment.apiUrl;
+  private baseUrl = environment.baseUrl;
 
   constructor(private http: HttpClient) {}
 
   // Get one product by slug and add image url prefix
   getProductBySlug(slug: string): Observable<Product> {
-    return this.http.get<Product>(`${this.apiUrl}/api/products/${slug}`).pipe(
+    return this.http.get<Product>(`${this.baseUrl}/api/products/${slug}`).pipe(
       map((product) => {
-        product.image = `${this.apiUrl}/assets/${product.image}`;
+        product.image = `${this.baseUrl}/assets/${product.image}`;
         return product;
       })
     );
@@ -24,10 +24,10 @@ export class ProductDataService {
 
   // Get all products and add image url prefix
   getAllProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(`${this.apiUrl}/api/products`).pipe(
+    return this.http.get<Product[]>(`${this.baseUrl}/api/products`).pipe(
       map((products) => {
         products.forEach((product) => {
-          product.image = `${this.apiUrl}/assets/${product.image}`;
+          product.image = `${this.baseUrl}/assets/${product.image}`;
         });
         return products;
       })

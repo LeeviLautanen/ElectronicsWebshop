@@ -4,7 +4,6 @@ import { RouterLink } from '@angular/router';
 import { Product } from '../models/Product.model';
 import { ProductDataService } from '../product-data.service';
 import { CartControlsSmallComponent } from '../cart-controls-small/cart-controls-small.component';
-import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-product-grid',
@@ -14,7 +13,6 @@ import { environment } from '../../environments/environment';
   styleUrl: './product-grid.component.css',
 })
 export class ProductGridComponent implements OnInit {
-  apiUrl = environment.apiUrl;
   products: Product[] = [];
 
   constructor(private productDataService: ProductDataService) {}

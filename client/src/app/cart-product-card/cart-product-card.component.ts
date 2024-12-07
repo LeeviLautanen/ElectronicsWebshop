@@ -4,7 +4,6 @@ import { CartItem } from '../models/CartItem.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ShoppingCartService } from '../shopping-cart.service';
-import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-cart-product-card',
@@ -15,7 +14,6 @@ import { environment } from '../../environments/environment';
 })
 export class CartProductCardComponent {
   @Input() cartItem!: CartItem;
-  apiUrl = environment.apiUrl;
 
   constructor(private shoppingCartService: ShoppingCartService) {}
 

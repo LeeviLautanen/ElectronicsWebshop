@@ -5,7 +5,6 @@ import { ProductDataService } from '../product-data.service';
 import { CommonModule } from '@angular/common';
 import { NgIcon } from '@ng-icons/core';
 import { CartControlsLargeComponent } from '../cart-controls-large/cart-controls-large.component';
-import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-product-page',
@@ -16,7 +15,6 @@ import { environment } from '../../environments/environment';
 })
 export class ProductPageComponent implements OnInit {
   product!: Product;
-  apiUrl = environment.apiUrl;
 
   constructor(
     private route: ActivatedRoute,
