@@ -1,5 +1,4 @@
 const express = require("express");
-const cors = require("cors");
 const path = require("path");
 require("dotenv").config();
 
@@ -11,13 +10,7 @@ app.use(express.json());
 
 const isDev = process.env.NODE_ENV === "development";
 
-if (isDev) {
-  app.use(
-    cors({
-      origin: "http://localhost:4200",
-    })
-  );
-}
+const PORT = isDev ? process.env.PORT_DEV : process.env.PORT;
 
 app.use("/api", productRoutes);
 app.use("/api", paymentRoutes);
@@ -29,5 +22,4 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "./dist/browser/index.html"));
 });
 
-const PORT = process.env.SERVER_PORT;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
