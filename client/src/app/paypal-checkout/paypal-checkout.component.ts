@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnInit } from '@angular/core';
 import { PaymentService } from '../payment.service';
-import { environment } from '../../environments/environment';
+import { environment } from '../../environments/environment.dev';
 
 @Component({
   selector: 'app-paypal-checkout',
