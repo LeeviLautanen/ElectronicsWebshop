@@ -19,6 +19,10 @@ export class ShoppingCartService {
     }))
   );
 
+  getCart(): CartItem[] {
+    return this.cart.value;
+  }
+
   addItem(product: Product, quantity: number): void {
     const currentCart = this.cart.value;
     const existingItem = currentCart.find(
