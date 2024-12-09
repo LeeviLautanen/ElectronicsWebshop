@@ -66,7 +66,7 @@ export class PaypalCheckoutComponent implements OnInit {
     }
   }
 
-  onApproveCallback(data: any, actions: any): void {
+  onApproveCallback(data: any): void {
     this.paymentService.captureOrder(data.orderID);
   }
 

@@ -31,7 +31,6 @@ router.get("/products", async (req, res) => {
 // Add product
 router.post("/products", async (req, res) => {
   const { slug, name, description, image, price, stock } = req.body;
-  console.log(req.body);
 
   try {
     const result = await pool.query(
