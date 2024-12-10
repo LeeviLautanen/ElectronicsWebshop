@@ -5,6 +5,7 @@ require("dotenv").config();
 
 const productRoutes = require("./routes/productRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
+const shippingRoutes = require("./routes/shippingRoutes");
 
 const app = express();
 app.use(express.json());
@@ -21,6 +22,7 @@ if (isDev) {
 
 app.use("/api", productRoutes);
 app.use("/api", paymentRoutes);
+app.use("/api", shippingRoutes);
 
 // Static files
 app.use(express.static(path.join(__dirname, "./dist/browser")));

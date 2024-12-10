@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit } from '@angular/core';
-import { PaymentService } from '../payment.service';
+import { PaymentService } from '../services/payment.service';
 import { environment } from '../../environments/environment.dev';
 
 @Component({

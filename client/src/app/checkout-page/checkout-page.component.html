@@ -1,56 +1,133 @@
-<!-- Content Section -->
-<div class="flex flex-col gap-6">
-  <div class="w-full bg-gray-900 p-6 rounded-lg shadow-lg">
-    <!-- Progress Bar -->
-    <div class="flex items-center justify-between text-gray-300 mb-6">
-      <div class="flex flex-col items-center space-y-2">
-        <span>Henkilötiedot</span>
-        <span
-          class="w-8 h-8 flex items-center justify-center rounded-full bg-green-600 text-white"
-          >1</span
-        >
+<div class="p-6 bg-gray-100 rounded-lg shadow-md">
+  <h2 class="text-2xl font-bold text-gray-800 mb-6">Kassa</h2>
+
+  <!-- Shipping info -->
+  <section class="bg-white rounded-lg p-6 shadow-md mb-6">
+    <h3 class="text-lg font-semibold text-gray-800 mb-4">Toimitustiedot</h3>
+
+    <div class="grid grid-cols-2 gap-6">
+      <div>
+        <label class="shipping-info-label">Nimi</label>
+        <input class="shipping-info-input" [(ngModel)]="shippingInfo.name" />
       </div>
-      <hr class="flex-grow mx-2 border-gray-600" />
-      <div class="flex flex-col items-center space-y-2">
-        <span>Maksu</span>
-        <span
-          class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-600 text-gray-300"
-          >2</span
-        >
+
+      <div>
+        <label class="shipping-info-label">Puhelin (ei pakollinen)</label>
+
+        <div class="relative">
+          <span class="absolute left-2 top-1/2 transform -translate-y-1/2"
+            >+358</span
+          >
+          <input
+            class="mt-1 pl-12 block w-full border-2 rounded-lg p-3 focus:ring-indigo-500 focus:border-indigo-500"
+            [(ngModel)]="shippingInfo.phone"
+          />
+        </div>
       </div>
-      <hr class="flex-grow mx-2 border-gray-600" />
-      <div class="flex flex-col items-center space-y-2">
-        <span>Varmista</span>
-        <span
-          class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-600 text-gray-300"
-          >3</span
-        >
+
+      <div>
+        <label class="shipping-info-label">Sähköpostiosoite</label>
+        <input class="shipping-info-input" [(ngModel)]="shippingInfo.email" />
+      </div>
+
+      <div>
+        <label class="shipping-info-label">Osoite</label>
+        <input [(ngModel)]="shippingInfo.address" class="shipping-info-input" />
+      </div>
+
+      <div>
+        <label class="shipping-info-label">Postinumero</label>
+        <input
+          class="shipping-info-input"
+          [(ngModel)]="shippingInfo.postalCode"
+        />
+      </div>
+
+      <div>
+        <label class="shipping-info-label">Postitoimipaikka</label>
+        <input
+          class="shipping-info-input"
+          [(ngModel)]="shippingInfo.postalCity"
+        />
       </div>
     </div>
+  </section>
 
-    <!-- Customer Information Form -->
-    <form class="space-y-4">
-      <input
-        type="text"
-        placeholder="Full Name"
-        class="w-full p-3 bg-gray-800 rounded-lg text-white"
-      />
-      <input
-        type="email"
-        placeholder="Email Address"
-        class="w-full p-3 bg-gray-800 rounded-lg text-white"
-      />
-      <input
-        type="tel"
-        placeholder="Phone Number"
-        class="w-full p-3 bg-gray-800 rounded-lg text-white"
-      />
-      <button
-        class="w-full mt-4 bg-green-600 px-4 py-2 rounded-lg text-white font-semibold hover:bg-green-700"
+  <!-- Shipping options -->
+  <section class="bg-white rounded-lg p-6 shadow-md mb-6">
+    <h3 class="text-xl font-semibold text-gray-800 mb-4">Toimitustapa</h3>
+    <ul class="space-y-4">
+      <li
+        *ngFor="let option of shippingOptions"
+        class="flex items-center border-b pb-4"
       >
-        Continue to Payment
-      </button>
-    </form>
-  </div>
-  <app-paypal-checkout></app-paypal-checkout>
+        <img
+          [src]="option.image"
+          alt="{{ option.name }}"
+          class="w-20 h-12 rounded-full mr-4"
+        />
+        <div class="flex-1">
+          <h4 class="text-lg font-bold text-gray-800">{{ option.name }}</h4>
+          <p class="text-sm text-gray-600">{{ option.description }}</p>
+        </div>
+        <div class="text-right">
+          <p class="text-sm text-gray-500">
+            Toimitusaika: {{ option.delivery_time }}
+          </p>
+          <p class="text-lg font-semibold text-gray-800">
+            {{ option.price | currency : "EUR" : "symbol" : "1.2-2" }}
+          </p>
+        </div>
+        <input
+          type="radio"
+          [id]="option.name"
+          name="delivery"
+          class="ml-4"
+          [value]="option.name"
+          (change)="onSelectOption(option.name)"
+          [checked]="selectedOption === option.name"
+        />
+      </li>
+    </ul>
+  </section>
+
+  <!-- Order summary -->
+  <section class="bg-white rounded-lg p-6 shadow-md mb-6">
+    <h3 class="text-xl font-semibold text-gray-800 mb-4">
+      Tilauksen yhteenveto
+    </h3>
+    <ul class="space-y-4">
+      <li class="flex justify-between">
+        <span>Arduino Uno R3</span>
+        <span>24,90€</span>
+      </li>
+      <li class="flex justify-between">
+        <span>Moottorinohjainmoduuli</span>
+        <span>12,90€</span>
+      </li>
+      <li class="flex justify-between font-bold">
+        <span>Yhteensä:</span>
+        <span>37,80€</span>
+      </li>
+    </ul>
+  </section>
+
+  <!-- Payment methods -->
+  <section class="bg-white rounded-lg p-6 shadow-md mb-6">
+    <h3 class="text-xl font-semibold text-gray-800 mb-4">Maksutavat</h3>
+    <ul class="space-y-2">
+      <li>
+        <input type="radio" id="klarna" name="payment" class="mr-2" />
+        <label for="klarna">Klarna</label>
+      </li>
+      <li>
+        <input type="radio" id="paypal" name="payment" class="mr-2" />
+        <label for="paypal">PayPal</label>
+      </li>
+      <li>
+        <input type="radio" id="credit" name="payment" class="mr-2" />
+        <label for="credit">Luottokortti</label>
+      </li>
+    </ul>
+  </section>
 </div>

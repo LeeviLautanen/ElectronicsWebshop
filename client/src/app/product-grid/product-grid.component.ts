@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Product } from '../models/Product.model';
-import { ProductDataService } from '../product-data.service';
+import { ProductDataService } from '../services/product-data.service';
 import { CartControlsSmallComponent } from '../cart-controls-small/cart-controls-small.component';
 
 @Component({

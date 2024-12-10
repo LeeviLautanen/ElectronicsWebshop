@@ -4,7 +4,7 @@ import {
   bootstrapChevronDown,
 } from '@ng-icons/bootstrap-icons';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { ShoppingCartService } from '../shopping-cart.service';
+import { ShoppingCartService } from '../services/shopping-cart.service';
 import { Subscription } from 'rxjs';
 import { CartItem } from '../models/CartItem.model';
 import { CommonModule } from '@angular/common';

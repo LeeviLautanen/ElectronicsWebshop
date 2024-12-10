@@ -14,7 +14,7 @@
 
       <!-- Price -->
       <p class="mt-4 text-3xl font-semibold">
-        {{ product.price }} €
+        {{ product.price | currency : "EUR" : "symbol" : "1.2-2" }}
         <span class="text-lg font-normal">(sis alv.)</span>
       </p>
 

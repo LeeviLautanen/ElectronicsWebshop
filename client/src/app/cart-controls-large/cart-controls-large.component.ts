@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Product } from '../models/Product.model';
-import { ShoppingCartService } from '../shopping-cart.service';
+import { ShoppingCartService } from '../services/shopping-cart.service';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   bootstrapCartPlus,
