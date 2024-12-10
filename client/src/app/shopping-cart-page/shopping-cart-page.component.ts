@@ -43,9 +43,9 @@ export class ShoppingCartPageComponent implements OnInit {
     // Subscribe to the cart observable and update values
     this.cartSubscription = this.shoppingCartService.cart$.subscribe(
       (cartData) => {
-        this.cartItems = cartData.items;
-        this.cartQuantity = cartData.quantity;
-        this.cartValue = cartData.value;
+        this.cartItems = cartData.cartItems;
+        this.cartQuantity = cartData.itemQuantity;
+        this.cartValue = cartData.cartValue;
       }
     );
   }

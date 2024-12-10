@@ -3,7 +3,9 @@ import { PaypalCheckoutComponent } from '../paypal-checkout/paypal-checkout.comp
 import { FormsModule, NgForm, NgModel } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ShippingOption } from '../models/ShippingOption.model';
-import { ShippingService } from '../services/shipping.service';
+import { ShoppingCartService } from '../services/shopping-cart.service';
+import { Observable, Subscription } from 'rxjs';
+import { Cart } from '../models/Cart.model';
 
 @Component({
   selector: 'app-checkout-page',
@@ -14,16 +16,9 @@ import { ShippingService } from '../services/shipping.service';
 })
 export class CheckoutPageComponent implements OnInit {
   emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  shippingOptions: ShippingOption[] = [];
-  selectedOption: string = '';
 
-  constructor(private shippingService: ShippingService) {}
-
-  ngOnInit(): void {
-    this.shippingService.getShippingOptions().subscribe((options) => {
-      this.shippingOptions = options;
-    });
-  }
+  shippingOptions$!: Observable<ShippingOption[]>;
+  cart$!: Observable<Cart>;
 
   shippingInfo = {
     name: '',
@@ -34,8 +29,20 @@ export class CheckoutPageComponent implements OnInit {
     postalCity: '',
   };
 
-  onSelectOption(optionId: string): void {
-    this.selectedOption = optionId;
+  constructor(private shoppingCartService: ShoppingCartService) {}
+
+  ngOnInit(): void {
+    // Make shipping service update shipping options from DB
+    this.shoppingCartService.loadShippingOptions();
+
+    // Assign the observables
+    this.shippingOptions$ = this.shoppingCartService.shippingOptions$;
+    this.cart$ = this.shoppingCartService.cart$;
+  }
+
+  // Update selected shipping option to cart
+  onSelectOption(option: ShippingOption): void {
+    this.shoppingCartService.selectShippingOption(option);
   }
 
   isEmailValid(): boolean {

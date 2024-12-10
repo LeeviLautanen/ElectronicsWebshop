@@ -16,10 +16,13 @@ export class PaymentService {
     private shoppingCartService: ShoppingCartService
   ) {}
 
+  // Send a request to server to create a new order
   async createOrder(): Promise<any> {
     const url = `${this.baseUrl}/api/createOrder`;
 
-    const cartItems: CartItem[] = this.shoppingCartService.getCart();
+    // Get items in cart and compress then before sending to server
+    const cartData = await firstValueFrom(this.shoppingCartService.cart$);
+    const cartItems: CartItem[] = cartData.cartItems;
     const cartItemsCompact = cartItems.map((item) => ({
       slug: item.product.slug,
       quantity: item.quantity,
