@@ -6,7 +6,7 @@ const pool = require("../db");
 router.get("/shipping", async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT name, description, delivery_time, image, price, max_weight_g, max_height_mm FROM shippingOptions"
+      "SELECT public_id, name, description, delivery_time, image, price, max_weight_g, max_height_mm FROM shippingOptions"
     );
 
     const shippingOptions = result.rows.map((option) => ({

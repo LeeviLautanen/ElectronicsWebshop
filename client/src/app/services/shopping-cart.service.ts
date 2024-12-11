@@ -33,7 +33,7 @@ export class ShoppingCartService {
 
   constructor(private http: HttpClient) {}
 
-  addItem(product: Product, quantity: number): void {
+  addItem(product: Product, quantity: number) {
     const currentItems = this.cartSubject.value.cartItems;
     const existingItem = currentItems.find(
       (item) => item.product.slug === product.slug
@@ -52,7 +52,7 @@ export class ShoppingCartService {
     this.saveCart();
   }
 
-  removeItem(product: Product, quantity?: number): void {
+  removeItem(product: Product, quantity?: number) {
     let currentItems = this.cartSubject.value.cartItems;
     const existingItem = currentItems.find(
       (item) => item.product.slug === product.slug
@@ -79,15 +79,16 @@ export class ShoppingCartService {
   }
 
   // Set the selected shipping option
-  selectShippingOption(option: ShippingOption): void {
+  selectShippingOption(option: ShippingOption) {
     this.cartSubject.next({
       ...this.cartSubject.value,
       shippingOption: option,
     });
+    this.saveCart();
   }
 
   // Fetch all shipping options
-  loadShippingOptions(): void {
+  loadShippingOptions() {
     this.http
       .get<ShippingOption[]>(`${this.baseUrl}/api/shipping`)
       .pipe(
@@ -109,6 +110,14 @@ export class ShoppingCartService {
   // Get the cheapest shipping option with the current cart
   getCheapestShippingOption(): ShippingOption {
     return this.shippingOptionsSubject.value[0];
+  }
+
+  emptyCart() {
+    this.cartSubject.next({
+      ...this.cartSubject.value,
+      cartItems: [],
+    });
+    this.saveCart();
   }
 
   // Load cart from session storage

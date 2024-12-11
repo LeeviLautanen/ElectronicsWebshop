@@ -20,6 +20,7 @@ export class CheckoutPageComponent implements OnInit {
   shippingOptions$!: Observable<ShippingOption[]>;
   cart$!: Observable<Cart>;
 
+  shippingInfoValid: boolean = false;
   shippingInfo = {
     name: '',
     phone: '',
@@ -41,7 +42,7 @@ export class CheckoutPageComponent implements OnInit {
   }
 
   // Update selected shipping option to cart
-  onSelectOption(option: ShippingOption): void {
+  onSelectOption(option: ShippingOption) {
     this.shoppingCartService.selectShippingOption(option);
   }
 
@@ -51,5 +52,30 @@ export class CheckoutPageComponent implements OnInit {
 
   isPhoneValid(): boolean {
     return this.shippingInfo.phone.length <= 11;
+  }
+
+  areInputLengthsValid(): boolean {
+    // Max lengths gotten from https://developer.paypal.com/docs/api/orders/v2/#orders_create
+
+    const info = this.shippingInfo;
+    if (
+      info.name.length > 300 ||
+      info.address.length > 300 ||
+      info.postalCity.length > 120 ||
+      info.postalCode.length > 60
+    ) {
+      return false;
+    }
+    return true;
+  }
+
+  checkShippingInfo() {
+    if (
+      //this.isEmailValid() && Enable for production !!!
+      this.isPhoneValid() &&
+      this.areInputLengthsValid()
+    ) {
+      this.shippingInfoValid = true;
+    }
   }
 }

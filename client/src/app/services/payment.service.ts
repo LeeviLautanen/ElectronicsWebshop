@@ -17,19 +17,16 @@ export class PaymentService {
   ) {}
 
   // Send a request to server to create a new order
-  async createOrder(): Promise<any> {
+  async createOrder(shippingInfo: any): Promise<any> {
     const url = `${this.baseUrl}/api/createOrder`;
 
     // Get items in cart and compress then before sending to server
     const cartData = await firstValueFrom(this.shoppingCartService.cart$);
-    const cartItems: CartItem[] = cartData.cartItems;
-    const cartItemsCompact = cartItems.map((item) => ({
-      slug: item.product.slug,
-      quantity: item.quantity,
-    }));
-
     return await firstValueFrom(
-      this.httpClient.post(url, { cartItems: cartItemsCompact })
+      this.httpClient.post(url, {
+        cartData: cartData,
+        shippingInfo: shippingInfo,
+      })
     );
   }
 

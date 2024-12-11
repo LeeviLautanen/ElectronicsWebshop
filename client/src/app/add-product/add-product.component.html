@@ -2,18 +2,6 @@
   <h2 class="text-2xl font-semibold text-gray-800 mb-6">Add Product</h2>
   <form (ngSubmit)="onSubmit()" class="space-y-4">
     <div class="flex flex-col">
-      <label for="slug" class="text-sm font-medium text-gray-700">Slug</label>
-      <input
-        id="slug"
-        type="text"
-        [(ngModel)]="product.slug"
-        name="slug"
-        required
-        class="mt-1 p-2 border border-gray-300 rounded-md"
-      />
-    </div>
-
-    <div class="flex flex-col">
       <label for="name" class="text-sm font-medium text-gray-700">Name</label>
       <input
         id="name"
@@ -72,6 +60,34 @@
         type="number"
         [(ngModel)]="product.stock"
         name="stock"
+        required
+        class="mt-1 p-2 border border-gray-300 rounded-md"
+      />
+    </div>
+
+    <div class="flex flex-col">
+      <label for="weight" class="text-sm font-medium text-gray-700"
+        >Weight (grams)</label
+      >
+      <input
+        id="weight"
+        type="number"
+        [(ngModel)]="product.weight_g"
+        name="weight"
+        required
+        class="mt-1 p-2 border border-gray-300 rounded-md"
+      />
+    </div>
+
+    <div class="flex flex-col">
+      <label for="height" class="text-sm font-medium text-gray-700"
+        >Height (mm)</label
+      >
+      <input
+        id="height"
+        type="number"
+        [(ngModel)]="product.height_mm"
+        name="height"
         required
         class="mt-1 p-2 border border-gray-300 rounded-md"
       />

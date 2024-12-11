@@ -1,6 +1,9 @@
-import { Component, ElementRef, OnInit } from '@angular/core';
+import { Component, ElementRef, Input, OnInit } from '@angular/core';
 import { PaymentService } from '../services/payment.service';
 import { environment } from '../../environments/environment.dev';
+import { Router } from '@angular/router';
+import { ShoppingCartComponent } from '../shopping-cart/shopping-cart.component';
+import { ShoppingCartService } from '../services/shopping-cart.service';
 
 @Component({
   selector: 'app-paypal-checkout',
@@ -10,9 +13,14 @@ import { environment } from '../../environments/environment.dev';
   styleUrl: './paypal-checkout.component.css',
 })
 export class PaypalCheckoutComponent implements OnInit {
+  @Input() shippingInfo: any;
   private clientId = environment.clientId;
 
-  constructor(private paymentService: PaymentService) {}
+  constructor(
+    private paymentService: PaymentService,
+    private router: Router,
+    private shoppingCartService: ShoppingCartService
+  ) {}
 
   ngOnInit(): void {
     // Initialize the paypal button after the script has loaded
@@ -25,7 +33,7 @@ export class PaypalCheckoutComponent implements OnInit {
   private loadPaypalScript(): Promise<void> {
     return new Promise((resolve, reject) => {
       const script = document.createElement('script');
-      script.src = `https://www.paypal.com/sdk/js?client-id=${this.clientId}&components=buttons&currency=EUR`;
+      script.src = `https://www.paypal.com/sdk/js?client-id=${this.clientId}&components=buttons&currency=EUR&disable-funding=card`;
       script.onload = () => resolve();
       script.onerror = () => reject('Paypal SDK could not be loaded.');
       document.body.appendChild(script);
@@ -58,8 +66,7 @@ export class PaypalCheckoutComponent implements OnInit {
 
   async createOrderCallback(): Promise<string> {
     try {
-      const res = await this.paymentService.createOrder();
-      return res;
+      return await this.paymentService.createOrder(this.shippingInfo);
     } catch (error) {
       console.log(error);
       return 'error';
@@ -68,6 +75,8 @@ export class PaypalCheckoutComponent implements OnInit {
 
   onApproveCallback(data: any): void {
     this.paymentService.captureOrder(data.orderID);
+    this.shoppingCartService.emptyCart();
+    this.router.navigateByUrl('');
   }
 
   onErrorCallback(): void {

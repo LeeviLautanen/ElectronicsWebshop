@@ -1,4 +1,5 @@
 export interface ShippingOption {
+  public_id: string;
   name: string;
   description: string;
   delivery_time: string;

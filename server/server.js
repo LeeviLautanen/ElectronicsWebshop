@@ -6,6 +6,7 @@ require("dotenv").config();
 const productRoutes = require("./routes/productRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const shippingRoutes = require("./routes/shippingRoutes");
+const developmentRoutes = require("./routes/developmentRoutes");
 
 const app = express();
 app.use(express.json());
@@ -18,6 +19,7 @@ if (isDev) {
       origin: `http://localhost:4200`,
     })
   );
+  app.use("/api", developmentRoutes);
 }
 
 app.use("/api", productRoutes);
