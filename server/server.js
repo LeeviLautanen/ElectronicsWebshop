@@ -1,3 +1,7 @@
+// Sentry error logging, has to be first
+require("./instrument");
+
+const sentry = require("@sentry/node");
 const express = require("express");
 const path = require("path");
 const cors = require("cors");
@@ -33,6 +37,9 @@ app.use(express.static(path.join(__dirname, "./dist/browser")));
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "./dist/browser/index.html"));
 });
+
+// Error handler must be registered before any other error middleware and after all controllers
+sentry.setupExpressErrorHandler(app);
 
 const PORT = isDev ? process.env.PORT_DEV : process.env.PORT;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

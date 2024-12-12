@@ -18,4 +18,8 @@ router.post("/products", async (req, res) => {
   }
 });
 
+router.get("/debug-sentry", (req, res) => {
+  throw new Error("My first Sentry error!");
+});
+
 module.exports = router;

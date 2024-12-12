@@ -2,7 +2,6 @@ import { Component, ElementRef, Input, OnInit } from '@angular/core';
 import { PaymentService } from '../services/payment.service';
 import { environment } from '../../environments/environment.dev';
 import { Router } from '@angular/router';
-import { ShoppingCartComponent } from '../shopping-cart/shopping-cart.component';
 import { ShoppingCartService } from '../services/shopping-cart.service';
 
 @Component({
@@ -45,14 +44,9 @@ export class PaypalCheckoutComponent implements OnInit {
     // @ts-ignore, doesnt play nice with ts
     window.paypal
       .Buttons({
-        // Sets up the transaction when a payment button is clicked
         createOrder: this.createOrderCallback.bind(this),
-        // Callback for handling an approved order
         onApprove: this.onApproveCallback.bind(this),
-        // Error callback
-        onError: function (error: any) {
-          // Do something with the error from the SDK
-        },
+        onError: this.onErrorCallback.bind(this),
 
         style: {
           shape: 'rect',

@@ -184,6 +184,26 @@ router.post("/captureOrder", async (req, res) => {
       }
     );
 
+    if (response.data.status == "COMPLETED") {
+      const cartItems = req.body.cartData.cartItems;
+      const public_ids = cartItems.map((item) => item.product.public_id);
+
+      const updatePromises = cartItems.map((item) => {
+        const updateQuery = `
+          UPDATE products
+          SET stock = stock - $1
+          WHERE public_id = $2
+        `;
+        return pool.query(updateQuery, [item.quantity, item.product.public_id]);
+      });
+
+      try {
+        await Promise.all(updatePromises);
+      } catch (err) {
+        console.error("Error updating stock:", err);
+      }
+    }
+
     // Send PayPal order response to the client
     return res.status(200).json(response.data.status);
   } catch (error) {

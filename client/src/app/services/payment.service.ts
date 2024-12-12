@@ -32,6 +32,9 @@ export class PaymentService {
 
   async captureOrder(orderId: string): Promise<any> {
     const url = `${this.baseUrl}/api/captureOrder`;
-    return await firstValueFrom(this.httpClient.post(url, { id: orderId }));
+    const cartData = await firstValueFrom(this.shoppingCartService.cart$);
+    return await firstValueFrom(
+      this.httpClient.post(url, { id: orderId, cartData: cartData })
+    );
   }
 }
