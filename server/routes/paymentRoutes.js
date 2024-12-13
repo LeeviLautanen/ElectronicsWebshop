@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../db");
 const axios = require("axios");
+const Sentry = require("@sentry/node");
+const orderQueue = require("../orderQueue");
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -25,6 +27,52 @@ let authToken = {
   token: null,
   expiresAt: new Date(),
 };
+
+// Create order queue worker
+orderQueue.process(async (job) => {
+  const { orderId, cartData } = job.data;
+
+  if (await isOutOfStock(cartData)) {
+    return { status: "OUT_OF_STOCK" };
+  }
+
+  const token = await getValidToken();
+
+  try {
+    // API call for capturing order
+    const response = await axios.post(
+      `${base}/v2/checkout/orders/${orderId}/capture`,
+      {},
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (response.data.status != "COMPLETED") {
+      throw new Error("Capturing order failed");
+    }
+
+    // Update database stock values
+    const updatePromises = cartData.cartItems.map((item) => {
+      const updateQuery = `
+          UPDATE products
+          SET stock = stock - $1
+          WHERE public_id = $2
+        `;
+      return pool.query(updateQuery, [item.quantity, item.product.public_id]);
+    });
+
+    await Promise.all(updatePromises);
+
+    return { status: response.data.status };
+  } catch (error) {
+    Sentry.captureException(error);
+    return { status: "FAILED" };
+  }
+});
 
 // Get a token and refresh it if needed
 const getValidToken = async () => {
@@ -57,7 +105,7 @@ const getAccessToken = async () => {
     authToken.expiresAt = new Date(Date.now() + res.data.expires_in * 1000);
     return authToken.token;
   } catch (error) {
-    console.error("Error refreshing token: " + error);
+    Sentry.captureException(error);
   }
 };
 
@@ -74,7 +122,9 @@ router.post("/createOrder", async (req, res) => {
     WHERE public_id = ANY($1)`;
   const productsResult = await pool.query(productsQuery, [public_ids]);
 
-  // Add checking for stock
+  if (await isOutOfStock(req.body.cartData)) {
+    return res.status(400).json({ result: "OUT_OF_STOCK" });
+  }
 
   // Create the "items" array for paypal api request
   const items = cartData.cartItems.map((item) => {
@@ -161,55 +211,53 @@ router.post("/createOrder", async (req, res) => {
     // Return orderId to client
     return res.status(200).json(response.data.id);
   } catch (error) {
-    console.error("Error creating order:", error.response.data);
+    Sentry.captureException(error);
     return res.status(500).json({ error: "Error creating PayPal order" });
   }
 });
 
 // Capture order
 router.post("/captureOrder", async (req, res) => {
-  const orderId = req.body.id;
-  const token = await getValidToken();
+  const job = await orderQueue.add({
+    orderId: req.body.id,
+    cartData: req.body.cartData,
+  });
 
   try {
-    // API call to
-    const response = await axios.post(
-      `${base}/v2/checkout/orders/${orderId}/capture`,
-      {},
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const result = await job.finished();
 
-    if (response.data.status == "COMPLETED") {
-      const cartItems = req.body.cartData.cartItems;
-      const public_ids = cartItems.map((item) => item.product.public_id);
-
-      const updatePromises = cartItems.map((item) => {
-        const updateQuery = `
-          UPDATE products
-          SET stock = stock - $1
-          WHERE public_id = $2
-        `;
-        return pool.query(updateQuery, [item.quantity, item.product.public_id]);
-      });
-
-      try {
-        await Promise.all(updatePromises);
-      } catch (err) {
-        console.error("Error updating stock:", err);
-      }
+    if (result.status == "COMPLETED") {
+      return res.status(200).json(result.status);
+    } else if (result.status == "OUT_OF_STOCK") {
+      return res.status(400).json(result.status);
+    } else {
+      throw new Error("Unknown capture response");
     }
-
-    // Send PayPal order response to the client
-    return res.status(200).json(response.data.status);
   } catch (error) {
-    console.error("Error creating order:", error);
-    return res.status(500).json({ error: "Error creating PayPal order" });
+    Sentry.captureException(error);
+    return res.status(500).json(error.message);
   }
 });
+
+const isOutOfStock = async (cartData) => {
+  // Get products in cart from database
+  const public_ids = cartData.cartItems.map((item) => item.product.public_id);
+  const productsQuery = `
+    SELECT public_id, slug, name, image, price, stock
+    FROM products
+    WHERE public_id = ANY($1)`;
+  const productsResult = await pool.query(productsQuery, [public_ids]);
+
+  for (const cartItem of cartData.cartItems) {
+    const dbProduct = productsResult.rows.find(
+      (p) => p.public_id == cartItem.product.public_id
+    );
+
+    if (dbProduct.stock < cartItem.quantity) {
+      return true;
+    }
+  }
+  return false;
+};
 
 module.exports = router;

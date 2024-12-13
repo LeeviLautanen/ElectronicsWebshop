@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../db");
+const Sentry = require("@sentry/node");
 
 // Get offered shipping options
 router.get("/shipping", async (req, res) => {

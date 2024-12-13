@@ -67,13 +67,21 @@ export class PaypalCheckoutComponent implements OnInit {
     }
   }
 
-  onApproveCallback(data: any): void {
-    this.paymentService.captureOrder(data.orderID);
-    this.shoppingCartService.emptyCart();
-    this.router.navigateByUrl('');
+  async onApproveCallback(data: any) {
+    console.log(data);
+
+    const result = await this.paymentService.captureOrder(data.orderID);
+
+    if (result == 'COMPLETED') {
+      this.shoppingCartService.emptyCart();
+      this.router.navigateByUrl('');
+    } else {
+      console.log(result);
+    }
   }
 
-  onErrorCallback(): void {
+  onErrorCallback(data: any): void {
     console.log('Order didnt work');
+    console.log(data);
   }
 }

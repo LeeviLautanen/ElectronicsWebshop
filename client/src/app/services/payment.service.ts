@@ -3,7 +3,6 @@ import { environment } from '../../environments/environment.dev';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom, map } from 'rxjs';
 import { ShoppingCartService } from './shopping-cart.service';
-import { CartItem } from '../models/CartItem.model';
 
 @Injectable({
   providedIn: 'root',

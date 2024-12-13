@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../db");
+const Sentry = require("@sentry/node");
 
 // Get product data by slug
 router.get("/products/:slug", async (req, res) => {

@@ -5,21 +5,25 @@
   "scripts": {
     "dev:nodemon": "cross-env NODE_ENV=development nodemon server.js",
     "dev": "cross-env NODE_ENV=development node server.js",
-    "prod": "cross-env NODE_ENV=production node server.js"
+    "prod": "cross-env NODE_ENV=production node server.js && npm run sentry:sourcemaps",
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org leevi-lautanen --project webshop ./dist/browser && sentry-cli sourcemaps upload --org leevi-lautanen --project webshop ./dist/browser"
   },
   "keywords": [],
   "author": "Leevi Lautanen",
   "license": "ISC",
   "description": "Server-side of my web store",
   "dependencies": {
+    "@sentry/cli": "^2.39.1",
     "@sentry/node": "^8.44.0",
     "@sentry/profiling-node": "^8.44.0",
     "axios": "^1.7.9",
+    "bull": "^4.16.4",
     "cors": "^2.8.5",
     "cross-env": "^7.0.3",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
-    "pg": "^8.13.1"
+    "pg": "^8.13.1",
+    "redis": "^4.7.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.7"
