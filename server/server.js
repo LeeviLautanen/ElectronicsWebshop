@@ -30,19 +30,6 @@ app.use("/api", productRoutes);
 app.use("/api", paymentRoutes);
 app.use("/api", shippingRoutes);
 
-app.get("/debug-sentry-query", async (req, res) => {
-  try {
-    const res = await pool.query("SELECT * FROM non_existent_table");
-  } catch (error) {
-    Sentry.captureException(error);
-    console.log("Shit went down");
-  }
-});
-
-app.get("/debug-sentry", async (req, res) => {
-  throw new Error("Sentry works");
-});
-
 // Static files
 app.use(express.static(path.join(__dirname, "./dist/browser")));
 

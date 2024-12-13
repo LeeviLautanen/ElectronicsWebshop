@@ -20,7 +20,7 @@ router.post("/products", async (req, res) => {
 });
 
 // Sentry test route
-router.get("/senty-test", async (req, res) => {
+router.get("/sentry-test", async (req, res) => {
   try {
     throw new Error("Sentry works");
   } catch (error) {
