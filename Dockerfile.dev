@@ -4,7 +4,7 @@ FROM node:latest AS frontend-stage
 WORKDIR /app
 
 COPY ./client ./client
-RUN cd client && npm ci && npm run build-dev
+RUN cd client && npm ci && npm run build:dev
 
 # Building backend
 FROM node:latest AS backend-stage

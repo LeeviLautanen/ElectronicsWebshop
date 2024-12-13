@@ -36,7 +36,7 @@ export class ShoppingCartService {
   addItem(product: Product, quantity: number) {
     const currentItems = this.cartSubject.value.cartItems;
     const existingItem = currentItems.find(
-      (item) => item.product.slug === product.slug
+      (item) => item.product.public_id === product.public_id
     );
 
     if (existingItem) {
