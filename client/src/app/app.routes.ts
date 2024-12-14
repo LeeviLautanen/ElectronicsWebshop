@@ -4,9 +4,11 @@ import { ProductPageComponent } from './product-page/product-page.component';
 import { ProductGridComponent } from './product-grid/product-grid.component';
 import { ShoppingCartPageComponent } from './shopping-cart-page/shopping-cart-page.component';
 import { CheckoutPageComponent } from './checkout-page/checkout-page.component';
-import { InfoPageComponent } from './info-page/info-page.component';
-import { TermsPageComponent } from './terms-page/terms-page.component';
+import { TermsPageComponent } from './info-and-legal/terms-page/terms-page.component';
 import { AddProductComponent } from './add-product/add-product.component';
+import { OrderConfirmationPageComponent } from './order-confirmation-page/order-confirmation-page.component';
+import { PrivacyInfoPageComponent } from './info-and-legal/privacy-info-page/privacy-info-page.component';
+import { CompanyInfoPageComponent } from './info-and-legal/company-info-page/company-info-page.component';
 
 export const routes: Routes = [
   {
@@ -25,7 +27,12 @@ export const routes: Routes = [
   },
   { path: 'ostoskori', component: ShoppingCartPageComponent },
   { path: 'kassa', component: CheckoutPageComponent },
-  { path: 'tietoa', component: InfoPageComponent },
+  { path: 'tietoa', component: CompanyInfoPageComponent },
   { path: 'toimitusehdot', component: TermsPageComponent },
+  { path: 'tietosuojaseloste', component: PrivacyInfoPageComponent },
   { path: 'addProduct', component: AddProductComponent },
+  {
+    path: 'tilaus-vastaanotettu/:orderId',
+    component: OrderConfirmationPageComponent,
+  },
 ];

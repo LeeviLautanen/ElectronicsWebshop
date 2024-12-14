@@ -6,13 +6,21 @@ import { ShippingOption } from '../models/ShippingOption.model';
 import { ShoppingCartService } from '../services/shopping-cart.service';
 import { Observable, Subscription } from 'rxjs';
 import { Cart } from '../models/Cart.model';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { bootstrapCheck, bootstrapCircle } from '@ng-icons/bootstrap-icons';
 
 @Component({
   selector: 'app-checkout-page',
   standalone: true,
-  imports: [PaypalCheckoutComponent, CommonModule, FormsModule],
+  imports: [PaypalCheckoutComponent, CommonModule, FormsModule, NgIcon],
   templateUrl: './checkout-page.component.html',
   styleUrl: './checkout-page.component.css',
+  providers: [
+    provideIcons({
+      bootstrapCircle,
+      bootstrapCheck,
+    }),
+  ],
 })
 export class CheckoutPageComponent implements OnInit {
   emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -20,6 +28,7 @@ export class CheckoutPageComponent implements OnInit {
   shippingOptions$!: Observable<ShippingOption[]>;
   cart$!: Observable<Cart>;
 
+  termsAccepted: boolean = false;
   shippingInfoValid: boolean = false;
   shippingInfo = {
     name: '',
