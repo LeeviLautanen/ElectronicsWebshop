@@ -4,6 +4,7 @@ import { CartItem } from '../models/CartItem.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ShoppingCartService } from '../services/shopping-cart.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-cart-product-card',
@@ -15,9 +16,19 @@ import { ShoppingCartService } from '../services/shopping-cart.service';
 export class CartProductCardComponent {
   @Input() cartItem!: CartItem;
 
-  constructor(private shoppingCartService: ShoppingCartService) {}
+  constructor(
+    private shoppingCartService: ShoppingCartService,
+    private toastrService: ToastrService
+  ) {}
 
   increaseQuantity(): void {
+    if (this.cartItem.product.stock < this.cartItem.quantity) {
+      this.toastrService.error(
+        `Vain ${this.cartItem.product.stock} kappaletta varastossa.`,
+        'Ostoskoriin lisääminen epäonnistui'
+      );
+      return;
+    }
     this.shoppingCartService.addItem(this.cartItem.product, 1);
   }
 

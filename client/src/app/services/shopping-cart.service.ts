@@ -53,9 +53,10 @@ export class ShoppingCartService {
   }
 
   removeItem(product: Product, quantity?: number) {
+    // Find item to be removed
     let currentItems = this.cartSubject.value.cartItems;
     const existingItem = currentItems.find(
-      (item) => item.product.slug === product.slug
+      (item) => item.product.public_id === product.public_id
     );
 
     if (existingItem == undefined) {
@@ -63,19 +64,33 @@ export class ShoppingCartService {
       return;
     }
 
-    if (quantity != undefined) {
-      existingItem.quantity -= quantity;
-    } else {
+    // Delete item from cart if no quantity given or if new quantity is 0
+    if (quantity == undefined || existingItem.quantity - quantity == 0) {
       currentItems = this.cartSubject.value.cartItems.filter(
         (item) => item.product.slug !== product.slug
       );
+    } else {
+      existingItem.quantity -= quantity;
     }
 
+    // Update and save cart
     this.cartSubject.next({
       ...this.cartSubject.value,
       cartItems: currentItems,
     });
     this.saveCart();
+  }
+
+  // Get quantity of a product in cart
+  getProductQuantity(product: Product): number {
+    let currentItems = this.cartSubject.value.cartItems;
+    const existingItem = currentItems.find(
+      (item) => item.product.public_id === product.public_id
+    );
+    if (existingItem) {
+      return existingItem.quantity;
+    }
+    return 0;
   }
 
   // Set the selected shipping option
