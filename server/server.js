@@ -1,6 +1,6 @@
-// Sentry error logging, has to be first (but dsn is in env)
+// Sentry error logging, has to be first (but dsn is in .env)
 require("dotenv").config();
-require("./instrument");
+require("./sentry");
 
 const Sentry = require("@sentry/node");
 const express = require("express");
@@ -15,7 +15,7 @@ const developmentRoutes = require("./routes/developmentRoutes");
 const app = express();
 app.use(express.json());
 
-const isDev = process.env.NODE_ENV === "development";
+const isDev = process.env.NODE_ENV !== "production";
 
 if (isDev) {
   app.use(

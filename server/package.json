@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev:nodemon": "cross-env NODE_ENV=development nodemon server.js",
-    "dev": "cross-env NODE_ENV=development node server.js",
+    "dev": "cross-env NODE_ENV=development nodemon server.js",
+    "test": "cross-env NODE_ENV=testing node server.js",
     "prod": "cross-env NODE_ENV=production node server.js && npm run sentry:sourcemaps",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org leevi-lautanen --project webshop ./dist/browser && sentry-cli sourcemaps upload --org leevi-lautanen --project webshop ./dist/browser"
   },

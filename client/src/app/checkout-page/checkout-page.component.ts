@@ -79,12 +79,8 @@ export class CheckoutPageComponent implements OnInit {
   }
 
   checkShippingInfo() {
-    if (
+    this.shippingInfoValid =
       //this.isEmailValid() && Enable for production !!!
-      this.isPhoneValid() &&
-      this.areInputLengthsValid()
-    ) {
-      this.shippingInfoValid = true;
-    }
+      this.isPhoneValid() && this.areInputLengthsValid() && this.termsAccepted;
   }
 }

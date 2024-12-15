@@ -68,8 +68,6 @@ export class PaypalCheckoutComponent implements OnInit {
   }
 
   async onApproveCallback(data: any) {
-    console.log(data);
-
     const result = await this.paymentService.captureOrder(data.orderID);
 
     if (result == 'COMPLETED') {
@@ -82,6 +80,5 @@ export class PaypalCheckoutComponent implements OnInit {
 
   onErrorCallback(data: any): void {
     console.log('Order didnt work');
-    console.log(data);
   }
 }
