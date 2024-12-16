@@ -4,7 +4,7 @@ import { FormsModule, NgForm, NgModel } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ShippingOption } from '../models/ShippingOption.model';
 import { ShoppingCartService } from '../services/shopping-cart.service';
-import { Observable, Subscription } from 'rxjs';
+import { firstValueFrom, Observable, Subscription, timeout } from 'rxjs';
 import { Cart } from '../models/Cart.model';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapCheck, bootstrapCircle } from '@ng-icons/bootstrap-icons';
@@ -43,7 +43,7 @@ export class CheckoutPageComponent implements OnInit {
 
   ngOnInit(): void {
     // Make shipping service update shipping options from DB
-    this.shoppingCartService.loadShippingOptions();
+    this.shoppingCartService.fetchShippingOptions();
 
     // Assign the observables
     this.shippingOptions$ = this.shoppingCartService.shippingOptions$;
@@ -65,7 +65,6 @@ export class CheckoutPageComponent implements OnInit {
 
   areInputLengthsValid(): boolean {
     // Max lengths gotten from https://developer.paypal.com/docs/api/orders/v2/#orders_create
-
     const info = this.shippingInfo;
     if (
       info.name.length > 300 ||
@@ -78,9 +77,14 @@ export class CheckoutPageComponent implements OnInit {
     return true;
   }
 
-  checkShippingInfo() {
+  async checkShippingInfo() {
+    const cartData = await firstValueFrom(this.shoppingCartService.cart$);
+
     this.shippingInfoValid =
       //this.isEmailValid() && Enable for production !!!
-      this.isPhoneValid() && this.areInputLengthsValid() && this.termsAccepted;
+      this.isPhoneValid() &&
+      this.areInputLengthsValid() &&
+      this.termsAccepted &&
+      cartData.shippingOption != null;
   }
 }

@@ -4,11 +4,16 @@ const pool = require("../db");
 const Sentry = require("@sentry/node");
 
 // Get offered shipping options
-router.get("/shipping", async (req, res) => {
+router.post("/shippingOptions", async (req, res) => {
   try {
-    const result = await pool.query(
-      "SELECT public_id, name, description, delivery_time, image, price, max_weight_g, max_height_mm FROM shippingOptions"
-    );
+    const { cartHeight, cartWeight } = req.body;
+
+    const query = `
+    SELECT public_id, name, description, delivery_time, image, price, max_weight_g, max_height_mm 
+    FROM shippingOptions 
+    WHERE max_height_mm >= $1 AND max_weight_g >= $2
+    `;
+    const result = await pool.query(query, [cartHeight, cartWeight]);
 
     const shippingOptions = result.rows.map((option) => ({
       ...option,

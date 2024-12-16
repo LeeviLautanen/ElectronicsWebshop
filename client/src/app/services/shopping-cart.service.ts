@@ -33,6 +33,7 @@ export class ShoppingCartService {
 
   constructor(private http: HttpClient) {}
 
+  // Add product to cart
   addItem(product: Product, quantity: number) {
     const currentItems = this.cartSubject.value.cartItems;
     const existingItem = currentItems.find(
@@ -52,6 +53,7 @@ export class ShoppingCartService {
     this.saveCart();
   }
 
+  // Remove product from cart, delete all if no quantity provided
   removeItem(product: Product, quantity?: number) {
     // Find item to be removed
     let currentItems = this.cartSubject.value.cartItems;
@@ -93,19 +95,23 @@ export class ShoppingCartService {
     return 0;
   }
 
-  // Set the selected shipping option
-  selectShippingOption(option: ShippingOption) {
-    this.cartSubject.next({
-      ...this.cartSubject.value,
-      shippingOption: option,
-    });
-    this.saveCart();
-  }
-
   // Fetch all shipping options
-  loadShippingOptions() {
+  fetchShippingOptions() {
+    const { cartHeight, cartWeight } = this.cartSubject.value.cartItems.reduce(
+      (totals, { product, quantity }) => {
+        return {
+          cartHeight: Math.max(totals.cartHeight, product.height_mm),
+          cartWeight: totals.cartWeight + product.weight_g * quantity,
+        };
+      },
+      { cartHeight: 0, cartWeight: 0 }
+    );
+
     this.http
-      .get<ShippingOption[]>(`${this.baseUrl}/api/shipping`)
+      .post<ShippingOption[]>(`${this.baseUrl}/api/shippingOptions`, {
+        cartHeight: cartHeight,
+        cartWeight: cartWeight,
+      })
       .pipe(
         map((options) => {
           options.forEach((option) => {
@@ -115,18 +121,31 @@ export class ShoppingCartService {
         })
       )
       .subscribe((options) => {
+        // Update list of shipping options and auto select cheapest one
         this.shippingOptionsSubject.next(options);
-        if (this.cartSubject.value.shippingOption == null) {
-          this.selectShippingOption(this.getCheapestShippingOption());
-        }
+        this.selectShippingOption(this.getCheapestShippingOption());
       });
   }
 
-  // Get the cheapest shipping option with the current cart
-  getCheapestShippingOption(): ShippingOption {
-    return this.shippingOptionsSubject.value[0];
+  // Set the selected shipping option
+  selectShippingOption(option: ShippingOption | null) {
+    this.cartSubject.next({
+      ...this.cartSubject.value,
+      shippingOption: option,
+    });
+    this.saveCart();
   }
 
+  // Get the cheapest shipping option with the current cart
+  getCheapestShippingOption(): ShippingOption | null {
+    const cheapestOption = this.shippingOptionsSubject.value[0];
+    if (cheapestOption) {
+      return cheapestOption;
+    }
+    return null;
+  }
+
+  // Delete all products from cart
   emptyCart() {
     this.cartSubject.next({
       ...this.cartSubject.value,

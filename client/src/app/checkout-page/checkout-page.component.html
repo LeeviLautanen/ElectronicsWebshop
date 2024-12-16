@@ -77,7 +77,7 @@
         class="h-5 w-5 border-gray-300 rounded"
       />
       <label for="terms" class="text-sm text-gray-700">
-        Hyväksyn ja olen lukenut
+        Olen lukenut ja hyväksyn
         <a href="/toimitusehdot" class="text-blue-500 hover:underline"
           >toimitusehdot</a
         >
@@ -93,11 +93,14 @@
   <section class="bg-white rounded-lg p-6 shadow-md mb-6">
     <h3 class="text-xl font-semibold text-gray-800 mb-4">Toimitustapa</h3>
     <div
-      *ngIf="shippingOptions$ | async as options"
+      *ngIf="
+        (shippingOptions$ | async)?.length ?? 0 > 0;
+        else noShippingOptions
+      "
       class="flex flex-col gap-4"
     >
       <div
-        *ngFor="let option of options"
+        *ngFor="let option of shippingOptions$ | async"
         class="border rounded-lg p-4 flex items-center hover:shadow-lg cursor-pointer"
         [class.border-blue-500]="
           (cart$ | async)?.shippingOption?.public_id === option.public_id
@@ -123,6 +126,11 @@
         </div>
       </div>
     </div>
+    <ng-template #noShippingOptions>
+      <p class="text-sm text-red-500 text-center">
+        Ostoskorin tuotteille ei ole saatavilla toimitustapoja.
+      </p>
+    </ng-template>
   </section>
 
   <!-- Order summary -->
@@ -171,8 +179,9 @@
       <div class="flex justify-between items-center">
         <p class="text-lg font-semibold text-gray-800">Toimitustapa:</p>
         <p class="text-sm text-gray-600">
-          {{ cart.shippingOption.name }} ({{
-            cart.shippingOption.price | currency : "EUR" : "symbol" : "1.2-2"
+          {{ cart.shippingOption?.name ?? "Ei valittu" }} ({{
+            cart.shippingOption?.price ?? 0
+              | currency : "EUR" : "symbol" : "1.2-2"
           }})
         </p>
       </div>
@@ -180,7 +189,7 @@
         <p class="text-xl font-bold text-gray-800">Yhteensä:</p>
         <p class="text-xl font-bold text-blue-600">
           {{
-            cart.cartValue + cart.shippingOption.price
+            cart.cartValue + (cart.shippingOption?.price ?? 0)
               | currency : "EUR" : "symbol" : "1.2-2"
           }}
         </p>
