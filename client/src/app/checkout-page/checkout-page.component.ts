@@ -34,9 +34,9 @@ export class CheckoutPageComponent implements OnInit {
     name: '',
     phone: '',
     email: '',
-    address: '',
-    postalCode: '',
-    postalCity: '',
+    address_line_1: '',
+    admin_area_2: '',
+    postal_code: '',
   };
 
   constructor(private shoppingCartService: ShoppingCartService) {}
@@ -68,9 +68,9 @@ export class CheckoutPageComponent implements OnInit {
     const info = this.shippingInfo;
     if (
       info.name.length > 300 ||
-      info.address.length > 300 ||
-      info.postalCity.length > 120 ||
-      info.postalCode.length > 60
+      info.address_line_1.length > 300 ||
+      info.admin_area_2.length > 120 ||
+      info.postal_code.length > 60
     ) {
       return false;
     }

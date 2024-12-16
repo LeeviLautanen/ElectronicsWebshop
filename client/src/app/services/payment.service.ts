@@ -9,6 +9,8 @@ import { ShoppingCartService } from './shopping-cart.service';
 })
 export class PaymentService {
   private baseUrl = environment.baseUrl;
+  // Temporary shipping info storage to use in capture request
+  private shippingInfo: any;
 
   constructor(
     private httpClient: HttpClient,
@@ -18,6 +20,7 @@ export class PaymentService {
   // Send a request to server to create a new order
   async createOrder(shippingInfo: any): Promise<any> {
     const url = `${this.baseUrl}/api/createOrder`;
+    this.shippingInfo = shippingInfo;
 
     // Get items in cart and compress then before sending to server
     const cartData = await firstValueFrom(this.shoppingCartService.cart$);
@@ -33,8 +36,14 @@ export class PaymentService {
     const url = `${this.baseUrl}/api/captureOrder`;
 
     const cartData = await firstValueFrom(this.shoppingCartService.cart$);
-    return await firstValueFrom(
-      this.httpClient.post(url, { id: orderId, cartData: cartData })
+    const result = await firstValueFrom(
+      this.httpClient.post(url, {
+        id: orderId,
+        cartData: cartData,
+        shippingInfo: this.shippingInfo,
+      })
     );
+    this.shippingInfo = null;
+    return result;
   }
 }

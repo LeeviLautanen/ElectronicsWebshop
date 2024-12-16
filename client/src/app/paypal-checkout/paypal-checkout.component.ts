@@ -80,5 +80,6 @@ export class PaypalCheckoutComponent implements OnInit {
 
   onErrorCallback(data: any): void {
     console.log('Order didnt work');
+    console.log(data.error);
   }
 }

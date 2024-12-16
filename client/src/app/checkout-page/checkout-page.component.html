@@ -43,7 +43,7 @@
       <div>
         <label class="shipping-info-label">Osoite</label>
         <input
-          [(ngModel)]="shippingInfo.address"
+          [(ngModel)]="shippingInfo.address_line_1"
           class="shipping-info-input"
           (blur)="checkShippingInfo()"
         />
@@ -53,7 +53,7 @@
         <label class="shipping-info-label">Postinumero</label>
         <input
           class="shipping-info-input"
-          [(ngModel)]="shippingInfo.postalCode"
+          [(ngModel)]="shippingInfo.postal_code"
           (blur)="checkShippingInfo()"
         />
       </div>
@@ -62,7 +62,7 @@
         <label class="shipping-info-label">Postitoimipaikka</label>
         <input
           class="shipping-info-input"
-          [(ngModel)]="shippingInfo.postalCity"
+          [(ngModel)]="shippingInfo.admin_area_2"
           (blur)="checkShippingInfo()"
         />
       </div>

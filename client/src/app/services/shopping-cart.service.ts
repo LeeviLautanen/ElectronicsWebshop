@@ -95,7 +95,7 @@ export class ShoppingCartService {
     return 0;
   }
 
-  // Fetch all shipping options
+  // Fetch all possible shipping options for current cart
   fetchShippingOptions() {
     const { cartHeight, cartWeight } = this.cartSubject.value.cartItems.reduce(
       (totals, { product, quantity }) => {

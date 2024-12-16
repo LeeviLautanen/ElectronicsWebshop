@@ -59,6 +59,24 @@ class PaypalService {
     }
   }
 
+  async getOrder(orderId) {
+    try {
+      const token = await this.getToken();
+      const response = await this.axios.get(
+        `${this.base}/v2/checkout/orders/${orderId}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(`Error fetching paypal order: ${error.message}`);
+    }
+  }
+
   // Get a token and refresh it if needed
   async getToken() {
     const now = new Date();

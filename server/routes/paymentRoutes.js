@@ -23,6 +23,7 @@ router.post("/createOrder", async (req, res) => {
     return {
       name: product.name,
       quantity: item.quantity,
+      sku: item.public_id,
       url: `https://bittiboksi.fi/${product.slug}`,
       image_url: `https://bittiboksi.fi/assets/${product.image}`,
       unit_amount: {
@@ -64,9 +65,9 @@ router.post("/createOrder", async (req, res) => {
   const shipping = {
     name: { full_name: shippingInfo.name },
     address: {
-      address_line_1: shippingInfo.address,
-      admin_area_2: shippingInfo.postalCity,
-      postal_code: shippingInfo.postalCode,
+      address_line_1: shippingInfo.address_line_1,
+      admin_area_2: shippingInfo.admin_area_2,
+      postal_code: shippingInfo.postal_code,
       country_code: "FI",
     },
   };
@@ -103,9 +104,13 @@ router.post("/captureOrder", async (req, res) => {
       cartData: req.body.cartData,
     });
 
-    console.log(result);
-
+    // Save order data to DB if order completed
     if (result.status == "COMPLETED") {
+      orderService.addOrderToDatabase(
+        req.body.id,
+        req.body.cartData,
+        req.body.shippingInfo
+      );
       return res.status(200).json(result.status);
     } else if (result.status == "OUT_OF_STOCK") {
       return res.status(400).json(result.status);
