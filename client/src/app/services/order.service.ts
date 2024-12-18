@@ -19,17 +19,21 @@ export class OrderService {
 
   // Send a request to server to create a new order
   async createOrder(shippingInfo: any): Promise<any> {
-    const url = `${this.baseUrl}/api/createOrder`;
-    this.shippingInfo = shippingInfo;
+    try {
+      const url = `${this.baseUrl}/api/createOrder`;
+      this.shippingInfo = shippingInfo;
 
-    // Get items in cart and compress then before sending to server
-    const cartData = await firstValueFrom(this.shoppingCartService.cart$);
-    return await firstValueFrom(
-      this.http.post(url, {
-        cartData: cartData,
-        shippingInfo: shippingInfo,
-      })
-    );
+      // Get items in cart and compress then before sending to server
+      const cartData = await firstValueFrom(this.shoppingCartService.cart$);
+      return await firstValueFrom(
+        this.http.post(url, {
+          cartData: cartData,
+          shippingInfo: shippingInfo,
+        })
+      );
+    } catch (error: any) {
+      throw new Error(`Error creating paypal order: ${error.message}`);
+    }
   }
 
   async captureOrder(orderId: string): Promise<any> {
@@ -38,7 +42,7 @@ export class OrderService {
     const cartData = await firstValueFrom(this.shoppingCartService.cart$);
     const result = await firstValueFrom(
       this.http.post(url, {
-        id: orderId,
+        paypalOrderId: orderId,
         cartData: cartData,
         shippingInfo: this.shippingInfo,
       })
@@ -48,8 +52,7 @@ export class OrderService {
   }
 
   getOrderData(orderId: string): Observable<any> {
-    const url = `${this.baseUrl}/api/getOrderData`;
-
-    return this.http.post(url, { orderId });
+    const url = `${this.baseUrl}/api/getOrderData/${orderId}`;
+    return this.http.get(url);
   }
 }

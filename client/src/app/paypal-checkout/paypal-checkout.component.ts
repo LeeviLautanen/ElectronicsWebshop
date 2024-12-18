@@ -3,6 +3,7 @@ import { environment } from '../../environments/environment.dev';
 import { Router } from '@angular/router';
 import { ShoppingCartService } from '../services/shopping-cart.service';
 import { OrderService } from '../services/order.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-paypal-checkout',
@@ -18,7 +19,8 @@ export class PaypalCheckoutComponent implements OnInit {
   constructor(
     private orderService: OrderService,
     private router: Router,
-    private shoppingCartService: ShoppingCartService
+    private shoppingCartService: ShoppingCartService,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -62,23 +64,39 @@ export class PaypalCheckoutComponent implements OnInit {
     try {
       return await this.orderService.createOrder(this.shippingInfo);
     } catch (error) {
+      this.toastr.error(
+        'Maksun aloittamisessa tapahtui virhe, tilausta ei luotu.',
+        'Tilaus epäonnistui'
+      );
       console.log(error);
       return 'error';
     }
   }
 
   async onApproveCallback(data: any) {
-    const result = await this.orderService.captureOrder(data.orderID);
+    try {
+      const result = await this.orderService.captureOrder(data.orderID);
 
-    if (result == 'COMPLETED') {
-      this.shoppingCartService.emptyCart();
-      this.router.navigateByUrl('');
-    } else {
-      console.log(result);
+      if (result.status == 'COMPLETED') {
+        this.shoppingCartService.emptyCart();
+        this.router.navigateByUrl(`/tilaus/${result.orderId}`);
+      } else {
+        throw new Error(`Order capture result was not 'completed': ${result}`);
+      }
+    } catch (error) {
+      this.toastr.error(
+        'Maksun käsittelyssä tapahtui virhe, tilaus on peruutettu.',
+        'Tilaus epäonnistui'
+      );
+      console.log(error);
     }
   }
 
   onErrorCallback(data: any): void {
+    this.toastr.error(
+      'Maksun käsittelyssä tapahtui virhe, tilaus on peruutettu.',
+      'Tilaus epäonnistui'
+    );
     console.log('Order didnt work');
     console.log(data.error);
   }

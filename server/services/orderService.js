@@ -11,21 +11,18 @@ class OrderService {
   }
 
   async queueJob(job) {
-    const { orderId, cartData } = job.data;
+    const { paypalOrderId, cartData } = job.data;
 
     if (await this.isOutOfStock(cartData)) {
-      console.log("no stock");
       return { status: "OUT_OF_STOCK" };
     }
 
     try {
-      const data = await this.paypalService.captureOrder(orderId);
+      const data = await this.paypalService.captureOrder(paypalOrderId);
 
       if (data.status != "COMPLETED") {
-        console.log("not completed");
-
         throw new Error(
-          `Capturing order failed for orderId ${orderId} with status: ${data.status}`
+          `Capturing order failed for order id ${paypalOrderId} with status: ${data.status}`
         );
       }
 
@@ -47,7 +44,7 @@ class OrderService {
       return { status: data.status };
     } catch (error) {
       throw new Error(
-        `Queue job failed for orderId ${orderId}: ${error.message}`
+        `Queue job failed for orderId ${paypalOrderId}: ${error.message}`
       );
     }
   }
@@ -68,12 +65,17 @@ class OrderService {
       const { name, email, phone } = shippingInfo;
       const customerId = await this.getCustomerId(name, email, phone);
 
-      const orderId = await this.createNewOrder(paypalOrderId, customerId);
+      const { id, public_id } = await this.createNewOrder(
+        paypalOrderId,
+        customerId
+      );
 
-      await this.createOrderItems(cartData.cartItems, orderId);
+      await this.createOrderItems(cartData.cartItems, id);
 
       const shippingPublicId = cartData.shippingOption.public_id;
-      await this.createOrderShipping(shippingPublicId, orderId, shippingInfo);
+      await this.createOrderShipping(shippingPublicId, id, shippingInfo);
+
+      return public_id;
     } catch (error) {
       throw new Error(
         `Error adding order information to database: ${error.message}`
@@ -125,13 +127,13 @@ class OrderService {
       const orderQuery = `
         INSERT INTO orders(customer_id, paypal_order_id) 
         VALUES ($1, $2)
-        RETURNING id
+        RETURNING id, public_id
       `;
       const orderResult = await this.pool.query(orderQuery, [
         customerId,
         paypalOrderId,
       ]);
-      return orderResult.rows[0].id;
+      return orderResult.rows[0];
     } catch (error) {
       throw new Error(
         `Error inserting a new order to database: ${error.message}`
@@ -178,7 +180,7 @@ class OrderService {
       // Insert new row
       const orderShippingQuery = `
         INSERT INTO order_shipping(order_id, shipping_option_id, shipping_name, shipping_cost, address_line_1, admin_area_2, postal_code) 
-        VALUES ($1, $2, $3, $4, $5, $6)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
       `;
       const { address_line_1, admin_area_2, postal_code } = shippingInfo;
       await this.pool.query(orderShippingQuery, [
@@ -255,14 +257,14 @@ class OrderService {
       const orderItems = orderItemResult.rows.map((row) => ({
         name: row.product_name,
         quantity: row.quantity,
-        price: row.unit_price,
+        price: parseFloat(row.unit_price),
       }));
 
       const payload = {
         orderId: orderId,
         createdAt: orderData.created_at,
         shippingName: orderData.shipping_name,
-        shippingCost: orderData.shipping_cost,
+        shippingCost: parseFloat(orderData.shipping_cost),
         orderItems: orderItems,
       };
 
