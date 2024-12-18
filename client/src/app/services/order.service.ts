@@ -1,19 +1,19 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment.dev';
 import { HttpClient } from '@angular/common/http';
-import { firstValueFrom, map } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { ShoppingCartService } from './shopping-cart.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class PaymentService {
+export class OrderService {
   private baseUrl = environment.baseUrl;
   // Temporary shipping info storage to use in capture request
   private shippingInfo: any;
 
   constructor(
-    private httpClient: HttpClient,
+    private http: HttpClient,
     private shoppingCartService: ShoppingCartService
   ) {}
 
@@ -25,7 +25,7 @@ export class PaymentService {
     // Get items in cart and compress then before sending to server
     const cartData = await firstValueFrom(this.shoppingCartService.cart$);
     return await firstValueFrom(
-      this.httpClient.post(url, {
+      this.http.post(url, {
         cartData: cartData,
         shippingInfo: shippingInfo,
       })
@@ -37,7 +37,7 @@ export class PaymentService {
 
     const cartData = await firstValueFrom(this.shoppingCartService.cart$);
     const result = await firstValueFrom(
-      this.httpClient.post(url, {
+      this.http.post(url, {
         id: orderId,
         cartData: cartData,
         shippingInfo: this.shippingInfo,
@@ -45,5 +45,11 @@ export class PaymentService {
     );
     this.shippingInfo = null;
     return result;
+  }
+
+  getOrderData(orderId: string): Observable<any> {
+    const url = `${this.baseUrl}/api/getOrderData`;
+
+    return this.http.post(url, { orderId });
   }
 }

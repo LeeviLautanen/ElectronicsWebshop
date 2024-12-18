@@ -123,4 +123,14 @@ router.post("/captureOrder", async (req, res) => {
   }
 });
 
+// Get order data for order confirmation page
+router.post("/getOrderData", async (req, res) => {
+  try {
+    const data = await orderService.getOrderData(req.body.orderId);
+    return res.status(200).json(data);
+  } catch (error) {
+    throw new Error(`Error getting order data: ${error.message}`);
+  }
+});
+
 module.exports = router;

@@ -1,8 +1,8 @@
 import { Component, ElementRef, Input, OnInit } from '@angular/core';
-import { PaymentService } from '../services/payment.service';
 import { environment } from '../../environments/environment.dev';
 import { Router } from '@angular/router';
 import { ShoppingCartService } from '../services/shopping-cart.service';
+import { OrderService } from '../services/order.service';
 
 @Component({
   selector: 'app-paypal-checkout',
@@ -16,7 +16,7 @@ export class PaypalCheckoutComponent implements OnInit {
   private clientId = environment.clientId;
 
   constructor(
-    private paymentService: PaymentService,
+    private orderService: OrderService,
     private router: Router,
     private shoppingCartService: ShoppingCartService
   ) {}
@@ -60,7 +60,7 @@ export class PaypalCheckoutComponent implements OnInit {
 
   async createOrderCallback(): Promise<string> {
     try {
-      return await this.paymentService.createOrder(this.shippingInfo);
+      return await this.orderService.createOrder(this.shippingInfo);
     } catch (error) {
       console.log(error);
       return 'error';
@@ -68,7 +68,7 @@ export class PaypalCheckoutComponent implements OnInit {
   }
 
   async onApproveCallback(data: any) {
-    const result = await this.paymentService.captureOrder(data.orderID);
+    const result = await this.orderService.captureOrder(data.orderID);
 
     if (result == 'COMPLETED') {
       this.shoppingCartService.emptyCart();

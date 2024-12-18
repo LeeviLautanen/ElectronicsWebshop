@@ -59,6 +59,7 @@ class PaypalService {
     }
   }
 
+  // Get order data that paypal has
   async getOrder(orderId) {
     try {
       const token = await this.getToken();

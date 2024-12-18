@@ -8,7 +8,7 @@ const path = require("path");
 const cors = require("cors");
 
 const productRoutes = require("./routes/productRoutes");
-const paymentRoutes = require("./routes/paymentRoutes");
+const orderRoutes = require("./routes/orderRoutes");
 const shippingRoutes = require("./routes/shippingRoutes");
 const developmentRoutes = require("./routes/developmentRoutes");
 
@@ -27,7 +27,7 @@ if (isDev) {
 }
 
 app.use("/api", productRoutes);
-app.use("/api", paymentRoutes);
+app.use("/api", orderRoutes);
 app.use("/api", shippingRoutes);
 
 // Static files

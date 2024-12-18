@@ -171,19 +171,20 @@ class OrderService {
   async createOrderShipping(public_id, orderId, shippingInfo) {
     try {
       // Get the shipping option id
-      const shippingQuery = `SELECT id, price FROM shipping_options WHERE public_id = $1`;
+      const shippingQuery = `SELECT id, name, price FROM shipping_options WHERE public_id = $1`;
       const shippingResult = await this.pool.query(shippingQuery, [public_id]);
-      const { id, price } = shippingResult.rows[0];
+      const { id, name, price } = shippingResult.rows[0];
 
       // Insert new row
       const orderShippingQuery = `
-        INSERT INTO order_shipping(order_id, shipping_option_id, shipping_cost, address_line_1, admin_area_2, postal_code) 
+        INSERT INTO order_shipping(order_id, shipping_option_id, shipping_name, shipping_cost, address_line_1, admin_area_2, postal_code) 
         VALUES ($1, $2, $3, $4, $5, $6)
       `;
       const { address_line_1, admin_area_2, postal_code } = shippingInfo;
       await this.pool.query(orderShippingQuery, [
         orderId,
         id,
+        name,
         price,
         address_line_1,
         admin_area_2,
@@ -218,6 +219,59 @@ class OrderService {
       WHERE public_id = ANY($1)`;
     const productsResult = await this.pool.query(productsQuery, [public_ids]);
     return productsResult;
+  }
+
+  // Get order data from database
+  async getOrderData(orderId) {
+    try {
+      // Get order creation date, shipping name and cost
+      const orderQuery = `
+        SELECT 
+          o.created_at,
+          os.shipping_name,
+          os.shipping_cost
+        FROM 
+          orders o
+          LEFT JOIN order_shipping os ON o.id = os.order_id
+        WHERE 
+          o.public_id = $1;
+      `;
+      const orderResult = await this.pool.query(orderQuery, [orderId]);
+      const orderData = orderResult.rows[0];
+
+      // Get name, quantity and price for order items
+      const orderItemQuery = `
+        SELECT 
+          oi.product_name,
+          oi.quantity,
+          oi.unit_price
+        FROM 
+          order_items oi
+          INNER JOIN orders o ON oi.order_id = o.id
+        WHERE 
+          o.public_id = $1;
+      `;
+      const orderItemResult = await this.pool.query(orderItemQuery, [orderId]);
+      const orderItems = orderItemResult.rows.map((row) => ({
+        name: row.product_name,
+        quantity: row.quantity,
+        price: row.unit_price,
+      }));
+
+      const payload = {
+        orderId: orderId,
+        createdAt: orderData.created_at,
+        shippingName: orderData.shipping_name,
+        shippingCost: orderData.shipping_cost,
+        orderItems: orderItems,
+      };
+
+      return payload;
+    } catch (error) {
+      throw new Error(
+        `Error getting order data from database: ${error.message}`
+      );
+    }
   }
 
   // Get shipping cost from cart data
