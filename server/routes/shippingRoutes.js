@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../db");
-const Sentry = require("@sentry/node");
+const sentry = require("../sentry");
 
 // Get offered shipping options
 router.post("/shippingOptions", async (req, res) => {
@@ -21,8 +21,9 @@ router.post("/shippingOptions", async (req, res) => {
     }));
 
     res.status(201).json(shippingOptions);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  } catch (error) {
+    sentry.captureException(error);
+    res.status(500).json({ error: error.message });
   }
 });
 

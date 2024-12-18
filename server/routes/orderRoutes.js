@@ -136,6 +136,7 @@ router.get("/getOrderData/:orderId", async (req, res) => {
     const data = await orderService.getOrderData(orderId);
     return res.status(200).json(data);
   } catch (error) {
+    sentry.captureException(error);
     throw new Error(`Error getting order data: ${error.message}`);
   }
 });
