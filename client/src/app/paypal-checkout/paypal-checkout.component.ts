@@ -79,7 +79,7 @@ export class PaypalCheckoutComponent implements OnInit {
 
       if (result.status == 'COMPLETED') {
         this.shoppingCartService.emptyCart();
-        this.router.navigateByUrl(`/tilaus/${result.orderId}`);
+        this.router.navigateByUrl(`tilaus/${result.orderId}`);
       } else {
         throw new Error(`Order capture result was not 'completed': ${result}`);
       }

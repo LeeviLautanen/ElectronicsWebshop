@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { OrderService } from '../services/order.service';
 import { CommonModule } from '@angular/common';
 import { OrderData } from '../models/OrderItems.model';
@@ -7,7 +7,7 @@ import { OrderData } from '../models/OrderItems.model';
 @Component({
   selector: 'app-order-confirmation-page',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './order-confirmation-page.component.html',
   styleUrl: './order-confirmation-page.component.css',
 })

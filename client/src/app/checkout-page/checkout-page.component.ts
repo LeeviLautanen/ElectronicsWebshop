@@ -56,10 +56,16 @@ export class CheckoutPageComponent implements OnInit {
   }
 
   isEmailValid(): boolean {
+    this.shippingInfo.email = this.shippingInfo.email.trim();
     return this.emailPattern.test(this.shippingInfo.email);
   }
 
   isPhoneValid(): boolean {
+    // Remove 358 prefix if for some reason it is written
+    if (this.shippingInfo.phone.startsWith('358')) {
+      this.shippingInfo.phone = this.shippingInfo.phone.slice(3);
+    }
+    this.shippingInfo.phone = this.shippingInfo.phone.trim();
     return this.shippingInfo.phone.length <= 11;
   }
 

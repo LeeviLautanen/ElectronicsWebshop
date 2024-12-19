@@ -23,6 +23,11 @@ export class OrderService {
       const url = `${this.baseUrl}/api/createOrder`;
       this.shippingInfo = shippingInfo;
 
+      // Remove spaces from phone number
+      if (this.shippingInfo.phone) {
+        this.shippingInfo.phone = this.shippingInfo.phone.replace(/\s+/g, '');
+      }
+
       // Get items in cart and compress then before sending to server
       const cartData = await firstValueFrom(this.shoppingCartService.cart$);
       return await firstValueFrom(
