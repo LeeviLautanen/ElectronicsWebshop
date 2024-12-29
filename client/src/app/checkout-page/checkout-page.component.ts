@@ -8,6 +8,7 @@ import { firstValueFrom, Observable, Subscription, timeout } from 'rxjs';
 import { Cart } from '../models/Cart.model';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapCheck, bootstrapCircle } from '@ng-icons/bootstrap-icons';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-checkout-page',
@@ -39,15 +40,29 @@ export class CheckoutPageComponent implements OnInit {
     postal_code: '',
   };
 
-  constructor(private shoppingCartService: ShoppingCartService) {}
+  constructor(
+    private shoppingCartService: ShoppingCartService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    // Make shipping service update shipping options from DB
-    this.shoppingCartService.fetchShippingOptions();
-
     // Assign the observables
     this.shippingOptions$ = this.shoppingCartService.shippingOptions$;
     this.cart$ = this.shoppingCartService.cart$;
+
+    // Check that cart is not empty
+    this.checkCart();
+
+    // Make shipping service update shipping options from DB
+    this.shoppingCartService.fetchShippingOptions();
+  }
+
+  // Check that cart is not empty
+  async checkCart() {
+    const cartData = await firstValueFrom(this.shoppingCartService.cart$);
+    if (cartData.cartItems.length === 0) {
+      this.router.navigate(['/kauppa']);
+    }
   }
 
   // Update selected shipping option to cart
