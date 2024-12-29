@@ -38,4 +38,5 @@ export const routes: Routes = [
     path: 'tilaus/:orderId',
     component: OrderConfirmationPageComponent,
   },
+  { path: '**', redirectTo: 'kauppa' },
 ];

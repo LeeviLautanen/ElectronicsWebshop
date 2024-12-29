@@ -20,7 +20,7 @@
     </div>
 
     <!-- Image -->
-    <a [routerLink]="'/tuote/' + product.slug">
+    <a [routerLink]="'/kauppa/tuote/' + product.slug">
       <img
         [src]="product.image"
         alt="Product image"
@@ -30,7 +30,7 @@
 
     <!-- Name -->
     <div class="text-white">
-      <a [routerLink]="'/tuote/' + product.slug">
+      <a [routerLink]="'/kauppa/tuote/' + product.slug">
         <h3 class="text-lg font-semibold hover:text-gray-600 transition-colors">
           {{ product.name }}
         </h3>

@@ -3,7 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { environment } from '../../environments/environment.dev';
 import { Category } from '../models/Category.model';
-import { Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-category-list',
@@ -17,13 +18,24 @@ export class CategoryListComponent implements OnInit {
   categories!: Category[];
   selectedCategoryIndex = -1;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit() {
     this.http
       .get(`${this.baseUrl}/api/categories`)
       .subscribe((categories: any) => {
         this.categories = categories;
+      });
+
+    // Sketchy way to reset selected category when clicking on product card
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.selectedCategoryIndex = -1;
       });
   }
 
@@ -33,7 +45,6 @@ export class CategoryListComponent implements OnInit {
       this.router.navigate([`/`]);
       return;
     }
-
     this.selectedCategoryIndex = index;
     const categoryName = this.categories[index].name;
     this.router.navigate([`/kauppa/${categoryName}`]);
