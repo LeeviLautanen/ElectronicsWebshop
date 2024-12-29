@@ -22,6 +22,20 @@ export class ProductDataService {
     );
   }
 
+  // Get products by category and add image url prefix
+  getProductsByCategory(category: string): Observable<Product[]> {
+    return this.http
+      .get<Product[]>(`${this.baseUrl}/api/categories/${category}`)
+      .pipe(
+        map((products) => {
+          products.forEach((product) => {
+            product.image = `${this.baseUrl}/assets/${product.image}`;
+          });
+          return products;
+        })
+      );
+  }
+
   // Get all products and add image url prefix
   getAllProducts(): Observable<Product[]> {
     return this.http.get<Product[]>(`${this.baseUrl}/api/products`).pipe(

@@ -1,7 +1,7 @@
 <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
   <div
     *ngFor="let product of products"
-    class="bg-gray-800 p-4 rounded-lg shadow-xl transform hover:scale-[1.01] transition-transform"
+    class="bg-gray-800 p-3 rounded-lg shadow-xl transform hover:scale-[1.01] transition-transform"
   >
     <!-- Stock indicator -->
     <div class="flex absolute top-5 right-5 items-center group">
@@ -42,5 +42,22 @@
       <p class="text-white text-xl font-semibold pb-1">{{ product.price }} €</p>
       <app-cart-controls-small [product]="product"></app-cart-controls-small>
     </div>
+  </div>
+</div>
+
+<div class="w-64 p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition">
+  <img
+    src="https://via.placeholder.com/200"
+    alt="Product image"
+    class="h-40 w-full object-cover rounded-md"
+  />
+  <h2 class="mt-4 text-lg font-medium text-gray-800 truncate">Product Name</h2>
+  <div class="flex items-center justify-between mt-2">
+    <p class="text-xl font-bold text-gray-900">€29.99</p>
+    <button
+      class="px-3 py-1 bg-green-500 text-white text-sm rounded-lg hover:bg-green-600"
+    >
+      Lisää koriin
+    </button>
   </div>
 </div>

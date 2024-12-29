@@ -3,13 +3,13 @@
     *ngFor="let category of categories; let i = index"
     (click)="selectCategory(i)"
     [ngClass]="{
-      'bg-gray-500 text-white': selectedCategory === i,
-      'hover:bg-gray-600 text-gray-300': selectedCategory !== i,
+      'bg-gray-500 text-white': selectedCategoryIndex === i,
+      'hover:bg-gray-600 text-gray-300': selectedCategoryIndex !== i,
       'rounded-t-lg': i === 0,
       'rounded-b-lg': i === categories.length - 1
     }"
     class="w-full py-2.5 px-3 text-left transition-colors"
   >
-    {{ category }}
+    {{ category.name }}
   </button>
 </div>

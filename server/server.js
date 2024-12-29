@@ -20,7 +20,7 @@ const isDev = process.env.NODE_ENV !== "production";
 if (isDev) {
   app.use(
     cors({
-      origin: `http://localhost:4200`,
+      origin: [`http://localhost:4200`, `http://localhost:4201`],
     })
   );
   app.use("/api", developmentRoutes);

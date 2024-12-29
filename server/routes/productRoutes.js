@@ -19,11 +19,43 @@ router.get("/products/:slug", async (req, res) => {
   }
 });
 
+// Get all categories
+router.get("/categories", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT id, name FROM categories ORDER BY name ASC"
+    );
+    res.status(201).json(result.rows);
+  } catch (error) {
+    sentry.captureException(error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get products by category
+router.get("/categories/:name", async (req, res) => {
+  try {
+    const categoryName = req.params.name;
+    const result = await pool.query(
+      `SELECT public_id, name, slug, description, image, price, stock, weight_g, height_mm 
+       FROM products 
+       WHERE category_id = (SELECT id FROM categories WHERE name = $1) 
+       ORDER BY name ASC`,
+      [categoryName]
+    );
+
+    res.status(201).json(result.rows);
+  } catch (error) {
+    sentry.captureException(error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Get all products
 router.get("/products", async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT id, public_id, name, slug, description, image, price, stock, weight_g, height_mm FROM products ORDER BY id DESC"
+      "SELECT id, category_id, public_id, name, slug, description, image, price, stock, weight_g, height_mm FROM products ORDER BY id DESC"
     );
     res.status(201).json(result.rows);
   } catch (error) {
@@ -76,8 +108,8 @@ router.put("/products", productAuth, async (req, res) => {
 
     const updateQuery = `
       UPDATE products
-      SET name = $1, slug = $2, description = $3, image = $4, price = $5, stock = $6, weight_g = $7, height_mm = $8
-      WHERE public_id = $9
+      SET name = $1, slug = $2, description = $3, image = $4, price = $5, stock = $6, weight_g = $7, height_mm = $8, category_id = $9
+      WHERE public_id = $10
       RETURNING *
     `;
     const updateValues = [
@@ -89,6 +121,7 @@ router.put("/products", productAuth, async (req, res) => {
       req.body.stock,
       req.body.weight_g,
       req.body.height_mm,
+      req.body.category_id,
       req.body.public_id,
     ];
 

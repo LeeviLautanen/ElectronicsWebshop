@@ -1,17 +1,18 @@
 <div class="min-h-screen flex flex-col">
   <header class="w-full bg-gray-800 mb-4">
-    <div class="mx-auto sm:max-w-sm md:max-w-md lg:max-w-lg px-4">
+    <div class="mx-auto px-4 sm:max-w-sm md:max-w-md lg:max-w-lg">
       <app-navbar></app-navbar>
     </div>
   </header>
+
   <main
-    class="w-full sm:max-w-sm md:max-w-md lg:max-w-lg mx-auto px-4 flex-grow"
+    class="flex-grow w-full mx-auto px-4 sm:max-w-sm md:max-w-md lg:max-w-lg"
   >
     <router-outlet></router-outlet>
   </main>
 
   <footer class="w-full bg-gray-800 mt-4">
-    <div class="mx-auto sm:max-w-sm md:max-w-md lg:max-w-lg px-4">
+    <div class="mx-auto px-4 sm:max-w-sm md:max-w-md lg:max-w-lg">
       <app-footer></app-footer>
     </div>
   </footer>

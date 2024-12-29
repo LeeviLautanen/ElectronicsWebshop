@@ -19,6 +19,10 @@ export const routes: Routes = [
         component: ProductGridComponent,
       },
       {
+        path: ':category',
+        component: ProductGridComponent,
+      },
+      {
         path: 'tuote/:slug',
         component: ProductPageComponent,
       },
@@ -26,7 +30,7 @@ export const routes: Routes = [
   },
   { path: 'ostoskori', component: ShoppingCartPageComponent },
   { path: 'kassa', component: CheckoutPageComponent },
-  { path: 'tietoa', component: CompanyInfoPageComponent },
+  { path: 'tietoa-meistä', component: CompanyInfoPageComponent },
   { path: 'toimitusehdot', component: TermsPageComponent },
   { path: 'tietosuojaseloste', component: PrivacyInfoPageComponent },
   {
