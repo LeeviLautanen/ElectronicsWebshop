@@ -15,9 +15,7 @@ module.exports = {
       },
       colors: {
         primary: "#2C3E50", // Dark Blue-Gray
-        secondary: "#27AE60", // Vibrant Green
-        accent: "#E67E22", // Bold Orange
-        light: "#F7F9FA", // Light Gray
+        light: "#F9FAFB", // Light Gray
       },
     },
   },
