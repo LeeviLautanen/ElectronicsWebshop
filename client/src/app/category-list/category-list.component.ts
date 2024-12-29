@@ -5,6 +5,7 @@ import { environment } from '../../environments/environment.dev';
 import { Category } from '../models/Category.model';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
+import { ProductDataService } from '../services/product-data.service';
 
 @Component({
   selector: 'app-category-list',
@@ -15,38 +16,29 @@ import { filter } from 'rxjs';
 })
 export class CategoryListComponent implements OnInit {
   baseUrl = environment.baseUrl;
-  categories!: Category[];
-  selectedCategoryIndex = -1;
+  categories: Category[] = [];
+  selectedCategoryIndex: number | null = null;
 
-  constructor(
-    private http: HttpClient,
-    private router: Router,
-    private route: ActivatedRoute
-  ) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.http
-      .get(`${this.baseUrl}/api/categories`)
-      .subscribe((categories: any) => {
-        this.categories = categories;
-      });
-
-    // Sketchy way to reset selected category when clicking on product card
-    this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe(() => {
-        this.selectedCategoryIndex = -1;
+      .get<Category[]>(`${this.baseUrl}/api/categories`)
+      .subscribe((data) => {
+        this.categories = data;
       });
   }
 
-  selectCategory(index: number) {
-    if (index == this.selectedCategoryIndex) {
-      this.selectedCategoryIndex = -1;
-      this.router.navigate([`/`]);
-      return;
+  selectCategory(index: number): void {
+    if (this.selectedCategoryIndex === index) {
+      this.selectedCategoryIndex = null;
+      this.router.navigate(['/kauppa']);
+    } else {
+      this.selectedCategoryIndex = index;
+      this.router.navigate([
+        '/kauppa',
+        { category: this.categories[index].name },
+      ]);
     }
-    this.selectedCategoryIndex = index;
-    const categoryName = this.categories[index].name;
-    this.router.navigate([`/kauppa/${categoryName}`]);
   }
 }

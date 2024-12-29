@@ -10,17 +10,12 @@ import { PrivacyInfoPageComponent } from './info-and-legal/privacy-info-page/pri
 import { AboutUsPageComponent } from './info-and-legal/about-us-page/about-us-page.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'kauppa', pathMatch: 'full' },
   {
     path: 'kauppa',
     component: HomeComponent,
     children: [
       {
         path: '',
-        component: ProductGridComponent,
-      },
-      {
-        path: ':category',
         component: ProductGridComponent,
       },
       {

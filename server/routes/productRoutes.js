@@ -23,7 +23,7 @@ router.get("/products/:slug", async (req, res) => {
 router.get("/categories", async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT id, name FROM categories ORDER BY name ASC"
+      "SELECT id, name FROM categories ORDER BY sort_order ASC"
     );
     res.status(201).json(result.rows);
   } catch (error) {

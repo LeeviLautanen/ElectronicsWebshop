@@ -4,7 +4,7 @@
     (click)="selectCategory(i)"
     [ngClass]="{
       'bg-gray-500 text-white': selectedCategoryIndex === i,
-      'hover:bg-gray-600 text-gray-300': selectedCategoryIndex !== i,
+      ' text-gray-200': selectedCategoryIndex !== i,
       'rounded-t-lg': i === 0,
       'rounded-b-lg': i === categories.length - 1
     }"
