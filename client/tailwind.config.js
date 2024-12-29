@@ -17,6 +17,9 @@ module.exports = {
         primary: "#2C3E50", // Dark Blue-Gray
         light: "#F9FAFB", // Light Gray
       },
+      borderColor: {
+        lightCard: "#E5E7EB",
+      },
     },
   },
   plugins: [],

@@ -36,6 +36,6 @@ export class CategoryListComponent implements OnInit {
 
     this.selectedCategoryIndex = index;
     const categoryName = this.categories[index].name;
-    this.router.navigate([`/${categoryName}`]);
+    this.router.navigate([`/kauppa/${categoryName}`]);
   }
 }

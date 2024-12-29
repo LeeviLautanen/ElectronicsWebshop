@@ -7,11 +7,12 @@ import { CheckoutPageComponent } from './checkout-page/checkout-page.component';
 import { TermsPageComponent } from './info-and-legal/terms-page/terms-page.component';
 import { OrderConfirmationPageComponent } from './order-confirmation-page/order-confirmation-page.component';
 import { PrivacyInfoPageComponent } from './info-and-legal/privacy-info-page/privacy-info-page.component';
-import { CompanyInfoPageComponent } from './info-and-legal/company-info-page/company-info-page.component';
+import { AboutUsPageComponent } from './info-and-legal/about-us-page/about-us-page.component';
 
 export const routes: Routes = [
+  { path: '', redirectTo: 'kauppa', pathMatch: 'full' },
   {
-    path: '',
+    path: 'kauppa',
     component: HomeComponent,
     children: [
       {
@@ -30,7 +31,7 @@ export const routes: Routes = [
   },
   { path: 'ostoskori', component: ShoppingCartPageComponent },
   { path: 'kassa', component: CheckoutPageComponent },
-  { path: 'tietoa-meistä', component: CompanyInfoPageComponent },
+  { path: 'tietoa-meistä', component: AboutUsPageComponent },
   { path: 'toimitusehdot', component: TermsPageComponent },
   { path: 'tietosuojaseloste', component: PrivacyInfoPageComponent },
   {

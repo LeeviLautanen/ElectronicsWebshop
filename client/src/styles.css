@@ -11,3 +11,11 @@
 .no-spinner::-webkit-inner-spin-button {
   appearance: none;
 }
+
+.light-card {
+  @apply mx-auto bg-gray-50 border border-lightCard rounded-lg shadow-md p-6 mb-8;
+}
+
+.checkout-card {
+  @apply mx-auto bg-gray-50 border border-lightCard rounded-lg shadow-md p-6 mb-8;
+}
