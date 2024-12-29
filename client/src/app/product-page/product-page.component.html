@@ -5,13 +5,13 @@
   >
     <!-- Back Link -->
     <a
-      class="pb-1 text-md text-gray-300 self-start hover:text-white cursor-pointer"
+      class="pb-1 text-md text-gray-200 self-start hover:text-white cursor-pointer"
       (click)="goBack()"
     >
       &larr; Takaisin
     </a>
 
-    <div class="flex">
+    <div class="flex justify-evenly">
       <!-- Image -->
       <img
         [src]="product.image"
@@ -52,6 +52,8 @@
   <div class="flex flex-col w-full mt-4 p-4 bg-primary rounded-lg">
     <!-- Description -->
     <h3 class="text-xl font-bold text-white">Tuotekuvaus</h3>
-    <p class="mt-2 text-gray-300">{{ product.description }}</p>
+    <p class="mt-2 text-gray-200 whitespace-pre-line text-justify">
+      {{ product.description }}
+    </p>
   </div>
 </div>

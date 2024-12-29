@@ -17,14 +17,21 @@ app.use(express.json());
 
 const isDev = process.env.NODE_ENV !== "production";
 
+// 4201 needed for product editor, etc
+let allowedOrigins = [`http://localhost:4201`];
+
 if (isDev) {
-  app.use(
-    cors({
-      origin: [`http://localhost:4200`, `http://localhost:4201`],
-    })
-  );
+  allowedOrigins.push(`http://localhost:4200`);
   app.use("/api", developmentRoutes);
+} else {
+  allowedOrigins;
 }
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+  })
+);
 
 app.use("/api", productRoutes);
 app.use("/api", orderRoutes);
