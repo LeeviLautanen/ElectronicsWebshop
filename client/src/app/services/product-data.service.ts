@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { Product } from './models/Product.model';
-import { environment } from '../environments/environment.dev';
+import { Product } from '../models/Product.model';
+import { environment } from '../../environments/environment.dev';
 
 @Injectable({
   providedIn: 'root',
@@ -22,6 +22,20 @@ export class ProductDataService {
     );
   }
 
+  // Get products by category and add image url prefix
+  getProductsByCategory(category: string): Observable<Product[]> {
+    return this.http
+      .get<Product[]>(`${this.baseUrl}/api/categories/${category}`)
+      .pipe(
+        map((products) => {
+          products.forEach((product) => {
+            product.image = `${this.baseUrl}/assets/${product.image}`;
+          });
+          return products;
+        })
+      );
+  }
+
   // Get all products and add image url prefix
   getAllProducts(): Observable<Product[]> {
     return this.http.get<Product[]>(`${this.baseUrl}/api/products`).pipe(
@@ -35,7 +49,7 @@ export class ProductDataService {
   }
 
   // Add a product to database
-  addProduct(product: any): Observable<any> {
-    return this.http.post('http://localhost:3000/api/products', product);
+  addProduct(product: Product): Observable<any> {
+    return this.http.post('http://localhost:1234/api/products', product);
   }
 }

@@ -13,6 +13,13 @@ module.exports = {
         md: "980px",
         lg: "1200px",
       },
+      colors: {
+        primary: "#2C3E50", // Dark Blue-Gray
+        light: "#F9FAFB", // Light Gray
+      },
+      borderColor: {
+        lightCard: "#E5E7EB",
+      },
     },
   },
   plugins: [],

@@ -1,19 +1,25 @@
-<div class="min-h-screen flex flex-col">
-  <header class="w-full bg-gray-800 mb-4">
-    <div class="mx-auto sm:max-w-sm md:max-w-md lg:max-w-lg px-4">
-      <app-navbar></app-navbar>
-    </div>
-  </header>
-  <h1>This is the development container</h1>
-  <main
-    class="w-full sm:max-w-sm md:max-w-md lg:max-w-lg mx-auto px-4 flex-grow"
-  >
-    <router-outlet></router-outlet>
-  </main>
+<app-unsupported-screen-page
+  *ngIf="isSmallScreen"
+></app-unsupported-screen-page>
 
-  <footer class="w-full bg-gray-800 mt-4">
-    <div class="mx-auto sm:max-w-sm md:max-w-md lg:max-w-lg px-4">
-      <app-footer></app-footer>
-    </div>
-  </footer>
+<div *ngIf="!isSmallScreen">
+  <div class="min-h-screen flex flex-col bg-light">
+    <header class="w-full bg-primary mb-4">
+      <div class="mx-auto px-4 sm:max-w-sm md:max-w-md lg:max-w-lg">
+        <app-navbar></app-navbar>
+      </div>
+    </header>
+
+    <main
+      class="flex-grow w-full mx-auto px-4 sm:max-w-sm md:max-w-md lg:max-w-lg"
+    >
+      <router-outlet></router-outlet>
+    </main>
+
+    <footer class="w-full bg-primary mt-4">
+      <div class="mx-auto px-4 sm:max-w-sm md:max-w-md lg:max-w-lg">
+        <app-footer></app-footer>
+      </div>
+    </footer>
+  </div>
 </div>

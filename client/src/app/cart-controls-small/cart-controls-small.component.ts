@@ -7,7 +7,7 @@ import {
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { Product } from '../models/Product.model';
 import { CommonModule } from '@angular/common';
-import { ShoppingCartService } from '../shopping-cart.service';
+import { ShoppingCartService } from '../services/shopping-cart.service';
 import { FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 
@@ -43,15 +43,19 @@ export class CartControlsSmallComponent {
   }
 
   addToCart() {
-    this.quantity = 1;
-
     if (this.quantity <= 0) {
       this.toastrService.error(
         `Määrän täytyy olla positiivinen luku, ${this.quantity} ei kelpaa.`,
         'Ostoskoriin lisääminen epäonnistui'
       );
       return;
-    } else if (this.product.stock < this.quantity) {
+    }
+
+    const currentQuantity = this.shoppingCartService.getProductQuantity(
+      this.product
+    );
+
+    if (this.product.stock < currentQuantity + this.quantity) {
       this.toastrService.error(
         `Vain ${this.product.stock} kappaletta varastossa.`,
         'Ostoskoriin lisääminen epäonnistui'
@@ -60,5 +64,6 @@ export class CartControlsSmallComponent {
     }
 
     this.shoppingCartService.addItem(this.product, this.quantity);
+    this.quantity = 1;
   }
 }

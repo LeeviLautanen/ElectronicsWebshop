@@ -1,6 +1,6 @@
 const { Pool } = require("pg");
 
-const isDev = process.env.NODE_ENV === "development";
+const isDev = process.env.NODE_ENV !== "production";
 
 // Postgres connection
 const pool = new Pool({
@@ -10,8 +10,6 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
 });
-
-console.log(process.env.DB_HOST);
 
 // Test the connection
 pool

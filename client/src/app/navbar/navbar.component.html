@@ -1,17 +1,24 @@
-<nav class="flex justify-between items-center text-white p-3">
+<nav class="flex items-center text-white p-3">
   <!-- Name -->
-  <div class="flex items-center space-x-4">
+  <div class="flex space-x-4">
     <a href="/" class="text-xl font-bold">BittiBoksi</a>
   </div>
 
   <!-- Navbar links -->
-  <div class="flex items-center space-x-5 px-6">
-    <a href="/tietoa" class="text-sm hover:text-gray-300">Tietoa meistä</a>
-    <a href="/" class="text-sm hover:text-gray-300">Ota yhteyttä</a>
+  <div class="space-x-5 px-6">
+    <a href="/tietoa-meistä" class="text-sm hover:text-gray-300"
+      >Tietoa meistä</a
+    >
+    <a href="/toimitusehdot" class="text-sm hover:text-gray-300"
+      >Toimitusehdot</a
+    >
+    <a href="/tietosuojaseloste" class="text-sm hover:text-gray-300"
+      >Tietosuojaseloste</a
+    >
   </div>
 
-  <!-- Search bar -->
-  <div class="flex flex-grow justify-center items-center space-x-2">
+  <!-- Search bar (Hidden until implemented fully) -->
+  <div class="hidden mx-auto space-x-2">
     <div class="relative flex items-center bg-gray-700 rounded-lg">
       <input
         type="text"
@@ -24,5 +31,5 @@
   </div>
 
   <!-- Shopping cart -->
-  <app-shopping-cart></app-shopping-cart>
+  <app-shopping-cart class="ml-auto"></app-shopping-cart>
 </nav>

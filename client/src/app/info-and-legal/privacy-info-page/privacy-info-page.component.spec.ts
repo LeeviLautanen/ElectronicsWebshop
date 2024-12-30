@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { InfoPageComponent } from './info-page.component';
+import { PrivacyInfoPageComponent } from './privacy-info-page.component';
 
-describe('InfoPageComponent', () => {
-  let component: InfoPageComponent;
-  let fixture: ComponentFixture<InfoPageComponent>;
+describe('PrivacyInfoPageComponent', () => {
+  let component: PrivacyInfoPageComponent;
+  let fixture: ComponentFixture<PrivacyInfoPageComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [InfoPageComponent]
+      imports: [PrivacyInfoPageComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(InfoPageComponent);
+    fixture = TestBed.createComponent(PrivacyInfoPageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

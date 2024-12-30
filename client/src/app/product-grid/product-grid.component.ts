@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Product } from '../models/Product.model';
-import { ProductDataService } from '../product-data.service';
+import { ProductDataService } from '../services/product-data.service';
 import { CartControlsSmallComponent } from '../cart-controls-small/cart-controls-small.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-product-grid',
@@ -15,12 +16,29 @@ import { CartControlsSmallComponent } from '../cart-controls-small/cart-controls
 export class ProductGridComponent implements OnInit {
   products: Product[] = [];
 
-  constructor(private productDataService: ProductDataService) {}
+  constructor(
+    private productDataService: ProductDataService,
+    private route: ActivatedRoute
+  ) {}
 
-  // Fetch all product data
   ngOnInit(): void {
-    this.productDataService.getAllProducts().subscribe((data) => {
-      this.products = data;
+    this.route.paramMap.subscribe((params) => {
+      const category = params.get('category');
+      this.fetchProducts(category);
     });
+  }
+
+  private fetchProducts(category: string | null): void {
+    if (category == null || category.length == 0) {
+      this.productDataService.getAllProducts().subscribe((data) => {
+        this.products = data;
+      });
+    } else {
+      this.productDataService
+        .getProductsByCategory(category)
+        .subscribe((data) => {
+          this.products = data;
+        });
+    }
   }
 }

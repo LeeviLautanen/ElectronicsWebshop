@@ -1,0 +1,76 @@
+<div *ngIf="orderData" class="flex flex-col items-center justify-center px-4">
+  <!-- Thank you message -->
+  <h1 class="mt-6 text-3xl font-bold text-gray-800">Kiitos tilauksestasi!</h1>
+  <p class="mt-2 text-lg text-gray-600">
+    Tilauksesi on vastaanotettu ja käsitellään mahdollisimman pian.
+  </p>
+
+  <div class="mt-8 w-full max-w-4xl p-6 bg-white rounded-lg shadow-md">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Tilauksen tiedot</h2>
+
+    <!-- Order details -->
+    <div class="mb-6 text-gray-700">
+      <p><strong>Tilaustunnus:</strong> {{ orderData.orderId }}</p>
+    </div>
+
+    <!-- Product table -->
+    <table class="w-full border-collapse text-left">
+      <thead>
+        <tr class="bg-gray-100">
+          <th class="p-3">Tuote</th>
+          <th class="p-3">Määrä</th>
+          <th class="p-3">Hinta</th>
+          <th class="p-3 text-right">Yhteensä</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of orderData.orderItems" class="border-t">
+          <td class="p-3">{{ item.name }}</td>
+          <td class="p-3">{{ item.quantity }}</td>
+          <td class="p-3">
+            {{ item.price | currency : "EUR" : "symbol" : "1.2-2" }}
+          </td>
+          <td class="p-3 text-right">
+            {{
+              item.price * item.quantity | currency : "EUR" : "symbol" : "1.2-2"
+            }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Summary -->
+    <hr class="my-4" />
+    <div class="text-gray-700">
+      <div class="flex justify-between mb-2">
+        <span>Tuotteiden yhteensä:</span>
+        <span>{{
+          orderItemsTotal | currency : "EUR" : "symbol" : "1.2-2"
+        }}</span>
+      </div>
+      <div class="flex justify-between mb-4">
+        <span>Toimituskulut ({{ orderData.shippingName }}):</span>
+        <span>{{
+          orderData.shippingCost | currency : "EUR" : "symbol" : "1.2-2"
+        }}</span>
+      </div>
+      <div class="flex justify-between font-semibold text-gray-800">
+        <span>Kokonaishinta:</span>
+        <span>
+          {{
+            orderData.shippingCost + orderItemsTotal
+              | currency : "EUR" : "symbol" : "1.2-2"
+          }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Return button -->
+  <button
+    routerLink="/"
+    class="mt-6 px-6 py-3 text-white bg-green-500 rounded-lg hover:bg-green-600 transition-colors duration-200"
+  >
+    Palaa kauppaan
+  </button>
+</div>

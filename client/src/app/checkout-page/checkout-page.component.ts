@@ -1,11 +1,111 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { PaypalCheckoutComponent } from '../paypal-checkout/paypal-checkout.component';
+import { FormsModule, NgForm, NgModel } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { ShippingOption } from '../models/ShippingOption.model';
+import { ShoppingCartService } from '../services/shopping-cart.service';
+import { firstValueFrom, Observable, Subscription, timeout } from 'rxjs';
+import { Cart } from '../models/Cart.model';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { bootstrapCheck, bootstrapCircle } from '@ng-icons/bootstrap-icons';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-checkout-page',
   standalone: true,
-  imports: [PaypalCheckoutComponent],
+  imports: [PaypalCheckoutComponent, CommonModule, FormsModule, NgIcon],
   templateUrl: './checkout-page.component.html',
   styleUrl: './checkout-page.component.css',
+  providers: [
+    provideIcons({
+      bootstrapCircle,
+      bootstrapCheck,
+    }),
+  ],
 })
-export class CheckoutPageComponent {}
+export class CheckoutPageComponent implements OnInit {
+  emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+  shippingOptions$!: Observable<ShippingOption[]>;
+  cart$!: Observable<Cart>;
+
+  termsAccepted: boolean = false;
+  shippingInfoValid: boolean = false;
+  shippingInfo = {
+    name: '',
+    phone: '',
+    email: '',
+    address_line_1: '',
+    admin_area_2: '',
+    postal_code: '',
+  };
+
+  constructor(
+    private shoppingCartService: ShoppingCartService,
+    private router: Router
+  ) {}
+
+  ngOnInit(): void {
+    // Assign the observables
+    this.shippingOptions$ = this.shoppingCartService.shippingOptions$;
+    this.cart$ = this.shoppingCartService.cart$;
+
+    // Check that cart is not empty
+    this.checkCart();
+
+    // Make shipping service update shipping options from DB
+    this.shoppingCartService.fetchShippingOptions();
+  }
+
+  // Check that cart is not empty
+  async checkCart() {
+    const cartData = await firstValueFrom(this.shoppingCartService.cart$);
+    if (cartData.cartItems.length === 0) {
+      this.router.navigate(['/kauppa']);
+    }
+  }
+
+  // Update selected shipping option to cart
+  onSelectOption(option: ShippingOption) {
+    this.shoppingCartService.selectShippingOption(option);
+  }
+
+  isEmailValid(): boolean {
+    this.shippingInfo.email = this.shippingInfo.email.trim();
+    return this.emailPattern.test(this.shippingInfo.email);
+  }
+
+  isPhoneValid(): boolean {
+    // Remove 358 prefix if for some reason it is written
+    if (this.shippingInfo.phone.startsWith('358')) {
+      this.shippingInfo.phone = this.shippingInfo.phone.slice(3);
+    }
+    this.shippingInfo.phone = this.shippingInfo.phone.trim();
+    return this.shippingInfo.phone.length <= 11;
+  }
+
+  areInputLengthsValid(): boolean {
+    // Max lengths gotten from https://developer.paypal.com/docs/api/orders/v2/#orders_create
+    const info = this.shippingInfo;
+    if (
+      info.name.length > 300 ||
+      info.address_line_1.length > 300 ||
+      info.admin_area_2.length > 120 ||
+      info.postal_code.length > 60
+    ) {
+      return false;
+    }
+    return true;
+  }
+
+  async checkShippingInfo() {
+    const cartData = await firstValueFrom(this.shoppingCartService.cart$);
+
+    this.shippingInfoValid =
+      //this.isEmailValid() && Enable for production !!!
+      this.isPhoneValid() &&
+      this.areInputLengthsValid() &&
+      this.termsAccepted &&
+      cartData.shippingOption != null;
+  }
+}

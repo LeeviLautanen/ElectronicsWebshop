@@ -1,57 +1,59 @@
 <div *ngIf="product" class="flex flex-col items-center">
-  <div class="flex w-full p-4 bg-gray-800 rounded-lg">
-    <!-- Image -->
-    <img
-      [src]="product.image"
-      alt="Product image"
-      class="w-96 h-96 object-cover rounded-lg"
-    />
+  <!-- Product Card -->
+  <div
+    class="flex flex-col pl-4 pb-4 pt-2 w-full bg-primary rounded-lg relative"
+  >
+    <!-- Back Link -->
+    <a
+      class="pb-1 text-md text-gray-200 self-start hover:text-white cursor-pointer"
+      (click)="goBack()"
+    >
+      &larr; Takaisin
+    </a>
 
-    <!-- Info -->
-    <div class="flex flex-col justify-between py-6 ml-8 text-white">
-      <!-- Name -->
-      <h2 class="mt-4 text-3xl font-bold">{{ product.name }}</h2>
+    <div class="flex justify-evenly">
+      <!-- Image -->
+      <img
+        [src]="product.image"
+        alt="Product image"
+        class="md:w-96 sm:w-52 h-auto object-cover rounded-lg"
+      />
 
-      <!-- Price -->
-      <p class="mt-4 text-3xl font-semibold">
-        {{ product.price }} €
-        <span class="text-lg font-normal">(sis alv.)</span>
-      </p>
+      <!-- Info -->
+      <div class="flex flex-col justify-between ml-8 text-white md:py-6">
+        <!-- Name -->
+        <h2 class="text-3xl font-bold">{{ product.name }}</h2>
 
-      <!-- Stock quantity -->
-      <p class="mt-2 text-base">
-        <span class="font-medium">Saatavuus:</span>
-        <span class="text-white">
-          {{
-            product.stock > 0
-              ? product.stock + " kpl varastossa"
-              : "Ei varastossa"
-          }}
-        </span>
-      </p>
+        <!-- Price -->
+        <p class="text-3xl font-semibold">
+          {{ product.price | currency : "EUR" : "symbol" : "1.2-2" }}
+          <span class="text-lg font-normal">(sis alv.)</span>
+        </p>
 
-      <!-- Cart controls -->
-      <app-cart-controls-large [product]="product"></app-cart-controls-large>
+        <!-- Stock quantity -->
+        <p class="text-base">
+          <span class="font-medium">Saatavuus:</span>
+          <span class="text-white">
+            {{
+              product.stock > 0
+                ? product.stock + " kpl varastossa"
+                : "Ei varastossa"
+            }}
+          </span>
+        </p>
+
+        <!-- Cart controls -->
+        <app-cart-controls-large [product]="product"></app-cart-controls-large>
+      </div>
     </div>
   </div>
 
-  <!-- Description and features -->
-  <div class="flex flex-col w-full mt-4 p-4 bg-gray-700 rounded-lg">
+  <!-- Description and Features -->
+  <div class="flex flex-col w-full mt-4 p-4 bg-primary rounded-lg">
     <!-- Description -->
     <h3 class="text-xl font-bold text-white">Tuotekuvaus</h3>
-    <p class="mt-2 text-gray-300">{{ product.description }}</p>
-
-    <!-- Features (hidden until features are added) -->
-    <div class="mt-6 hidden">
-      <h3 class="text-xl font-bold text-white">Ominaisuudet</h3>
-      <ul class="mt-2 list-disc list-inside text-gray-300">
-        <li>Jotain</li>
-        <li>Jotain</li>
-        <li>Jotain</li>
-        <li>Jotain</li>
-        <li>Jotain</li>
-        <li>Jotain</li>
-      </ul>
-    </div>
+    <p class="mt-2 text-gray-200 whitespace-pre-line text-justify">
+      {{ product.description }}
+    </p>
   </div>
 </div>

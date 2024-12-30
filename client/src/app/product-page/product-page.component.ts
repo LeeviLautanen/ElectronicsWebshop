@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Product } from '../models/Product.model';
-import { ActivatedRoute } from '@angular/router';
-import { ProductDataService } from '../product-data.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ProductDataService } from '../services/product-data.service';
 import { CommonModule } from '@angular/common';
 import { NgIcon } from '@ng-icons/core';
 import { CartControlsLargeComponent } from '../cart-controls-large/cart-controls-large.component';
@@ -18,6 +18,7 @@ export class ProductPageComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private productDataService: ProductDataService
   ) {}
 
@@ -32,5 +33,9 @@ export class ProductPageComponent implements OnInit {
     this.productDataService.getProductBySlug(slug).subscribe((data) => {
       this.product = data;
     });
+  }
+
+  goBack(): void {
+    this.router.navigate(['/']);
   }
 }

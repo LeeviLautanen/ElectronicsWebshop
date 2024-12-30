@@ -1,0 +1,7 @@
+.shipping-info-label {
+  @apply block text-sm font-medium text-gray-600;
+}
+
+.shipping-info-input {
+  @apply mt-1 block w-full border-2 rounded-lg p-3 focus:ring-indigo-500 focus:border-indigo-500;
+}

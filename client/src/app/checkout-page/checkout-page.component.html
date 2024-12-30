@@ -1,56 +1,218 @@
-<!-- Content Section -->
-<div class="flex flex-col gap-6">
-  <div class="w-full bg-gray-900 p-6 rounded-lg shadow-lg">
-    <!-- Progress Bar -->
-    <div class="flex items-center justify-between text-gray-300 mb-6">
-      <div class="flex flex-col items-center space-y-2">
-        <span>Henkilötiedot</span>
-        <span
-          class="w-8 h-8 flex items-center justify-center rounded-full bg-green-600 text-white"
-          >1</span
-        >
+<div class="">
+  <!-- Shipping info -->
+  <section class="checkout-card">
+    <h3 class="text-lg font-semibold text-gray-800 mb-4">Toimitustiedot</h3>
+
+    <div class="grid grid-cols-2 gap-6">
+      <div>
+        <label class="shipping-info-label">Nimi</label>
+        <input
+          class="shipping-info-input"
+          [(ngModel)]="shippingInfo.name"
+          (blur)="checkShippingInfo()"
+        />
       </div>
-      <hr class="flex-grow mx-2 border-gray-600" />
-      <div class="flex flex-col items-center space-y-2">
-        <span>Maksu</span>
-        <span
-          class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-600 text-gray-300"
-          >2</span
-        >
+
+      <div>
+        <label class="shipping-info-label">Puhelin (ei pakollinen)</label>
+        <div class="relative">
+          <span class="absolute left-2 top-1/2 transform -translate-y-1/2"
+            >+358</span
+          >
+          <input
+            type="tel"
+            class="mt-1 pl-12 block w-full border-2 rounded-lg p-3 focus:ring-indigo-500 focus:border-indigo-500"
+            [(ngModel)]="shippingInfo.phone"
+            (blur)="checkShippingInfo()"
+          />
+        </div>
       </div>
-      <hr class="flex-grow mx-2 border-gray-600" />
-      <div class="flex flex-col items-center space-y-2">
-        <span>Varmista</span>
-        <span
-          class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-600 text-gray-300"
-          >3</span
-        >
+
+      <div>
+        <label class="shipping-info-label">Sähköpostiosoite</label>
+        <input
+          type="email"
+          class="shipping-info-input"
+          [(ngModel)]="shippingInfo.email"
+          (blur)="checkShippingInfo()"
+        />
+      </div>
+
+      <div>
+        <label class="shipping-info-label">Osoite</label>
+        <input
+          [(ngModel)]="shippingInfo.address_line_1"
+          class="shipping-info-input"
+          (blur)="checkShippingInfo()"
+        />
+      </div>
+
+      <div>
+        <label class="shipping-info-label">Postinumero</label>
+        <input
+          class="shipping-info-input"
+          [(ngModel)]="shippingInfo.postal_code"
+          (blur)="checkShippingInfo()"
+        />
+      </div>
+
+      <div>
+        <label class="shipping-info-label">Postitoimipaikka</label>
+        <input
+          class="shipping-info-input"
+          [(ngModel)]="shippingInfo.admin_area_2"
+          (blur)="checkShippingInfo()"
+        />
       </div>
     </div>
 
-    <!-- Customer Information Form -->
-    <form class="space-y-4">
+    <div class="flex items-center space-x-2 mt-4">
       <input
-        type="text"
-        placeholder="Full Name"
-        class="w-full p-3 bg-gray-800 rounded-lg text-white"
+        type="checkbox"
+        id="terms"
+        [(ngModel)]="termsAccepted"
+        (ngModelChange)="checkShippingInfo()"
+        class="h-5 w-5 border-gray-300 rounded"
       />
-      <input
-        type="email"
-        placeholder="Email Address"
-        class="w-full p-3 bg-gray-800 rounded-lg text-white"
-      />
-      <input
-        type="tel"
-        placeholder="Phone Number"
-        class="w-full p-3 bg-gray-800 rounded-lg text-white"
-      />
-      <button
-        class="w-full mt-4 bg-green-600 px-4 py-2 rounded-lg text-white font-semibold hover:bg-green-700"
+      <label for="terms" class="text-sm text-gray-700">
+        Olen lukenut ja hyväksyn
+        <a href="/toimitusehdot" class="text-blue-500 hover:underline"
+          >toimitusehdot</a
+        >
+        ja
+        <a href="/tietosuojaseloste" class="text-blue-500 hover:underline"
+          >tietosuojaselosteen</a
+        >
+      </label>
+    </div>
+  </section>
+
+  <!-- Shipping options -->
+  <section class="checkout-card">
+    <h3 class="text-xl font-semibold text-gray-800 mb-4">Toimitustapa</h3>
+    <div
+      *ngIf="
+        (shippingOptions$ | async)?.length ?? 0 > 0;
+        else noShippingOptions
+      "
+      class="flex flex-col gap-4"
+    >
+      <div
+        *ngFor="let option of shippingOptions$ | async"
+        class="border rounded-lg p-4 flex items-center hover:shadow-lg cursor-pointer"
+        [class.border-blue-500]="
+          (cart$ | async)?.shippingOption?.public_id === option.public_id
+        "
+        (click)="onSelectOption(option)"
       >
-        Continue to Payment
-      </button>
-    </form>
-  </div>
-  <app-paypal-checkout></app-paypal-checkout>
+        <img
+          [src]="option.image"
+          alt="{{ option.name }}"
+          class="w-16 h-16 rounded-full mr-4"
+        />
+        <div class="flex-1">
+          <h4 class="text-lg font-bold text-gray-800">{{ option.name }}</h4>
+          <p class="text-sm text-gray-600">{{ option.description }}</p>
+        </div>
+        <div class="text-right">
+          <p class="text-sm text-gray-500">
+            Toimitusaika: {{ option.delivery_time }}
+          </p>
+          <p class="text-lg font-semibold text-gray-800">
+            {{ option.price | currency : "EUR" : "symbol" : "1.2-2" }}
+          </p>
+        </div>
+      </div>
+    </div>
+    <ng-template #noShippingOptions>
+      <p class="text-sm text-red-500 text-center">
+        Ostoskorin tuotteille ei ole saatavilla toimitustapoja.
+      </p>
+    </ng-template>
+  </section>
+
+  <!-- Order summary -->
+  <section class="checkout-card">
+    <h3 class="text-xl font-semibold text-gray-800 mb-4">
+      Tilauksen yhteenveto
+    </h3>
+    <div *ngIf="cart$ | async as cart" class="space-y-4">
+      <div
+        *ngFor="let item of cart.cartItems"
+        class="flex items-center justify-between border-t border-gray-200 pt-4"
+      >
+        <!-- Image -->
+        <img
+          [src]="item.product.image"
+          alt="{{ item.product.name }}"
+          class="w-16 h-16 rounded-md object-cover"
+        />
+
+        <!-- Item details -->
+        <div class="flex-1 ml-4">
+          <h4 class="text-lg font-semibold text-gray-800">
+            {{ item.product.name }}
+          </h4>
+          <p class="text-sm text-gray-600">
+            {{ item.quantity }} x
+            {{ item.product.price | currency : "EUR" : "symbol" : "1.2-2" }}
+          </p>
+        </div>
+
+        <!-- Subtotal -->
+        <p class="text-lg font-semibold text-gray-800">
+          {{
+            item.quantity * item.product.price
+              | currency : "EUR" : "symbol" : "1.2-2"
+          }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Total price -->
+    <div
+      *ngIf="cart$ | async as cart"
+      class="mt-6 border-t border-gray-300 pt-4"
+    >
+      <div class="flex justify-between items-center">
+        <p class="text-lg font-semibold text-gray-800">Toimitustapa:</p>
+        <p class="text-sm text-gray-600">
+          {{ cart.shippingOption?.name ?? "Ei valittu" }} ({{
+            cart.shippingOption?.price ?? 0
+              | currency : "EUR" : "symbol" : "1.2-2"
+          }})
+        </p>
+      </div>
+      <div class="flex justify-between items-center mt-2">
+        <p class="text-xl font-bold text-gray-800">Yhteensä:</p>
+        <p class="text-xl font-bold text-blue-600">
+          {{
+            cart.cartValue + (cart.shippingOption?.price ?? 0)
+              | currency : "EUR" : "symbol" : "1.2-2"
+          }}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Payment methods -->
+  <section class="checkout-card">
+    <h3 class="text-xl font-semibold text-gray-800 mb-6">Maksutavat</h3>
+
+    <div *ngIf="shippingInfoValid; else invalidShippingInfo">
+      <div class="flex flex-col items-center space-y-2">
+        <app-paypal-checkout
+          class="w-full max-w-sm"
+          [shippingInfo]="shippingInfo"
+        ></app-paypal-checkout>
+        <p class="text-sm">(Vaatii PayPal tilin)</p>
+      </div>
+    </div>
+
+    <ng-template #invalidShippingInfo>
+      <p class="text-sm text-red-500 text-center">
+        Tarkista ja täydennä toimitustiedot ennen maksamista.
+      </p>
+    </ng-template>
+  </section>
 </div>
