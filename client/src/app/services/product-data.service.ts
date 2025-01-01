@@ -16,7 +16,7 @@ export class ProductDataService {
   getProductBySlug(slug: string): Observable<Product> {
     return this.http.get<Product>(`${this.baseUrl}/api/products/${slug}`).pipe(
       map((product) => {
-        product.image = `${this.baseUrl}/assets/${product.image}`;
+        product.image = `${this.baseUrl}/uploads/${product.image}`;
         return product;
       })
     );
@@ -29,7 +29,7 @@ export class ProductDataService {
       .pipe(
         map((products) => {
           products.forEach((product) => {
-            product.image = `${this.baseUrl}/assets/${product.image}`;
+            product.image = `${this.baseUrl}/uploads/${product.image}`;
           });
           return products;
         })
@@ -41,7 +41,7 @@ export class ProductDataService {
     return this.http.get<Product[]>(`${this.baseUrl}/api/products`).pipe(
       map((products) => {
         products.forEach((product) => {
-          product.image = `${this.baseUrl}/assets/${product.image}`;
+          product.image = `${this.baseUrl}/uploads/${product.image}`;
         });
         return products;
       })

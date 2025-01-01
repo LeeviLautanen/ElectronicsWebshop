@@ -5,6 +5,7 @@ require("./sentry");
 const Sentry = require("@sentry/node");
 const express = require("express");
 const path = require("path");
+const fs = require("fs");
 const cors = require("cors");
 
 const productRoutes = require("./routes/productRoutes");
@@ -36,6 +37,21 @@ app.use(
 app.use("/api", productRoutes);
 app.use("/api", orderRoutes);
 app.use("/api", shippingRoutes);
+
+// Serve product images with a default fallback
+app.use("/uploads", (req, res, next) => {
+  const filePath = path.join(__dirname, "uploads", req.path);
+  const defaultImagePath = path.join(__dirname, "uploads", "no-image.jpg");
+
+  fs.access(filePath, fs.constants.F_OK, (err) => {
+    // Serve default image if no image found with url
+    if (err) {
+      res.sendFile(defaultImagePath);
+    } else {
+      res.sendFile(filePath);
+    }
+  });
+});
 
 // Static files
 app.use(express.static(path.join(__dirname, "./dist/browser")));

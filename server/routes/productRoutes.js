@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../db");
 const sentry = require("../sentry");
+const upload = require("../upload");
 const productAuth = require("../productAuth");
 
 // Get product data by slug
@@ -93,46 +94,64 @@ router.post("/products", productAuth, async (req, res) => {
 });
 
 // Update product data
-router.put("/products", productAuth, async (req, res) => {
-  try {
-    const existingResult = await pool.query(
-      "SELECT id FROM products WHERE public_id = $1",
-      [req.body.public_id]
-    );
+router.put(
+  "/products",
+  productAuth,
+  upload.single("image"),
+  async (req, res) => {
+    try {
+      const {
+        name,
+        slug,
+        description,
+        image,
+        price,
+        stock,
+        weight_g,
+        height_mm,
+        category_id,
+        public_id,
+      } = JSON.parse(req.body.product);
 
-    if (existingResult.rowCount === 0) {
-      return res.status(404).json({
-        message: `Could not update data: no product found with public id: ${req.body.public_id}`,
-      });
-    }
+      const existingResult = await pool.query(
+        "SELECT id FROM products WHERE public_id = $1",
+        [public_id]
+      );
 
-    const updateQuery = `
+      if (existingResult.rowCount === 0) {
+        return res.status(404).json({
+          message: `Could not update data: no product found with public id: ${public_id}`,
+        });
+      }
+
+      const updateQuery = `
       UPDATE products
       SET name = $1, slug = $2, description = $3, image = $4, price = $5, stock = $6, weight_g = $7, height_mm = $8, category_id = $9
       WHERE public_id = $10
       RETURNING *
     `;
-    const updateValues = [
-      req.body.name,
-      req.body.slug,
-      req.body.description,
-      req.body.image,
-      req.body.price,
-      req.body.stock,
-      req.body.weight_g,
-      req.body.height_mm,
-      req.body.category_id,
-      req.body.public_id,
-    ];
+      const updateValues = [
+        name,
+        slug,
+        description,
+        image,
+        price,
+        stock,
+        weight_g,
+        height_mm,
+        category_id,
+        public_id,
+      ];
 
-    const updatedResult = await pool.query(updateQuery, updateValues);
+      const updatedResult = await pool.query(updateQuery, updateValues);
 
-    return res.status(200).json(updatedResult.rows[0]);
-  } catch (error) {
-    sentry.captureException(error);
-    return res.status(500).json({ error: error.message });
+      return res.status(200).json(updatedResult.rows[0]);
+    } catch (error) {
+      sentry.captureException(error);
+      return res.status(500).json({ error: error.message });
+    }
   }
-});
+);
 
 // Delete a product by public ID
 router.delete("/products/:public_id", productAuth, async (req, res) => {
@@ -153,6 +172,15 @@ router.delete("/products/:public_id", productAuth, async (req, res) => {
   } catch (error) {
     sentry.captureException(error);
     return res.status(500).json({ error: error.message });
+  }
+});
+
+// Add a new image manually
+router.post("/images", productAuth, upload.single("image"), (req, res) => {
+  try {
+    return res.status(200).send({ message: "Image uploaded" });
+  } catch (error) {
+    return res.status(500).json(error);
   }
 });
 
