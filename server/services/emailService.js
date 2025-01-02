@@ -8,6 +8,14 @@ const templatePath = path.join(__dirname, "orderConfirmationTemplate.hbs");
 const templateSource = fs.readFileSync(templatePath, "utf8");
 const template = handlebars.compile(templateSource);
 
+// Register a custom helper for currency formatting
+handlebars.registerHelper("currency", function (value) {
+  return new Intl.NumberFormat("fi-FI", {
+    style: "currency",
+    currency: "EUR",
+  }).format(value);
+});
+
 class EmailService {
   constructor() {
     // Configure the transporter for gmail
@@ -39,14 +47,16 @@ class EmailService {
 
       const orderTotal = subTotal + shippingCost;
 
-      const emailHtml = template({
+      const data = {
         orderId: orderId,
         orderItems: orderItems,
         shippingCost: shippingCost,
         shippingName: shippingName,
         subTotal: subTotal,
         orderTotal: orderTotal,
-      });
+      };
+
+      const emailHtml = template(data);
 
       const mailOptions = {
         from: process.env.EMAIL_USER,

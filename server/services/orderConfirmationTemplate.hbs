@@ -53,8 +53,8 @@
             <tr>
               <td>{{name}}</td>
               <td>{{quantity}}</td>
-              <td>{{price}} €</td>
-              <td class="text-right">{{total}} €</td>
+              <td>{{currency price}}</td>
+              <td class="text-right">{{currency total}}</td>
             </tr>
           {{/each}}
         </tbody>
@@ -64,14 +64,15 @@
       <div class="order-summary">
         <div class="flex justify-between">
           <span>Tuotteet yhteensä:</span>
-          <span>{{subTotal}} €</span>
+          <span>{{currency subTotal}}</span>
         </div>
         <div class="flex justify-between">
-          <span>Toimituskulut ({{shippingName}}): {{shippingCost}} €</span>
+          <span>Toimituskulut ({{shippingName}}):
+            {{currency shippingCost}}</span>
         </div>
         <div class="flex justify-between total">
           <span>Kokonaishinta:</span>
-          <span class="total-price">{{orderTotal}} €</span>
+          <span class="total-price">{{currency orderTotal}}</span>
         </div>
       </div>
 
