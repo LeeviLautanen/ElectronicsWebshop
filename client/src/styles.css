@@ -19,3 +19,7 @@
 .checkout-card {
   @apply mx-auto bg-gray-50 border border-lightCard rounded-lg shadow-md p-6 mb-8;
 }
+
+.link {
+  @apply text-blue-400 underline;
+}
