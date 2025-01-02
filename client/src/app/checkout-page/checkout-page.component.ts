@@ -102,7 +102,7 @@ export class CheckoutPageComponent implements OnInit {
     const cartData = await firstValueFrom(this.shoppingCartService.cart$);
 
     this.shippingInfoValid =
-      //this.isEmailValid() && Enable for production !!!
+      this.isEmailValid() &&
       this.isPhoneValid() &&
       this.areInputLengthsValid() &&
       this.termsAccepted &&
