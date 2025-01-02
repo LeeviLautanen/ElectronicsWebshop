@@ -15,7 +15,8 @@ module.exports = {
       },
       colors: {
         primary: "#2C3E50", // Dark Blue-Gray
-        light: "#F9FAFB", // Light Gray
+        light: "#F9FAFB",
+        image: "#FCFCFC",
       },
       borderColor: {
         lightCard: "#E5E7EB",

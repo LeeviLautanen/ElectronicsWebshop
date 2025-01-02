@@ -1,6 +1,8 @@
 const pool = require("../db");
 const paypalService = require("../services/paypalService");
+const emailService = require("../services/emailService");
 const orderQueue = require("../orderQueue");
+const sentry = require("../sentry");
 
 class OrderService {
   constructor(pool, paypalService, orderQueue) {
@@ -55,6 +57,7 @@ class OrderService {
       const job = await this.orderQueue.add(data);
       return await job.finished();
     } catch (error) {
+      sentry.captureException(error);
       throw new Error(`Failed to add/process order job: ${error.message}`);
     }
   }
@@ -75,8 +78,12 @@ class OrderService {
       const shippingPublicId = cartData.shippingOption.public_id;
       await this.createOrderShipping(shippingPublicId, id, shippingInfo);
 
+      // Send order confirmation email
+      emailService.sendOrderConfirmationEmail(email, public_id, cartData);
+
       return public_id;
     } catch (error) {
+      sentry.captureException(error);
       throw new Error(
         `Error adding order information to database: ${error.message}`
       );

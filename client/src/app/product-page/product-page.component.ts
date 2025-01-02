@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Product } from '../models/Product.model';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ProductDataService } from '../services/product-data.service';
 import { CommonModule } from '@angular/common';
 import { NgIcon } from '@ng-icons/core';
@@ -9,7 +9,7 @@ import { CartControlsLargeComponent } from '../cart-controls-large/cart-controls
 @Component({
   selector: 'app-product-page',
   standalone: true,
-  imports: [CommonModule, NgIcon, CartControlsLargeComponent],
+  imports: [CommonModule, NgIcon, CartControlsLargeComponent, RouterLink],
   templateUrl: './product-page.component.html',
   styleUrl: './product-page.component.css',
 })

@@ -1,0 +1,91 @@
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      body { font-family: 'Arial', sans-serif; background-color: #f4f4f9;
+      margin: 0; padding: 0; } .container { max-width: 700px; margin: 40px auto;
+      padding: 30px; background-color: #ffffff; border-radius: 12px; box-shadow:
+      0 6px 20px rgba(0, 0, 0, 0.1); } .header { background-color: #3498db;
+      color: white; padding: 25px; text-align: center; border-radius: 12px 12px
+      0 0; } .header h1 { margin: 0; font-size: 28px; font-weight: 600; }
+      .order-details { margin-top: 25px; font-size: 16px; color: #333; }
+      .order-summary { margin-top: 25px; font-size: 16px; color: #333; } /*
+      Table Styles */ table { width: 100%; border-collapse: collapse;
+      margin-top: 25px; } th, td { padding: 12px; text-align: left;
+      border-bottom: 1px solid #ddd; } th { background-color: #f2f2f2;
+      font-weight: bold; } td { font-size: 14px; } .text-right { text-align:
+      right; } .total { font-size: 18px; font-weight: bold; color: #333; }
+      .total-price { font-weight: 600; } .contact-info { margin-top: 30px;
+      font-size: 14px; color: #555; } .contact-info a { color: #3498db;
+      text-decoration: none; } .contact-info a:hover { text-decoration:
+      underline; } .footer { text-align: center; margin-top: 40px; font-size:
+      12px; color: #777; } .btn { margin-top: 25px; padding: 12px 20px;
+      background-color: #3498db; color: white; font-weight: 600; text-align:
+      center; border-radius: 8px; text-decoration: none; } .btn:hover {
+      background-color: #2980b9; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <div class="header">
+        <h1>Kiitos tilauksestasi!</h1>
+      </div>
+
+      <!-- Order details -->
+      <div class="order-details">
+        <h2>Tilauksen tiedot</h2>
+        <p><strong>Tilaustunnus:</strong> {{orderId}}</p>
+      </div>
+
+      <!-- Order Items -->
+      <table>
+        <thead>
+          <tr>
+            <th>Tuote</th>
+            <th>Määrä</th>
+            <th>Hinta</th>
+            <th class="text-right">Yhteensä</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each orderItems}}
+            <tr>
+              <td>{{name}}</td>
+              <td>{{quantity}}</td>
+              <td>{{currency price}}</td>
+              <td class="text-right">{{currency total}}</td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+
+      <!-- Order Summary -->
+      <div class="order-summary">
+        <div class="flex justify-between">
+          <span>Tuotteet yhteensä:</span>
+          <span>{{currency subTotal}}</span>
+        </div>
+        <div class="flex justify-between">
+          <span>Toimituskulut ({{shippingName}}):
+            {{currency shippingCost}}</span>
+        </div>
+        <div class="flex justify-between total">
+          <span>Kokonaishinta:</span>
+          <span class="total-price">{{currency orderTotal}}</span>
+        </div>
+      </div>
+
+      <!-- Contact Info -->
+      <div class="contact-info">
+        <span>Jos sinulla on kysyttävää, ota meihin yhteyttä: </span>
+        <a href="mailto:bittiboksi.aspa@gmail.com">bittiboksi.aspa@gmail.com</a>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p>© 2025 BittiBoksi</p>
+      </div>
+    </div>
+  </body>
+</html>
