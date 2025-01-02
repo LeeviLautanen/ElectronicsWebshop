@@ -5,6 +5,7 @@ import { ProductDataService } from '../services/product-data.service';
 import { CommonModule } from '@angular/common';
 import { NgIcon } from '@ng-icons/core';
 import { CartControlsLargeComponent } from '../cart-controls-large/cart-controls-large.component';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-product-page',
@@ -15,11 +16,13 @@ import { CartControlsLargeComponent } from '../cart-controls-large/cart-controls
 })
 export class ProductPageComponent implements OnInit {
   product!: Product;
+  sanitizedDescription!: SafeHtml;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private productDataService: ProductDataService
+    private productDataService: ProductDataService,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
@@ -32,6 +35,9 @@ export class ProductPageComponent implements OnInit {
 
     this.productDataService.getProductBySlug(slug).subscribe((data) => {
       this.product = data;
+      this.sanitizedDescription = this.sanitizer.bypassSecurityTrustHtml(
+        this.product.description
+      );
     });
   }
 
