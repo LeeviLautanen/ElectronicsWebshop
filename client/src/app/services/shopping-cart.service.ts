@@ -115,7 +115,7 @@ export class ShoppingCartService {
       .pipe(
         map((options) => {
           options.forEach((option) => {
-            option.image = `${this.baseUrl}/assets/${option.image}`;
+            option.image = `${this.baseUrl}/uploads/${option.image}`;
           });
           return options;
         })
