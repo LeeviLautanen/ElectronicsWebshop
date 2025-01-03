@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
-import { ProductPageComponent } from './product-page/product-page.component';
 import { ProductGridComponent } from './product-grid/product-grid.component';
+import { ProductPageComponent } from './product-page/product-page.component';
 import { ShoppingCartPageComponent } from './shopping-cart-page/shopping-cart-page.component';
 import { CheckoutPageComponent } from './checkout-page/checkout-page.component';
 import { TermsPageComponent } from './info-and-legal/terms-page/terms-page.component';
@@ -19,7 +19,11 @@ export const routes: Routes = [
         component: ProductGridComponent,
       },
       {
-        path: 'tuote/:slug',
+        path: ':category',
+        component: ProductGridComponent,
+      },
+      {
+        path: ':category/:slug',
         component: ProductPageComponent,
       },
     ],
