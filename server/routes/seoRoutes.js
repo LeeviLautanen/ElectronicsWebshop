@@ -2,17 +2,19 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../db");
 const sentry = require("../sentry");
-
+const path = require("path");
 const { SitemapStream } = require("sitemap");
-const { log } = require("handlebars");
+
+router.get("/robots.txt", (req, res) => {
+  res.sendFile(path.join(__dirname, "../robots.txt"));
+});
 
 // Get offered shipping options
 router.get("/sitemap.xml", async (req, res) => {
   try {
     const links = [
       { url: "/kauppa", changefreq: "daily" },
-      { url: "/ostoskori", changefreq: "monthly" },
-      { url: "/tietoa-meistä", changefreq: "monthly" },
+      { url: "/tietoa-meista", changefreq: "monthly" },
       { url: "/toimitusehdot", changefreq: "monthly" },
       { url: "/tietosuojaseloste", changefreq: "monthly" },
     ];
@@ -26,8 +28,6 @@ router.get("/sitemap.xml", async (req, res) => {
     categories.rows.forEach((category) => {
       links.push({ url: `/kauppa/${category.name}`, changefreq: "daily" });
     });
-
-    console.log(links);
 
     const stream = new SitemapStream({ hostname: "https://bittiboksi.fi" });
 
