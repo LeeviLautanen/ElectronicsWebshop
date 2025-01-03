@@ -1,6 +1,8 @@
-<div class="flex flex-row gap-4">
+<div class="flex flex-col sm:flex-row gap-4">
   <!-- Cart items -->
-  <div class="w-2/3 bg-primary self-start p-6 space-y-6 rounded-lg shadow-lg">
+  <div
+    class="sm:w-2/3 bg-primary sm:self-start p-6 space-y-6 rounded-lg shadow-lg"
+  >
     <h2 class="text-2xl font-semibold text-white">Ostokset</h2>
     <div *ngIf="cartQuantity > 0; else empty"></div>
     <div
@@ -15,7 +17,7 @@
   </div>
 
   <!-- Summary -->
-  <div class="w-1/3 bg-primary p-6 self-start rounded-lg shadow-lg">
+  <div class="sm:w-1/3 bg-primary p-6 sm:self-start rounded-lg shadow-lg">
     <h2 class="text-2xl font-semibold text-white">Yhteenveto</h2>
     <div class="mt-4 space-y-2">
       <p class="flex justify-between flex-grow text-gray-300">

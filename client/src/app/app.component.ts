@@ -31,6 +31,6 @@ export class AppComponent {
   }
 
   checkScreenWidth() {
-    this.isSmallScreen = window.innerWidth < 768;
+    this.isSmallScreen = window.innerWidth < 320;
   }
 }
