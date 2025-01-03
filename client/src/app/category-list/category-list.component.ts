@@ -3,9 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { environment } from '../../environments/environment.dev';
 import { Category } from '../models/Category.model';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { filter } from 'rxjs';
-import { ProductDataService } from '../services/product-data.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-category-list',
@@ -35,10 +33,7 @@ export class CategoryListComponent implements OnInit {
       this.router.navigate(['/kauppa']);
     } else {
       this.selectedCategoryIndex = index;
-      this.router.navigate([
-        '/kauppa',
-        { category: this.categories[index].name },
-      ]);
+      this.router.navigate([`/kauppa/${this.categories[index].name}`]);
     }
   }
 }
