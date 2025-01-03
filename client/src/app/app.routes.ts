@@ -30,7 +30,7 @@ export const routes: Routes = [
   },
   { path: 'ostoskori', component: ShoppingCartPageComponent },
   { path: 'kassa', component: CheckoutPageComponent },
-  { path: 'tietoa-meistä', component: AboutUsPageComponent },
+  { path: 'tietoa-meista', component: AboutUsPageComponent },
   { path: 'toimitusehdot', component: TermsPageComponent },
   { path: 'tietosuojaseloste', component: PrivacyInfoPageComponent },
   {

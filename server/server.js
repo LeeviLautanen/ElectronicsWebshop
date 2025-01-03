@@ -12,7 +12,7 @@ const developmentRoutes = require("./routes/developmentRoutes");
 const productRoutes = require("./routes/productRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const shippingRoutes = require("./routes/shippingRoutes");
-const sitemapRoute = require("./routes/sitemapRoute");
+const seoRoutes = require("./routes/seoRoutes");
 
 const app = express();
 app.use(express.json());
@@ -38,7 +38,7 @@ app.use(
 app.use("/api", productRoutes);
 app.use("/api", orderRoutes);
 app.use("/api", shippingRoutes);
-app.use("/", sitemapRoute);
+app.use("/", seoRoutes);
 
 // Serve product images with a default fallback
 app.use("/uploads", (req, res, next) => {
