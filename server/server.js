@@ -58,13 +58,19 @@ app.use("/uploads", (req, res, next) => {
 // Static files
 app.use(express.static(path.join(__dirname, "./dist/browser")));
 
+app.get("*", (req, res) => {
+  if (req.path == "/404") {
+    console.log(req.path);
+    return res
+      .status(404)
+      .sendFile(path.join(__dirname, "./dist/browser/index.html"));
+  }
+
+  res.status(200).sendFile(path.join(__dirname, "./dist/browser/index.html"));
+});
+
 // Error handler must be registered before any other error middleware and after all controllers
 Sentry.setupExpressErrorHandler(app);
-
-// Fallback route for 404
-app.get("*", (req, res) => {
-  res.status(404).sendFile(path.join(__dirname, "./dist/browser/index.html"));
-});
 
 const PORT = isDev ? process.env.PORT_DEV : process.env.PORT;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

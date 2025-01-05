@@ -11,6 +11,7 @@ import { AboutUsPageComponent } from './info-and-legal/about-us-page/about-us-pa
 import { NotFoundComponent } from './not-found/not-found.component';
 
 export const routes: Routes = [
+  { path: '', redirectTo: 'kauppa', pathMatch: 'full' },
   {
     path: 'kauppa',
     component: HomeComponent,
@@ -38,5 +39,6 @@ export const routes: Routes = [
     path: 'tilaus/:orderId',
     component: OrderConfirmationPageComponent,
   },
-  { path: '**', component: NotFoundComponent },
+  { path: '404', component: NotFoundComponent },
+  { path: '**', redirectTo: '/404' },
 ];
