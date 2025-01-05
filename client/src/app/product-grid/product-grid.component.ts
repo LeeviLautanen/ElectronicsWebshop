@@ -4,7 +4,8 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Product } from '../models/Product.model';
 import { ProductDataService } from '../services/product-data.service';
 import { CartControlsSmallComponent } from '../cart-controls-small/cart-controls-small.component';
-import { Subscription } from 'rxjs';
+import { environment } from '../../environments/environment.dev';
+import { ImageUrlService } from '../services/image-url.service';
 
 @Component({
   selector: 'app-product-grid',
@@ -18,7 +19,8 @@ export class ProductGridComponent implements OnInit {
 
   constructor(
     private productDataService: ProductDataService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private imageUrlService: ImageUrlService
   ) {}
 
   ngOnInit(): void {
@@ -26,6 +28,10 @@ export class ProductGridComponent implements OnInit {
       const category = params.get('category');
       this.fetchProducts(category);
     });
+  }
+
+  getImageUrl(imageName: string): string {
+    return this.imageUrlService.getImageUrl(imageName, 'small');
   }
 
   private fetchProducts(category: string | null): void {

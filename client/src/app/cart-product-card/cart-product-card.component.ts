@@ -10,6 +10,7 @@ import {
   bootstrapPlusCircleFill,
   bootstrapTrash3,
 } from '@ng-icons/bootstrap-icons';
+import { ImageUrlService } from '../services/image-url.service';
 
 @Component({
   selector: 'app-cart-product-card',
@@ -30,8 +31,13 @@ export class CartProductCardComponent {
 
   constructor(
     private shoppingCartService: ShoppingCartService,
-    private toastrService: ToastrService
+    private toastrService: ToastrService,
+    private imageUrlService: ImageUrlService
   ) {}
+
+  getImageUrl(imageName: string): string {
+    return this.imageUrlService.getImageUrl(imageName, 'small');
+  }
 
   increaseQuantity(): void {
     if (this.cartItem.product.stock < this.cartItem.quantity) {

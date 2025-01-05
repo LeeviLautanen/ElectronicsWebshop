@@ -14,38 +14,19 @@ export class ProductDataService {
 
   // Get one product by slug and add image url prefix
   getProductBySlug(slug: string): Observable<Product> {
-    return this.http.get<Product>(`${this.baseUrl}/api/products/${slug}`).pipe(
-      map((product) => {
-        product.image = `${this.baseUrl}/uploads/${product.image}`;
-        return product;
-      })
-    );
+    return this.http.get<Product>(`${this.baseUrl}/api/products/${slug}`);
   }
 
   // Get products by category and add image url prefix
   getProductsByCategory(category: string): Observable<Product[]> {
-    return this.http
-      .get<Product[]>(`${this.baseUrl}/api/categories/${category}`)
-      .pipe(
-        map((products) => {
-          products.forEach((product) => {
-            product.image = `${this.baseUrl}/uploads/${product.image}`;
-          });
-          return products;
-        })
-      );
+    return this.http.get<Product[]>(
+      `${this.baseUrl}/api/categories/${category}`
+    );
   }
 
   // Get all products and add image url prefix
   getAllProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(`${this.baseUrl}/api/products`).pipe(
-      map((products) => {
-        products.forEach((product) => {
-          product.image = `${this.baseUrl}/uploads/${product.image}`;
-        });
-        return products;
-      })
-    );
+    return this.http.get<Product[]>(`${this.baseUrl}/api/products`);
   }
 
   // Add a product to database
