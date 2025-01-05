@@ -61,12 +61,9 @@ app.use(express.static(path.join(__dirname, "./dist/browser")));
 // Error handler must be registered before any other error middleware and after all controllers
 Sentry.setupExpressErrorHandler(app);
 
-// Default route
+// Fallback route for 404
 app.get("*", (req, res) => {
-  res.status(404).json({
-    error: "Not Found",
-    message: `The resource at ${req.originalUrl} was not found`,
-  });
+  res.status(404).sendFile(path.join(__dirname, "./dist/browser/index.html"));
 });
 
 const PORT = isDev ? process.env.PORT_DEV : process.env.PORT;
