@@ -8,8 +8,10 @@ import { TermsPageComponent } from './info-and-legal/terms-page/terms-page.compo
 import { OrderConfirmationPageComponent } from './order-confirmation-page/order-confirmation-page.component';
 import { PrivacyInfoPageComponent } from './info-and-legal/privacy-info-page/privacy-info-page.component';
 import { AboutUsPageComponent } from './info-and-legal/about-us-page/about-us-page.component';
+import { NotFoundComponent } from './not-found/not-found.component';
 
 export const routes: Routes = [
+  { path: '', redirectTo: 'kauppa', pathMatch: 'full' },
   {
     path: 'kauppa',
     component: HomeComponent,
@@ -37,5 +39,6 @@ export const routes: Routes = [
     path: 'tilaus/:orderId',
     component: OrderConfirmationPageComponent,
   },
-  { path: '**', redirectTo: 'kauppa' },
+  { path: '404', component: NotFoundComponent },
+  { path: '**', redirectTo: '/404' },
 ];

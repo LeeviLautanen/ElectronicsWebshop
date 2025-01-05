@@ -58,9 +58,15 @@ app.use("/uploads", (req, res, next) => {
 // Static files
 app.use(express.static(path.join(__dirname, "./dist/browser")));
 
-// Default route
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "./dist/browser/index.html"));
+  if (req.path == "/404") {
+    console.log(req.path);
+    return res
+      .status(404)
+      .sendFile(path.join(__dirname, "./dist/browser/index.html"));
+  }
+
+  res.status(200).sendFile(path.join(__dirname, "./dist/browser/index.html"));
 });
 
 // Error handler must be registered before any other error middleware and after all controllers
