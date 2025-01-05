@@ -31,10 +31,12 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     try {
-      const { slug } = JSON.parse(req.body.product);
-      if (!slug) throw new Error("Failed uploading image: no slug");
-      const fileName = `${slug}.webp`;
-      cb(null, fileName);
+      const { image } = JSON.parse(req.body.product);
+      if (!image)
+        throw new Error(
+          "Failed uploading image: product obj had no image name"
+        );
+      cb(null, image);
     } catch (error) {
       cb(error);
     }

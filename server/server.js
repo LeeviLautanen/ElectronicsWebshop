@@ -43,7 +43,7 @@ app.use("/", seoRoutes);
 // Serve product images with a default fallback
 app.use("/uploads", (req, res, next) => {
   const filePath = path.join(__dirname, "uploads", req.path);
-  const defaultImagePath = path.join(__dirname, "uploads", "no-image.jpg");
+  const defaultImagePath = path.join(__dirname, "uploads", "no-image.webp");
 
   fs.access(filePath, fs.constants.F_OK, (err) => {
     // Serve default image if no image found with url
