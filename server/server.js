@@ -58,28 +58,15 @@ app.use("/uploads", (req, res, next) => {
 // Static files
 app.use(express.static(path.join(__dirname, "./dist/browser")));
 
-// Default route
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "./dist/browser/index.html"));
-});
-
 // Error handler must be registered before any other error middleware and after all controllers
 Sentry.setupExpressErrorHandler(app);
 
-// Custom 404 handler
-app.use((req, res, next) => {
+// Default route
+app.get("*", (req, res) => {
   res.status(404).json({
     error: "Not Found",
     message: `The resource at ${req.originalUrl} was not found`,
   });
-});
-
-// Error handler middleware (for any other errors)
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res
-    .status(500)
-    .json({ error: "Internal Server Error", message: err.message });
 });
 
 const PORT = isDev ? process.env.PORT_DEV : process.env.PORT;
