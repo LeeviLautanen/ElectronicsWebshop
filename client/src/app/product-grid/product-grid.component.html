@@ -22,7 +22,7 @@
     <!-- Image -->
     <a [routerLink]="'/kauppa/tuote/' + product.slug">
       <img
-        [src]="product.image"
+        [src]="getImageUrl(product.image)"
         alt="Product image"
         class="bg-image w-full h-48 object-contain p-2 rounded-lg border-2 border-gray-600 mb-4"
       />

@@ -6,6 +6,8 @@ import { CommonModule, Location } from '@angular/common';
 import { NgIcon } from '@ng-icons/core';
 import { CartControlsLargeComponent } from '../cart-controls-large/cart-controls-large.component';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { environment } from '../../environments/environment.dev';
+import { ImageUrlService } from '../services/image-url.service';
 
 @Component({
   selector: 'app-product-page',
@@ -22,7 +24,8 @@ export class ProductPageComponent implements OnInit {
     private route: ActivatedRoute,
     private location: Location,
     private productDataService: ProductDataService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private imageUrlService: ImageUrlService
   ) {}
 
   ngOnInit(): void {
@@ -39,6 +42,10 @@ export class ProductPageComponent implements OnInit {
         this.product.description
       );
     });
+  }
+
+  getImageUrl(imageName: string): string {
+    return this.imageUrlService.getImageUrl(imageName, 'large');
   }
 
   goBack(): void {

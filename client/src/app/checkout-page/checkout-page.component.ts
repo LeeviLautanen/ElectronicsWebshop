@@ -9,6 +9,7 @@ import { Cart } from '../models/Cart.model';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapCheck, bootstrapCircle } from '@ng-icons/bootstrap-icons';
 import { Router } from '@angular/router';
+import { ImageUrlService } from '../services/image-url.service';
 
 @Component({
   selector: 'app-checkout-page',
@@ -42,7 +43,8 @@ export class CheckoutPageComponent implements OnInit {
 
   constructor(
     private shoppingCartService: ShoppingCartService,
-    private router: Router
+    private router: Router,
+    private imageUrlService: ImageUrlService
   ) {}
 
   ngOnInit(): void {
@@ -63,6 +65,10 @@ export class CheckoutPageComponent implements OnInit {
     if (cartData.cartItems.length === 0) {
       this.router.navigate(['/kauppa']);
     }
+  }
+
+  getImageUrl(imageName: string): string {
+    return this.imageUrlService.getImageUrl(imageName, 'small');
   }
 
   // Update selected shipping option to cart

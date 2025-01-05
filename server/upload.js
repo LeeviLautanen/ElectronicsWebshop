@@ -2,47 +2,47 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
-const uploadDir = path.join(__dirname, "uploads");
+const defaultDir = path.join(__dirname, "uploads");
+const smallImageDir = path.join(__dirname, "uploads/small");
+const largeImageDir = path.join(__dirname, "uploads/large");
 
-// Make sure the directory exists
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+// Make sure the directories exist
+if (!fs.existsSync(defaultDir)) {
+  fs.mkdirSync(defaultDir, { recursive: true });
+}
+if (!fs.existsSync(smallImageDir)) {
+  fs.mkdirSync(smallImageDir, { recursive: true });
+}
+if (!fs.existsSync(largeImageDir)) {
+  fs.mkdirSync(largeImageDir, { recursive: true });
 }
 
-// Storage config
+// Define storage settings
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, uploadDir); // Save directory
+    // Determine the folder based on the field name
+    if (file.fieldname === "smallImage") {
+      cb(null, smallImageDir);
+    } else if (file.fieldname === "largeImage") {
+      cb(null, largeImageDir);
+    } else {
+      cb(null, defaultDir);
+    }
   },
   filename: (req, file, cb) => {
-    // Generate a file name based on the slug
-    const { slug } = JSON.parse(req.body.product);
-    const fileName = `${slug}.jpg`;
-
-    // Check if the file already exists and delete it if it does
-    const filePath = path.join(uploadDir, fileName);
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+    try {
+      const { image } = JSON.parse(req.body.product);
+      if (!image)
+        throw new Error(
+          "Failed uploading image: product obj had no image name"
+        );
+      cb(null, image);
+    } catch (error) {
+      cb(error);
     }
-
-    cb(null, fileName);
   },
 });
 
-// Filters
-const fileFilter = (req, file, cb) => {
-  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-  if (!allowedTypes.includes(file.mimetype)) {
-    return cb(new Error("Only images are allowed"), false);
-  }
-  cb(null, true);
-};
-
-// Options
-const upload = multer({
-  storage,
-  limits: { fileSize: 1024 * 1024 }, // Limit file size to 1 MB
-  fileFilter,
-});
+const upload = multer({ storage });
 
 module.exports = upload;

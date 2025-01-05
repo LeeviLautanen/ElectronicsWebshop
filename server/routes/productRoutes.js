@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../db");
 const sentry = require("../sentry");
-const upload = require("../upload");
+const upload = require("../upload.js");
 const productAuth = require("../productAuth");
 
 // Get product data by slug
@@ -97,7 +97,10 @@ router.post("/products", productAuth, async (req, res) => {
 router.put(
   "/products",
   productAuth,
-  upload.single("image"),
+  upload.fields([
+    { name: "smallImage", maxCount: 1 },
+    { name: "largeImage", maxCount: 1 },
+  ]),
   async (req, res) => {
     try {
       const {
@@ -147,8 +150,7 @@ router.put(
 
       return res.status(200).json(updatedResult.rows[0]);
     } catch (error) {
-      sentry.captureException(error);
-      return res.status(500).json({ error: error.message });
+      return res.status(500).json(error);
     }
   }
 );
