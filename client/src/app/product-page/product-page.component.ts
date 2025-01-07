@@ -5,7 +5,7 @@ import { ProductDataService } from '../services/product-data.service';
 import { CommonModule, Location } from '@angular/common';
 import { NgIcon } from '@ng-icons/core';
 import { CartControlsLargeComponent } from '../cart-controls-large/cart-controls-large.component';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { DomSanitizer, Meta, SafeHtml, Title } from '@angular/platform-browser';
 import { environment } from '../../environments/environment.dev';
 import { ImageUrlService } from '../services/image-url.service';
 
@@ -25,7 +25,8 @@ export class ProductPageComponent implements OnInit {
     private location: Location,
     private productDataService: ProductDataService,
     private sanitizer: DomSanitizer,
-    private imageUrlService: ImageUrlService
+    private imageUrlService: ImageUrlService,
+    private title: Title
   ) {}
 
   ngOnInit(): void {
@@ -41,6 +42,7 @@ export class ProductPageComponent implements OnInit {
       this.sanitizedDescription = this.sanitizer.bypassSecurityTrustHtml(
         this.product.description
       );
+      this.title.setTitle(`${this.product.name} - BittiBoksi`);
     });
   }
 
