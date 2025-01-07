@@ -3,7 +3,7 @@
   <img
     [src]="getImageUrl(cartItem.product.image)"
     alt="Product image"
-    class="bg-image w-24 h-24 object-contain p-2 rounded-lg border-2 border-gray-600"
+    class="bg-image w-24 h-24 object-contain p-2 rounded-md border-2 border-gray-600"
   />
 
   <!-- Name and price -->
@@ -29,7 +29,7 @@
     <input
       type="number"
       [(ngModel)]="cartItem.quantity"
-      class="w-10 text-center text-black rounded-lg py-1 no-spinner"
+      class="w-10 text-center text-black rounded-md py-1 no-spinner"
     />
 
     <button class="mt-2" (click)="increaseQuantity()">
@@ -41,7 +41,7 @@
 
     <button
       (click)="removeFromCart()"
-      class="bg-red-600 px-2 pt-1 rounded-lg hover:bg-red-700 transition-colors"
+      class="px-2 pt-1 rounded-lg bg-redAccent hover:bg-red-700 transition-colors"
     >
       <ng-icon name="bootstrapTrash3" class="text-2xl"></ng-icon>
     </button>

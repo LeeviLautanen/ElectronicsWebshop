@@ -21,7 +21,7 @@
           >
           <input
             type="tel"
-            class="mt-1 pl-12 block w-full border-2 rounded-lg p-3 focus:ring-indigo-500 focus:border-indigo-500"
+            class="mt-1 pl-12 block w-full border-2 rounded-sm p-3 focus:ring-indigo-500 focus:border-indigo-500"
             [(ngModel)]="shippingInfo.phone"
             (blur)="checkShippingInfo()"
           />
@@ -99,8 +99,11 @@
     >
       <div
         *ngFor="let option of shippingOptions$ | async"
-        class="border rounded-lg p-4 flex items-center hover:shadow-lg cursor-pointer"
+        class="border rounded-sm p-4 flex items-center hover:shadow-lg cursor-pointer transition-shadow"
         [class.border-blue-500]="
+          (cart$ | async)?.shippingOption?.public_id === option.public_id
+        "
+        [class.shadow-lg]="
           (cart$ | async)?.shippingOption?.public_id === option.public_id
         "
         (click)="onSelectOption(option)"
