@@ -4,14 +4,14 @@
 
 <div *ngIf="!isSmallScreen">
   <div class="min-h-screen flex flex-col bg-light">
-    <header class="w-full bg-primary mb-4">
+    <header class="w-full bg-primary fixed top-0 z-50">
       <div class="mx-auto px-4 sm:max-w-sm md:max-w-md lg:max-w-lg">
         <app-navbar></app-navbar>
       </div>
     </header>
 
     <main
-      class="flex-grow w-full mx-auto px-4 sm:max-w-sm md:max-w-md lg:max-w-lg"
+      class="flex-grow w-full mx-auto px-4 mt-16 sm:max-w-sm md:max-w-md lg:max-w-lg"
     >
       <router-outlet></router-outlet>
     </main>

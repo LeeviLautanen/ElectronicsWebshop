@@ -1,7 +1,7 @@
 <div class="flex flex-col sm:flex-row gap-4">
   <!-- Cart items -->
   <div
-    class="sm:w-2/3 bg-primary sm:self-start p-6 space-y-6 rounded-lg shadow-lg"
+    class="sm:w-2/3 bg-primary sm:self-start p-6 space-y-6 rounded-sm shadow-lg"
   >
     <h2 class="text-2xl font-semibold text-white">Ostokset</h2>
     <div *ngIf="cartQuantity > 0; else empty"></div>
@@ -17,7 +17,7 @@
   </div>
 
   <!-- Summary -->
-  <div class="sm:w-1/3 bg-primary p-6 sm:self-start rounded-lg shadow-lg">
+  <div class="sm:w-1/3 bg-primary p-6 sm:self-start rounded-sm shadow-lg">
     <h2 class="text-2xl font-semibold text-white">Yhteenveto</h2>
     <div class="mt-4 space-y-2">
       <p class="flex justify-between flex-grow text-gray-300">
@@ -39,13 +39,13 @@
     </div>
     <button
       (click)="checkout()"
-      class="w-full mt-6 bg-green-600 px-4 py-2 rounded-lg text-white font-semibold hover:bg-green-700"
+      class="w-full mt-6 px-4 py-2 rounded-sm font-semibold text-white bg-greenAccent hover:bg-greenAccentSelected transition-colors"
     >
       Siirry kassalle
     </button>
     <button
       [routerLink]="'/'"
-      class="w-full mt-2 bg-gray-800 px-4 py-2 rounded-lg text-white font-semibold hover:bg-gray-600"
+      class="w-full mt-2 bg-gray-800 px-4 py-2 rounded-sm text-white font-semibold hover:bg-gray-600"
     >
       Jatka ostoksia
     </button>

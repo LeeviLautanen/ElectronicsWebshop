@@ -1,22 +1,28 @@
 <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
   <div
     *ngFor="let product of products"
-    class="flex flex-col bg-primary p-3 rounded-lg shadow-xl transform hover:scale-[1.01] transition-transform"
+    class="relative flex flex-col bg-primary p-3 shadow-lg rounded-sm hover:shadow-2xl transition-shadow"
   >
-    <!-- Stock indicator -->
-    <div class="flex absolute top-5 right-5 items-center group">
-      <div
-        class="w-4 h-4 rounded-full"
-        [class.bg-green-500]="product.stock > 0"
-        [class.bg-red-500]="product.stock <= 0"
-      ></div>
-      <span
-        class="absolute w-24 right-8 mt-1 opacity-0 group-hover:opacity-100 px-2 py-1 text-xs text-white bg-gray-600 rounded-lg transition-opacity"
-      >
-        {{
-          product.stock > 0 ? "Varastossa: " + product.stock : "Ei varastossa"
-        }}
-      </span>
+    <!-- Stock Indicator -->
+    <div
+      class="absolute top-2 right-2 px-2 py-1 text-xs font-medium rounded-sm"
+      [ngClass]="{
+        'bg-yellow-200 text-yellow-700':
+          product.stock > 0 && product.stock <= 3,
+        'bg-red-200 text-red-700': product.stock === 0
+      }"
+    >
+      <!-- Dynamic stock message -->
+      <ng-container *ngIf="product.stock > 5; else lowStockOrOutOfStock">
+        <!-- No text when stock is above 5 -->
+      </ng-container>
+
+      <ng-template #lowStockOrOutOfStock>
+        <ng-container *ngIf="product.stock > 0; else outOfStock">
+          {{ product.stock }} jäljellä
+        </ng-container>
+        <ng-template #outOfStock> Loppu varastosta </ng-template>
+      </ng-template>
     </div>
 
     <!-- Image -->
@@ -24,14 +30,16 @@
       <img
         [src]="getImageUrl(product.image)"
         alt="Product image"
-        class="bg-image w-full h-48 object-contain p-2 rounded-lg border-2 border-gray-600 mb-4"
+        class="bg-image w-full h-48 object-contain p-2 rounded-sm border-2 border-gray-600 mb-4"
       />
     </a>
 
     <!-- Name -->
     <div class="text-white flex-grow">
       <a [routerLink]="'/kauppa/tuote/' + product.slug">
-        <h3 class="text-lg font-semibold hover:text-gray-600 transition-colors">
+        <h3
+          class="text-lg font-semibold inline-block hover:text-gray-600 transition-colors"
+        >
           {{ product.name }}
         </h3>
       </a>
@@ -40,7 +48,10 @@
     <!-- Price and cart controls -->
     <div class="flex flex-row items-center justify-between mt-auto pt-2">
       <p class="text-white text-xl font-semibold pb-1">{{ product.price }} €</p>
-      <app-cart-controls-small [product]="product"></app-cart-controls-small>
+      <app-cart-controls-small
+        class="w-1/2"
+        [product]="product"
+      ></app-cart-controls-small>
     </div>
   </div>
 </div>

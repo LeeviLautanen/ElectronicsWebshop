@@ -232,9 +232,8 @@ class OrderService {
 
   // Get order data from database
   async getOrderData(orderId) {
-    try {
-      // Get order creation date, shipping name and cost
-      const orderQuery = `
+    // Get order creation date, shipping name and cost
+    const orderQuery = `
         SELECT 
           o.created_at,
           os.shipping_name,
@@ -245,42 +244,37 @@ class OrderService {
         WHERE 
           o.public_id = $1;
       `;
-      const orderResult = await this.pool.query(orderQuery, [orderId]);
-      const orderData = orderResult.rows[0];
+    const orderResult = await this.pool.query(orderQuery, [orderId]);
+    const orderData = orderResult.rows[0];
 
-      // Get name, quantity and price for order items
-      const orderItemQuery = `
-        SELECT 
-          oi.product_name,
-          oi.quantity,
-          oi.unit_price
-        FROM 
-          order_items oi
-          INNER JOIN orders o ON oi.order_id = o.id
-        WHERE 
-          o.public_id = $1;
-      `;
-      const orderItemResult = await this.pool.query(orderItemQuery, [orderId]);
-      const orderItems = orderItemResult.rows.map((row) => ({
-        name: row.product_name,
-        quantity: row.quantity,
-        price: parseFloat(row.unit_price),
-      }));
+    // Get name, quantity and price for order items
+    const orderItemQuery = `
+      SELECT 
+        oi.product_name,
+        oi.quantity,
+        oi.unit_price
+      FROM 
+        order_items oi
+        INNER JOIN orders o ON oi.order_id = o.id
+      WHERE 
+        o.public_id = $1;
+    `;
+    const orderItemResult = await this.pool.query(orderItemQuery, [orderId]);
+    const orderItems = orderItemResult.rows.map((row) => ({
+      name: row.product_name,
+      quantity: row.quantity,
+      price: parseFloat(row.unit_price),
+    }));
 
-      const payload = {
-        orderId: orderId,
-        createdAt: orderData.created_at,
-        shippingName: orderData.shipping_name,
-        shippingCost: parseFloat(orderData.shipping_cost),
-        orderItems: orderItems,
-      };
+    const payload = {
+      orderId: orderId,
+      createdAt: orderData.created_at,
+      shippingName: orderData.shipping_name,
+      shippingCost: parseFloat(orderData.shipping_cost),
+      orderItems: orderItems,
+    };
 
-      return payload;
-    } catch (error) {
-      throw new Error(
-        `Error getting order data from database: ${error.message}`
-      );
-    }
+    return payload;
   }
 
   // Get shipping cost from cart data

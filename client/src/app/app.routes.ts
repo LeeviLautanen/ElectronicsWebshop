@@ -29,16 +29,42 @@ export const routes: Routes = [
         component: ProductPageComponent,
       },
     ],
+    title: 'Kauppa - BittiBoksi',
   },
-  { path: 'ostoskori', component: ShoppingCartPageComponent },
-  { path: 'kassa', component: CheckoutPageComponent },
-  { path: 'tietoa-meista', component: AboutUsPageComponent },
-  { path: 'toimitusehdot', component: TermsPageComponent },
-  { path: 'tietosuojaseloste', component: PrivacyInfoPageComponent },
+  {
+    path: 'ostoskori',
+    component: ShoppingCartPageComponent,
+    title: 'Ostoskori - BittiBoksi',
+  },
+  {
+    path: 'kassa',
+    component: CheckoutPageComponent,
+    title: 'Kassa - BittiBoksi',
+  },
+  {
+    path: 'tietoa-meista',
+    component: AboutUsPageComponent,
+    title: 'Tietoa meistä - BittiBoksi',
+  },
+  {
+    path: 'toimitusehdot',
+    component: TermsPageComponent,
+    title: 'Toimitusehdot - BittiBoksi',
+  },
+  {
+    path: 'tietosuojaseloste',
+    component: PrivacyInfoPageComponent,
+    title: 'Tietosuojaseloste - BittiBoksi',
+  },
   {
     path: 'tilaus/:orderId',
     component: OrderConfirmationPageComponent,
+    title: 'Kiitos tilauksestasi! - BittiBoksi',
   },
-  { path: '404', component: NotFoundComponent },
+  {
+    path: '404',
+    component: NotFoundComponent,
+    title: 'Sivua ei löydetty - BittiBoksi',
+  },
   { path: '**', redirectTo: '/404' },
 ];

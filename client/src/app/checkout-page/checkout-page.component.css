@@ -3,5 +3,5 @@
 }
 
 .shipping-info-input {
-  @apply mt-1 block w-full border-2 rounded-lg p-3 focus:ring-indigo-500 focus:border-indigo-500;
+  @apply mt-1 block w-full border-2 rounded-sm p-3 focus:ring-indigo-500 focus:border-indigo-500;
 }

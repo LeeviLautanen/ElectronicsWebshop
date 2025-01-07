@@ -5,14 +5,14 @@
   <input
     type="number"
     [(ngModel)]="quantity"
-    class="w-12 text-center text-2xl text-black rounded-lg px-2 no-spinner"
+    class="w-12 text-center text-2xl text-black rounded-md px-2 no-spinner"
   />
   <button class="mt-2" (click)="increaseQuantity()">
     <ng-icon name="bootstrapPlusCircleFill" class="text-3xl"></ng-icon>
   </button>
   <button
     (click)="addToCart()"
-    class="bg-green-600 px-2 py-1 rounded-lg hover:bg-green-700 transition-colors"
+    class="bg-green-600 px-2 py-1 rounded-md hover:bg-green-700 transition-colors"
   >
     <ng-icon name="bootstrapCartPlus" class="text-3xl"></ng-icon>
   </button>

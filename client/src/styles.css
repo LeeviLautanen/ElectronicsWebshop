@@ -12,12 +12,17 @@
   appearance: none;
 }
 
+.spinner-always::-webkit-inner-spin-button,
+.spinner-always::-webkit-outer-spin-button {
+  opacity: 1;
+}
+
 .light-card {
-  @apply mx-auto bg-gray-50 border border-lightCard rounded-lg shadow-md p-6 mb-8;
+  @apply mx-auto bg-gray-50 border border-lightCard rounded-sm shadow-md p-6 mb-8;
 }
 
 .checkout-card {
-  @apply mx-auto bg-gray-50 border border-lightCard rounded-lg shadow-md p-6 mb-8;
+  @apply mx-auto bg-gray-50 border border-lightCard rounded-sm shadow-md p-6 mb-8;
 }
 
 .link {
