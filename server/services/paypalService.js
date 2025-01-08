@@ -35,7 +35,9 @@ class PaypalService {
       );
       return response.data;
     } catch (error) {
-      throw new Error(`Error creating paypal order: ${error.message}`);
+      throw new Error(
+        `PaypalService createOrder: ${error.response.data.details.description}`
+      );
     }
   }
 
