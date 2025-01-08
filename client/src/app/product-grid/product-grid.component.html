@@ -13,7 +13,7 @@
       }"
     >
       <!-- Dynamic stock message -->
-      <ng-container *ngIf="product.stock > 5; else lowStockOrOutOfStock">
+      <ng-container *ngIf="product.stock > 3; else lowStockOrOutOfStock">
         <!-- No text when stock is above 5 -->
       </ng-container>
 
@@ -47,7 +47,9 @@
 
     <!-- Price and cart controls -->
     <div class="flex flex-row items-center justify-between mt-auto pt-2">
-      <p class="text-white text-xl font-semibold pb-1">{{ product.price }} €</p>
+      <p class="text-white text-xl font-semibold pb-1">
+        {{ product.price | currency : "EUR" : "symbol" : "1.2-2" }}
+      </p>
       <app-cart-controls-small
         class="w-1/2"
         [product]="product"

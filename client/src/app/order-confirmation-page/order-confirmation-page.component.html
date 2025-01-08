@@ -1,4 +1,7 @@
-<div *ngIf="orderData" class="flex flex-col items-center justify-center px-4">
+<div
+  *ngIf="orderData; else noOrderFound"
+  class="flex flex-col items-center justify-center px-4"
+>
   <!-- Thank you message -->
   <h1 class="mt-6 text-3xl font-bold text-gray-800">Kiitos tilauksestasi!</h1>
   <p class="mt-2 text-lg text-gray-600">
@@ -75,3 +78,9 @@
     Palaa kauppaan
   </button>
 </div>
+
+<ng-template #noOrderFound>
+  <div class="flex flex-col items-center justify-center px-4">
+    <h1 class="mt-6 text-3xl font-bold text-gray-800">Tilausta ei löytynyt</h1>
+  </div>
+</ng-template>
