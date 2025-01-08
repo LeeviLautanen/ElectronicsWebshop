@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Renderer2 } from '@angular/core';
 import { Product } from '../models/Product.model';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ProductDataService } from '../services/product-data.service';
@@ -26,7 +26,8 @@ export class ProductPageComponent implements OnInit {
     private productDataService: ProductDataService,
     private sanitizer: DomSanitizer,
     private imageUrlService: ImageUrlService,
-    private title: Title
+    private title: Title,
+    private renderer: Renderer2
   ) {}
 
   ngOnInit(): void {
@@ -42,8 +43,35 @@ export class ProductPageComponent implements OnInit {
       this.sanitizedDescription = this.sanitizer.bypassSecurityTrustHtml(
         this.product.description
       );
-      this.title.setTitle(`${this.product.name} - BittiBoksi`);
+      this.setPageMetaData();
     });
+  }
+
+  setPageMetaData() {
+    this.title.setTitle(`${this.product.name} - BittiBoksi`);
+
+    // Product snippet rich results
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: this.product.name,
+      image: this.getImageUrl(this.product.image),
+      description: this.product.description,
+      offers: {
+        '@type': 'Offer',
+        url: `https://bittiboksi.fi/tuote/${this.product.slug}`,
+        priceCurrency: 'EUR',
+        price: this.product.price,
+        availability:
+          this.product.stock > 0
+            ? 'https://schema.org/InStock'
+            : 'https://schema.org/OutOfStock',
+      },
+    };
+    const script = this.renderer.createElement('script');
+    script.type = 'application/ld+json';
+    script.text = JSON.stringify(jsonLd);
+    this.renderer.appendChild(document.head, script);
   }
 
   getImageUrl(imageName: string): string {

@@ -26,15 +26,19 @@
       </p>
       <p class="flex justify-between text-gray-300">
         <span>Välisumma:</span>
-        <span>{{ cartValue * 0.745 | number : "1.2-2" }} €</span>
+        <span>{{
+          cartValue * 0.745 | currency : "EUR" : "symbol" : "1.2-2"
+        }}</span>
       </p>
       <p class="flex justify-between text-gray-300">
         <span>Arvonlisävero:</span>
-        <span>{{ cartValue * 0.255 | number : "1.2-2" }} €</span>
+        <span>{{
+          cartValue * 0.255 | currency : "EUR" : "symbol" : "1.2-2"
+        }}</span>
       </p>
       <p class="flex justify-between text-xl font-bold text-white mt-4">
         <span>Yhteensä:</span>
-        <span>{{ cartValue | number : "1.2-2" }} €</span>
+        <span>{{ cartValue | currency : "EUR" : "symbol" : "1.2-2" }}</span>
       </p>
     </div>
     <button

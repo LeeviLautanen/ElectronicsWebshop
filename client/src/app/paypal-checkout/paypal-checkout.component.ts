@@ -75,6 +75,8 @@ export class PaypalCheckoutComponent implements OnInit {
 
   async onApproveCallback(data: any) {
     try {
+      console.log('Order id; ' + data.orderID);
+
       const result = await this.orderService.captureOrder(data.orderID);
 
       if (result.status == 'COMPLETED') {
@@ -93,11 +95,6 @@ export class PaypalCheckoutComponent implements OnInit {
   }
 
   onErrorCallback(data: any): void {
-    this.toastr.error(
-      'Maksun käsittelyssä tapahtui virhe, tilaus on peruutettu.',
-      'Tilaus epäonnistui'
-    );
     console.log('Order didnt work');
-    console.log(data.error);
   }
 }

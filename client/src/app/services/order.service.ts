@@ -30,6 +30,7 @@ export class OrderService {
 
       // Get items in cart and compress then before sending to server
       const cartData = await firstValueFrom(this.shoppingCartService.cart$);
+
       return await firstValueFrom(
         this.http.post(url, {
           cartData: cartData,
@@ -42,18 +43,22 @@ export class OrderService {
   }
 
   async captureOrder(orderId: string): Promise<any> {
-    const url = `${this.baseUrl}/api/captureOrder`;
+    try {
+      const url = `${this.baseUrl}/api/captureOrder`;
 
-    const cartData = await firstValueFrom(this.shoppingCartService.cart$);
-    const result = await firstValueFrom(
-      this.http.post(url, {
-        paypalOrderId: orderId,
-        cartData: cartData,
-        shippingInfo: this.shippingInfo,
-      })
-    );
-    this.shippingInfo = null;
-    return result;
+      const cartData = await firstValueFrom(this.shoppingCartService.cart$);
+      const result = await firstValueFrom(
+        this.http.post(url, {
+          paypalOrderId: orderId,
+          cartData: cartData,
+          shippingInfo: this.shippingInfo,
+        })
+      );
+      this.shippingInfo = null;
+      return result;
+    } catch (error: any) {
+      throw new Error(`Error capturing paypal order: ${error.message}`);
+    }
   }
 
   getOrderData(orderId: string): Observable<any> {
