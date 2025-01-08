@@ -8,6 +8,8 @@ const paypalService = require("../services/paypalService");
 router.post("/createOrder", async (req, res) => {
   const { cartData, shippingInfo } = req.body;
 
+  sentry.captureMessage("Someone created an order");
+
   const products = await orderService.getProductsFromDatabase(cartData);
 
   if (await orderService.isOutOfStock(cartData)) {
@@ -98,6 +100,8 @@ router.post("/createOrder", async (req, res) => {
 router.post("/captureOrder", async (req, res) => {
   try {
     const { paypalOrderId, cartData, shippingInfo } = req.body;
+
+    sentry.captureMessage("Someone paid for an order");
 
     const result = await orderService.addOrderJob({
       paypalOrderId: paypalOrderId,
