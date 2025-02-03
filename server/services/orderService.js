@@ -49,13 +49,51 @@ class OrderService {
     });
   }
 
+  async tempJob(data) {
+    const { paypalOrderId, cartData } = data;
+
+    if (await this.isOutOfStock(cartData)) {
+      return { status: "OUT_OF_STOCK" };
+    }
+
+    try {
+      const data = await this.paypalService.captureOrder(paypalOrderId);
+
+      if (data.status != "COMPLETED") {
+        throw new Error(
+          `Capturing order failed for order id ${paypalOrderId} with status: ${data.status}`
+        );
+      }
+
+      // Update database stock values
+      const updatePromises = cartData.cartItems.map((item) => {
+        const updateQuery = `
+            UPDATE products
+            SET stock = stock - $1
+            WHERE public_id = $2
+          `;
+        return this.pool.query(updateQuery, [
+          item.quantity,
+          item.product.public_id,
+        ]);
+      });
+
+      console.log("All done");
+
+      await Promise.all(updatePromises);
+
+      return { status: data.status };
+    } catch (error) {
+      throw new Error(
+        `Temp job failed for orderId ${paypalOrderId}: ${error.message}`
+      );
+    }
+  }
+
   // Add and order to queue and return its result
   async addOrderJob(data) {
     try {
-      console.log(`Order job paypal id: ${data.paypalOrderId}`);
-
-      const job = await this.orderQueue.add(data);
-      return await job.finished();
+      return await this.tempJob(data);
     } catch (error) {
       sentry.captureException(error);
       throw new Error(`Failed to add/process order job: ${error.message}`);
