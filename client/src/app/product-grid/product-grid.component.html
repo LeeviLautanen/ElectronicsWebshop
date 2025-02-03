@@ -14,7 +14,7 @@
     >
       <!-- Dynamic stock message -->
       <ng-container *ngIf="product.stock > 3; else lowStockOrOutOfStock">
-        <!-- No text when stock is above 5 -->
+        <!-- No text when stock is above 3 -->
       </ng-container>
 
       <ng-template #lowStockOrOutOfStock>
