@@ -57,7 +57,9 @@ class PaypalService {
       );
       return response.data;
     } catch (error) {
-      throw new Error(`Error capturing paypal order: ${error.message}`);
+      throw new Error(
+        `PaypalService captureOrder: ${error.response.data.name}`
+      );
     }
   }
 
@@ -76,7 +78,7 @@ class PaypalService {
       );
       return response.data;
     } catch (error) {
-      throw new Error(`Error fetching paypal order: ${error.message}`);
+      throw new Error(`PaypalService getOrder: ${error.response.data.name}`);
     }
   }
 

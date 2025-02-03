@@ -27,7 +27,6 @@ router.post("/createOrder", async (req, res) => {
       quantity: item.quantity.toString(),
       sku: item.public_id,
       url: `https://bittiboksi.fi/tuote/${product.slug}`,
-      //image_url: `https://bittiboksi.fi/uploads/small/${product.image}`, Paypal doesnt support webp images???
       unit_amount: {
         currency_code: "EUR",
         value: parseFloat(product.price).toFixed(2),
@@ -88,7 +87,7 @@ router.post("/createOrder", async (req, res) => {
   try {
     const data = await paypalService.createOrder(payload);
 
-    // Return orderId to client
+    // Return paypay order id to client
     return res.status(200).json(data.id);
   } catch (error) {
     sentry.captureException(error);
