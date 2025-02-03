@@ -16,8 +16,6 @@ class OrderService {
         return { status: "OUT_OF_STOCK" };
       }
 
-      console.log(`Queue paypal order id: ${paypalOrderId}`);
-
       try {
         const data = await this.paypalService.captureOrder(paypalOrderId);
 
@@ -44,6 +42,7 @@ class OrderService {
 
         return { status: data.status };
       } catch (error) {
+        console.log(error.data);
         throw new Error(
           `Queue job failed for orderId ${paypalOrderId}: ${error.message}`
         );

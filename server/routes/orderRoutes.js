@@ -108,9 +108,6 @@ router.post("/captureOrder", async (req, res) => {
     const { paypalOrderId, cartData, shippingInfo } = req.body;
 
     const confirmationData = await paypalService.getOrder(paypalOrderId);
-
-    console.log(confirmationData);
-
     if (confirmationData.status != "APPROVED") {
       throw new Error(
         `Order was not approved, status: ${confirmationData.status}`
