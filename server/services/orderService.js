@@ -42,7 +42,6 @@ class OrderService {
 
         return { status: data.status };
       } catch (error) {
-        console.log(error.data);
         throw new Error(
           `Queue job failed for orderId ${paypalOrderId}: ${error.message}`
         );

@@ -57,9 +57,8 @@ class PaypalService {
       );
       return response.data;
     } catch (error) {
-      error.data = `Order url: ${this.base}/v2/checkout/orders/${orderId}/capture`;
       throw new Error(
-        `PaypalService captureOrder: ${error.response.data.name}`
+        `PaypalService captureOrder: ${error.response.data.name}, Order url: ${this.base}/v2/checkout/orders/${orderId}/capture`
       );
     }
   }
