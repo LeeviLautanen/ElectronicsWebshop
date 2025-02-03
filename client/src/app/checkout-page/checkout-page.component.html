@@ -10,6 +10,7 @@
           class="shipping-info-input"
           [(ngModel)]="shippingInfo.name"
           (blur)="checkShippingInfo()"
+          autocomplete="name"
         />
       </div>
 
@@ -35,6 +36,7 @@
           class="shipping-info-input"
           [(ngModel)]="shippingInfo.email"
           (blur)="checkShippingInfo()"
+          autocomplete="email"
         />
       </div>
 
@@ -44,6 +46,7 @@
           [(ngModel)]="shippingInfo.address_line_1"
           class="shipping-info-input"
           (blur)="checkShippingInfo()"
+          autocomplete="address-line1"
         />
       </div>
 
@@ -53,6 +56,7 @@
           class="shipping-info-input"
           [(ngModel)]="shippingInfo.postal_code"
           (blur)="checkShippingInfo()"
+          autocomplete="postal-code"
         />
       </div>
 
@@ -62,6 +66,7 @@
           class="shipping-info-input"
           [(ngModel)]="shippingInfo.admin_area_2"
           (blur)="checkShippingInfo()"
+          autocomplete="address-level2"
         />
       </div>
     </div>

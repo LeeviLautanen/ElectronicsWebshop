@@ -61,6 +61,9 @@ class PaypalService {
       );
       return response.data;
     } catch (error) {
+      console.log(
+        `Order url: ${this.base}/v2/checkout/orders/${orderId}/capture`
+      );
       throw new Error(
         `PaypalService captureOrder: ${error.response.data.name}`
       );

@@ -107,8 +107,6 @@ router.post("/captureOrder", async (req, res) => {
   try {
     const { paypalOrderId, cartData, shippingInfo } = req.body;
 
-    console.log(paypalOrderId);
-
     const confirmationData = await paypalService.getOrder(paypalOrderId);
 
     console.log(confirmationData);
