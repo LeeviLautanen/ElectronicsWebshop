@@ -44,6 +44,10 @@ class PaypalService {
   // Capture order payment with paypal API
   async captureOrder(orderId) {
     try {
+      console.log(
+        `Order url: ${this.base}/v2/checkout/orders/${orderId}/capture`
+      );
+
       const token = await this.getToken();
       const response = await this.axios.post(
         `${this.base}/v2/checkout/orders/${orderId}/capture`,

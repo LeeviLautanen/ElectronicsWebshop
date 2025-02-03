@@ -20,6 +20,8 @@ class OrderService {
     }
 
     try {
+      console.log(`Queue paypal order id: ${paypalOrderId}`);
+
       const data = await this.paypalService.captureOrder(paypalOrderId);
 
       if (data.status != "COMPLETED") {
