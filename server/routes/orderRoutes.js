@@ -13,7 +13,7 @@ router.post("/createOrder", async (req, res) => {
   const products = await orderService.getProductsFromDatabase(cartData);
 
   if (await orderService.isOutOfStock(cartData)) {
-    return res.status(400).json({ result: "OUT_OF_STOCK" });
+    return res.status(400).json({ status: "OUT_OF_STOCK" });
   }
 
   // Create the "items" array for paypal api request
@@ -91,7 +91,6 @@ router.post("/createOrder", async (req, res) => {
     // Return orderId to client
     return res.status(200).json(data.id);
   } catch (error) {
-    console.log(error);
     sentry.captureException(error);
     return res.status(500).json(error);
   }

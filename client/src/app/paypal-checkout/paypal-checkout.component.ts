@@ -62,26 +62,38 @@ export class PaypalCheckoutComponent implements OnInit {
 
   async createOrderCallback(): Promise<string> {
     try {
-      return await this.orderService.createOrder(this.shippingInfo);
+      const response = await this.orderService.createOrder(this.shippingInfo);
+
+      if (response.status == 'OUT_OF_STOCK') {
+        this.toastr.error(
+          'Joitakin ostoskorissa olleita tuotteita ei ole enää varastossa.',
+          'Tilaus epäonnistui'
+        );
+        return 'error';
+      }
+
+      return response;
     } catch (error) {
       this.toastr.error(
         'Maksun aloittamisessa tapahtui virhe, tilausta ei luotu.',
         'Tilaus epäonnistui'
       );
-      console.log(error);
       return 'error';
     }
   }
 
   async onApproveCallback(data: any) {
     try {
-      console.log('Order id; ' + data.orderID);
-
       const result = await this.orderService.captureOrder(data.orderID);
 
       if (result.status == 'COMPLETED') {
         this.shoppingCartService.emptyCart();
         this.router.navigateByUrl(`tilaus/${result.orderId}`);
+      } else if (result.status == 'OUT_OF_STOCK') {
+        this.toastr.error(
+          'Joitakin ostoskorissa olleita tuotteita ei ole enää varastossa.',
+          'Tilaus epäonnistui'
+        );
       } else {
         throw new Error(`Order capture result was not 'completed': ${result}`);
       }
@@ -90,11 +102,10 @@ export class PaypalCheckoutComponent implements OnInit {
         'Maksun käsittelyssä tapahtui virhe, tilaus on peruutettu.',
         'Tilaus epäonnistui'
       );
-      console.log(error);
     }
   }
 
   onErrorCallback(data: any): void {
-    console.log('Order didnt work');
+    //console.log('Paypal order failed');
   }
 }
