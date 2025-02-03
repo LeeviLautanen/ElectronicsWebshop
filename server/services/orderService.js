@@ -56,6 +56,8 @@ class OrderService {
   // Add and order to queue and return its result
   async addOrderJob(data) {
     try {
+      console.log(`Order job paypal id: ${data.paypalOrderId}`);
+
       const job = await this.orderQueue.add(data);
       return await job.finished();
     } catch (error) {

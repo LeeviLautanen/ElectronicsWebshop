@@ -87,10 +87,7 @@ router.post("/createOrder", async (req, res) => {
   try {
     const orderData = await paypalService.createOrder(payload);
 
-    console.log(orderData);
-
     const confirmationData = await paypalService.getOrder(orderData.id);
-
     if (confirmationData.status != "CREATED") {
       throw new Error(
         `Order was not created, status: ${confirmationData.status}`
@@ -109,6 +106,18 @@ router.post("/createOrder", async (req, res) => {
 router.post("/captureOrder", async (req, res) => {
   try {
     const { paypalOrderId, cartData, shippingInfo } = req.body;
+
+    console.log(paypalOrderId);
+
+    const confirmationData = await paypalService.getOrder(paypalOrderId);
+
+    console.log(confirmationData);
+
+    if (confirmationData.status != "CREATED") {
+      throw new Error(
+        `Order was not created, status: ${confirmationData.status}`
+      );
+    }
 
     sentry.captureMessage("Someone paid for an order");
 
