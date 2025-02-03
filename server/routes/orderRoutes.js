@@ -87,7 +87,7 @@ router.post("/createOrder", async (req, res) => {
   try {
     const data = await paypalService.createOrder(payload);
 
-    // Return orderId to client
+    // Return paypay order id to client
     return res.status(200).json(data.id);
   } catch (error) {
     sentry.captureException(error);
