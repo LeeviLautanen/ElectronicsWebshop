@@ -19,9 +19,9 @@ class OrderService {
       return { status: "OUT_OF_STOCK" };
     }
 
-    try {
-      console.log(`Queue paypal order id: ${paypalOrderId}`);
+    console.log(`Queue paypal order id: ${paypalOrderId}`);
 
+    try {
       const data = await this.paypalService.captureOrder(paypalOrderId);
 
       if (data.status != "COMPLETED") {

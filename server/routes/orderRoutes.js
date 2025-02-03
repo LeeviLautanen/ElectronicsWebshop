@@ -113,9 +113,9 @@ router.post("/captureOrder", async (req, res) => {
 
     console.log(confirmationData);
 
-    if (confirmationData.status != "CREATED") {
+    if (confirmationData.status != "APPROVED") {
       throw new Error(
-        `Order was not created, status: ${confirmationData.status}`
+        `Order was not approved, status: ${confirmationData.status}`
       );
     }
 
