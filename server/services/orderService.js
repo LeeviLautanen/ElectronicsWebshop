@@ -9,48 +9,46 @@ class OrderService {
     this.pool = pool; // Database
     this.paypalService = paypalService; // Paypal API calls
     this.orderQueue = orderQueue; // Bull queue
-    this.orderQueue.process(this.queueJob.bind(this));
-  }
+    this.orderQueue.process(async (job) => {
+      const { paypalOrderId, cartData } = job.data;
 
-  async queueJob(job) {
-    const { paypalOrderId, cartData } = job.data;
-
-    if (await this.isOutOfStock(cartData)) {
-      return { status: "OUT_OF_STOCK" };
-    }
-
-    console.log(`Queue paypal order id: ${paypalOrderId}`);
-
-    try {
-      const data = await this.paypalService.captureOrder(paypalOrderId);
-
-      if (data.status != "COMPLETED") {
-        throw new Error(
-          `Capturing order failed for order id ${paypalOrderId} with status: ${data.status}`
-        );
+      if (await this.isOutOfStock(cartData)) {
+        return { status: "OUT_OF_STOCK" };
       }
 
-      // Update database stock values
-      const updatePromises = cartData.cartItems.map((item) => {
-        const updateQuery = `
-            UPDATE products
-            SET stock = stock - $1
-            WHERE public_id = $2
-          `;
-        return this.pool.query(updateQuery, [
-          item.quantity,
-          item.product.public_id,
-        ]);
-      });
+      console.log(`Queue paypal order id: ${paypalOrderId}`);
 
-      await Promise.all(updatePromises);
+      try {
+        const data = await this.paypalService.captureOrder(paypalOrderId);
 
-      return { status: data.status };
-    } catch (error) {
-      throw new Error(
-        `Queue job failed for orderId ${paypalOrderId}: ${error.message}`
-      );
-    }
+        if (data.status != "COMPLETED") {
+          throw new Error(
+            `Capturing order failed for order id ${paypalOrderId} with status: ${data.status}`
+          );
+        }
+
+        // Update database stock values
+        const updatePromises = cartData.cartItems.map((item) => {
+          const updateQuery = `
+              UPDATE products
+              SET stock = stock - $1
+              WHERE public_id = $2
+            `;
+          return this.pool.query(updateQuery, [
+            item.quantity,
+            item.product.public_id,
+          ]);
+        });
+
+        await Promise.all(updatePromises);
+
+        return { status: data.status };
+      } catch (error) {
+        throw new Error(
+          `Queue job failed for orderId ${paypalOrderId}: ${error.message}`
+        );
+      }
+    });
   }
 
   // Add and order to queue and return its result
