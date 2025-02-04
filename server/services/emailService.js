@@ -3,10 +3,17 @@ const fs = require("fs");
 const path = require("path");
 const handlebars = require("handlebars");
 
-// Read the email template file
-const templatePath = path.join(__dirname, "orderConfirmationTemplate.hbs");
-const templateSource = fs.readFileSync(templatePath, "utf8");
-const template = handlebars.compile(templateSource);
+// Read the email template files
+const confirmationTemplateSrc = fs.readFileSync(
+  path.join(__dirname, "orderConfirmationTemplate.hbs"),
+  "utf8"
+);
+const confirmationTemplate = handlebars.compile(confirmationTemplateSrc);
+const processedTemplateSrc = fs.readFileSync(
+  path.join(__dirname, "orderProcessedTemplate.hbs"),
+  "utf8"
+);
+const processedTemplate = handlebars.compile(processedTemplateSrc);
 
 // Register a custom helper for currency formatting
 handlebars.registerHelper("currency", function (value) {
@@ -56,7 +63,7 @@ class EmailService {
         orderTotal: orderTotal,
       };
 
-      const emailHtml = template(data);
+      const emailHtml = confirmationTemplate(data);
 
       const mailOptions = {
         from: process.env.EMAIL_USER,
@@ -65,11 +72,38 @@ class EmailService {
         html: emailHtml,
       };
 
-      // Send email
       await this.transporter.sendMail(mailOptions);
-      console.log("Order confirmation email sent successfully");
     } catch (error) {
       throw new Error(`Failed to send confirmation email: ${error.message}`);
+    }
+  }
+
+  // Send order processed email
+  async sendOrderProcessedEmail(
+    customerEmail,
+    orderId,
+    shippingName,
+    trackingNumber
+  ) {
+    try {
+      const data = {
+        orderId: orderId,
+        shippingName: shippingName,
+        trackingNumber: trackingNumber,
+      };
+
+      const emailHtml = processedTemplate(data);
+
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: customerEmail,
+        subject: `Tilauksesi on käsitelty!`,
+        html: emailHtml,
+      };
+
+      await this.transporter.sendMail(mailOptions);
+    } catch (error) {
+      throw new Error(`Failed to send order processed email: ${error.message}`);
     }
   }
 }

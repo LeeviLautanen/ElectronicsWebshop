@@ -117,7 +117,7 @@ class OrderService {
       await this.createOrderShipping(shippingPublicId, id, shippingInfo);
 
       // Send order confirmation email
-      emailService.sendOrderConfirmationEmail(email, public_id, cartData);
+      await emailService.sendOrderConfirmationEmail(email, public_id, cartData);
 
       return public_id;
     } catch (error) {
@@ -322,6 +322,42 @@ class OrderService {
       [cartData.shippingOption.public_id]
     );
     return parseFloat(optionsResult.rows[0].price);
+  }
+
+  // Get all orders
+  async getOrders() {
+    try {
+      const orderQuery = `
+        SELECT 
+          c.name,
+          c.email,
+          c.phone,
+          o.public_id,
+          o.status,
+          o.created_at,
+          json_agg(json_build_object(
+            'name', oi.product_name,
+            'quantity', oi.quantity,
+            'unit_price', oi.unit_price
+          )) AS order_items,
+          os.shipping_name,
+          os.shipping_cost,
+          os.address_line_1,
+          os.admin_area_2,
+          os.postal_code,
+          os.tracking_number
+        FROM orders o
+        JOIN customers c ON o.customer_id = c.id
+        LEFT JOIN order_items oi ON o.id = oi.order_id
+        LEFT JOIN order_shipping os ON o.id = os.order_id
+        GROUP BY o.id, c.id, os.id;
+      `;
+      const orderResult = await pool.query(orderQuery);
+      return orderResult.rows;
+    } catch (error) {
+      sentry.captureException(error);
+      throw new Error(`orderService getOrders: ${error.message}`);
+    }
   }
 }
 

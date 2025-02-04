@@ -3,6 +3,8 @@ const router = express.Router();
 const sentry = require("../sentry");
 const orderService = require("../services/orderService");
 const paypalService = require("../services/paypalService");
+const emailService = require("../services/emailService");
+const adminAuth = require("../adminAuth");
 
 // Create order and send the id back to client
 router.post("/createOrder", async (req, res) => {
@@ -155,6 +157,35 @@ router.get("/getOrderData/:orderId", async (req, res) => {
   } catch (error) {
     sentry.captureException(error);
     throw new Error(`Error getting order data: ${error.message}`);
+  }
+});
+
+// Get all orders
+router.get("/orders", adminAuth, async (req, res) => {
+  try {
+    const orderData = await orderService.getOrders();
+    return res.status(201).json(orderData);
+  } catch (error) {
+    sentry.captureException(error);
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+// Get all orders
+router.post("/sendOrderProcessedEmail", adminAuth, async (req, res) => {
+  try {
+    const { customerEmail, orderId, shippingName, trackingNumber } = req.body;
+    await emailService.sendOrderProcessedEmail(
+      customerEmail,
+      orderId,
+      shippingName,
+      trackingNumber
+    );
+
+    return res.status(200).json({ status: "ok" });
+  } catch (error) {
+    sentry.captureException(error);
+    return res.status(500).json({ error: error.message });
   }
 });
 

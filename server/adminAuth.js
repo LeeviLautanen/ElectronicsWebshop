@@ -1,6 +1,6 @@
 const SERVER_KEY = process.env.SERVER_KEY;
 
-function productAuth(req, res, next) {
+function adminAuth(req, res, next) {
   const authHeader = req.headers["authorization"];
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).send("Unauthorized");
@@ -14,4 +14,4 @@ function productAuth(req, res, next) {
   next();
 }
 
-module.exports = productAuth;
+module.exports = adminAuth;
