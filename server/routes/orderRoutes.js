@@ -7,7 +7,7 @@ const emailService = require("../services/emailService");
 const adminAuth = require("../adminAuth");
 const klarnaService = require("../services/klarnaService");
 
-router.get("/createOrder", async (req, res) => {
+router.post("/createOrder", async (req, res) => {
   const { cartData, shippingInfo } = req.body;
 
   const payload = {
@@ -45,7 +45,7 @@ router.get("/createOrder", async (req, res) => {
 
     const orderData = await klarnaService.createOrder(payload);
 
-    console.log(orderData.html_snippet);
+    console.log(orderData);
 
     // Return paypay order id to client
     return res.status(200).send(orderData);
