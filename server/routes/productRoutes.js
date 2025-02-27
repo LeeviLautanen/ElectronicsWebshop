@@ -3,7 +3,7 @@ const router = express.Router();
 const pool = require("../db");
 const sentry = require("../sentry");
 const upload = require("../upload.js");
-const productAuth = require("../productAuth");
+const adminAuth = require("../adminAuth.js");
 
 // Get product data by slug
 router.get("/products/:slug", async (req, res) => {
@@ -66,7 +66,7 @@ router.get("/products", async (req, res) => {
 });
 
 // Add a new product
-router.post("/products", productAuth, async (req, res) => {
+router.post("/products", adminAuth, async (req, res) => {
   try {
     const insertQuery = `
       INSERT INTO products (name, slug, description, image, price, stock, weight_g, height_mm)
@@ -96,7 +96,7 @@ router.post("/products", productAuth, async (req, res) => {
 // Update product data
 router.put(
   "/products",
-  productAuth,
+  adminAuth,
   upload.fields([
     { name: "smallImage", maxCount: 1 },
     { name: "largeImage", maxCount: 1 },
@@ -156,7 +156,7 @@ router.put(
 );
 
 // Delete a product by public ID
-router.delete("/products/:public_id", productAuth, async (req, res) => {
+router.delete("/products/:public_id", adminAuth, async (req, res) => {
   try {
     const public_id = req.params.public_id;
     const deleteQuery = "DELETE FROM products WHERE public_id = $1 RETURNING *";
@@ -178,7 +178,7 @@ router.delete("/products/:public_id", productAuth, async (req, res) => {
 });
 
 // Add a new image manually
-router.post("/images", productAuth, upload.single("image"), (req, res) => {
+router.post("/images", adminAuth, upload.single("image"), (req, res) => {
   try {
     return res.status(200).send({ message: "Image uploaded" });
   } catch (error) {

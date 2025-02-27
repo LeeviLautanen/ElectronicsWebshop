@@ -35,13 +35,14 @@ export class ShoppingCartService {
 
   // Add product to cart
   addItem(product: Product, quantity: number) {
+    return;
     const currentItems = this.cartSubject.value.cartItems;
     const existingItem = currentItems.find(
       (item) => item.product.public_id === product.public_id
     );
 
     if (existingItem) {
-      existingItem.quantity += quantity;
+      //existingItem.quantity += quantity;
     } else {
       currentItems.push({ ...{ product, quantity } });
     }

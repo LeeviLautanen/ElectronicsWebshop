@@ -3,6 +3,8 @@ const router = express.Router();
 const sentry = require("../sentry");
 const orderService = require("../services/orderService");
 const paypalService = require("../services/paypalService");
+const emailService = require("../services/emailService");
+const adminAuth = require("../adminAuth");
 const klarnaService = require("../services/klarnaService");
 
 router.post("/createPaypalOrder", async (req, res) => {
@@ -191,10 +193,7 @@ router.post("/createPaypalOrder", async (req, res) => {
   try {
     const orderData = await paypalService.createOrder(payload);
 
-    console.log(orderData);
-
     const confirmationData = await paypalService.getOrder(orderData.id);
-
     if (confirmationData.status != "CREATED") {
       throw new Error(
         `Order was not created, status: ${confirmationData.status}`
@@ -213,6 +212,13 @@ router.post("/createPaypalOrder", async (req, res) => {
 router.post("/captureOrder", async (req, res) => {
   try {
     const { paypalOrderId, cartData, shippingInfo } = req.body;
+
+    const confirmationData = await paypalService.getOrder(paypalOrderId);
+    if (confirmationData.status != "APPROVED") {
+      throw new Error(
+        `Order was not approved, status: ${confirmationData.status}`
+      );
+    }
 
     sentry.captureMessage("Someone paid for an order");
 
@@ -255,6 +261,35 @@ router.get("/getOrderData/:orderId", async (req, res) => {
   } catch (error) {
     sentry.captureException(error);
     throw new Error(`Error getting order data: ${error.message}`);
+  }
+});
+
+// Get all orders
+router.get("/orders", adminAuth, async (req, res) => {
+  try {
+    const orderData = await orderService.getOrders();
+    return res.status(201).json(orderData);
+  } catch (error) {
+    sentry.captureException(error);
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+// Get all orders
+router.post("/sendOrderProcessedEmail", adminAuth, async (req, res) => {
+  try {
+    const { customerEmail, orderId, shippingName, trackingNumber } = req.body;
+    await emailService.sendOrderProcessedEmail(
+      customerEmail,
+      orderId,
+      shippingName,
+      trackingNumber
+    );
+
+    return res.status(200).json({ status: "ok" });
+  } catch (error) {
+    sentry.captureException(error);
+    return res.status(500).json({ error: error.message });
   }
 });
 

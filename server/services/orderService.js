@@ -9,11 +9,48 @@ class OrderService {
     this.pool = pool; // Database
     this.paypalService = paypalService; // Paypal API calls
     this.orderQueue = orderQueue; // Bull queue
-    this.orderQueue.process(this.queueJob.bind(this));
+    this.orderQueue.process(async (job) => {
+      const { paypalOrderId, cartData } = job.data;
+
+      if (await this.isOutOfStock(cartData)) {
+        return { status: "OUT_OF_STOCK" };
+      }
+
+      try {
+        const data = await this.paypalService.captureOrder(paypalOrderId);
+
+        if (data.status != "COMPLETED") {
+          throw new Error(
+            `Capturing order failed for order id ${paypalOrderId} with status: ${data.status}`
+          );
+        }
+
+        // Update database stock values
+        const updatePromises = cartData.cartItems.map((item) => {
+          const updateQuery = `
+              UPDATE products
+              SET stock = stock - $1
+              WHERE public_id = $2
+            `;
+          return this.pool.query(updateQuery, [
+            item.quantity,
+            item.product.public_id,
+          ]);
+        });
+
+        await Promise.all(updatePromises);
+
+        return { status: data.status };
+      } catch (error) {
+        throw new Error(
+          `Queue job failed for orderId ${paypalOrderId}: ${error.message}`
+        );
+      }
+    });
   }
 
-  async queueJob(job) {
-    const { paypalOrderId, cartData } = job.data;
+  async tempJob(data) {
+    const { paypalOrderId, cartData } = data;
 
     if (await this.isOutOfStock(cartData)) {
       return { status: "OUT_OF_STOCK" };
@@ -41,12 +78,14 @@ class OrderService {
         ]);
       });
 
+      console.log("All done");
+
       await Promise.all(updatePromises);
 
       return { status: data.status };
     } catch (error) {
       throw new Error(
-        `Queue job failed for orderId ${paypalOrderId}: ${error.message}`
+        `Temp job failed for orderId ${paypalOrderId}: ${error.message}`
       );
     }
   }
@@ -54,8 +93,7 @@ class OrderService {
   // Add and order to queue and return its result
   async addOrderJob(data) {
     try {
-      const job = await this.orderQueue.add(data);
-      return await job.finished();
+      return await this.tempJob(data);
     } catch (error) {
       sentry.captureException(error);
       throw new Error(`Failed to add/process order job: ${error.message}`);
@@ -79,7 +117,7 @@ class OrderService {
       await this.createOrderShipping(shippingPublicId, id, shippingInfo);
 
       // Send order confirmation email
-      emailService.sendOrderConfirmationEmail(email, public_id, cartData);
+      await emailService.sendOrderConfirmationEmail(email, public_id, cartData);
 
       return public_id;
     } catch (error) {
@@ -284,6 +322,42 @@ class OrderService {
       [cartData.shippingOption.public_id]
     );
     return parseFloat(optionsResult.rows[0].price);
+  }
+
+  // Get all orders
+  async getOrders() {
+    try {
+      const orderQuery = `
+        SELECT 
+          c.name,
+          c.email,
+          c.phone,
+          o.public_id,
+          o.status,
+          o.created_at,
+          json_agg(json_build_object(
+            'name', oi.product_name,
+            'quantity', oi.quantity,
+            'unit_price', oi.unit_price
+          )) AS order_items,
+          os.shipping_name,
+          os.shipping_cost,
+          os.address_line_1,
+          os.admin_area_2,
+          os.postal_code,
+          os.tracking_number
+        FROM orders o
+        JOIN customers c ON o.customer_id = c.id
+        LEFT JOIN order_items oi ON o.id = oi.order_id
+        LEFT JOIN order_shipping os ON o.id = os.order_id
+        GROUP BY o.id, c.id, os.id;
+      `;
+      const orderResult = await pool.query(orderQuery);
+      return orderResult.rows;
+    } catch (error) {
+      sentry.captureException(error);
+      throw new Error(`orderService getOrders: ${error.message}`);
+    }
   }
 }
 

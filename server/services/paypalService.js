@@ -58,7 +58,7 @@ class PaypalService {
       return response.data;
     } catch (error) {
       throw new Error(
-        `PaypalService captureOrder: ${error.response.data.name}`
+        `PaypalService captureOrder: ${error.response.data.name}, Base: ${this.base}, Env: ${process.env.NODE_ENV}`
       );
     }
   }
