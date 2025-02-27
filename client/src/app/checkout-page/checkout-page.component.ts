@@ -127,6 +127,8 @@ export class CheckoutPageComponent implements OnInit {
         this.shippingInfo
       );
 
+      console.log(klarnaHtml);
+
       // Sanitize and store it
       this.klarnaSnippet = this.sanitizer.bypassSecurityTrustHtml(klarnaHtml);
     }

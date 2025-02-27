@@ -17,8 +17,9 @@ export class OrderService {
     private shoppingCartService: ShoppingCartService
   ) {}
 
-  async createKlarnaOrder(shippingInfo: any): Promise<any> {
+  async createKlarnaOrder(shippingInfo: any): Promise<string> {
     try {
+      const url2 = `${this.baseUrl}/api/createOrder`;
       const url = `${this.baseUrl}/api/createOrder`;
       this.shippingInfo = shippingInfo;
 
@@ -28,14 +29,20 @@ export class OrderService {
       }
 
       // Get items in cart and compress then before sending to server
-      const cartData = await firstValueFrom(this.shoppingCartService.cart$);
+      const cartData = firstValueFrom(this.shoppingCartService.cart$);
 
-      return await firstValueFrom(
-        this.http.post(url, {
+      const data = await firstValueFrom(
+        this.http.post<any>(url, {
           cartData: cartData,
           shippingInfo: shippingInfo,
         })
       );
+
+      if (data.html_snippet != undefined) {
+        return data.html_snippet;
+      }
+
+      return '<h1>Error creating Klarna order</h1>';
     } catch (error: any) {
       throw new Error(`Error creating paypal order: ${error.message}`);
     }

@@ -13,10 +13,6 @@ class KlarnaService {
     this.password = this.isDev
       ? process.env.KLARNA_PASSWORD_DEV
       : process.env.KLARNA_PASSWORD;
-    this.authToken = {
-      token: null,
-      expiresAt: new Date(),
-    };
   }
 
   // Create an order with klarna API
@@ -28,14 +24,17 @@ class KlarnaService {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Basic ${process.env.KLARNA_USERNAME}:${process.env.KLARNA_PASSWORD}`,
+            Authorization: `Basic ${this.username}:${this.password}`,
           },
         }
       );
+
       return response.data;
     } catch (error) {
+      console.log(error.response.data);
+
       throw new Error(
-        `KlarnaService createOrder: ${error.response.data.details.description}`
+        `KlarnaService createOrder: ${error.response.data.error_code}`
       );
     }
   }
@@ -55,7 +54,9 @@ class KlarnaService {
       );
       return response.data;
     } catch (error) {
-      throw new Error(`KlarnaService getOrder: ${error.response.data.name}`);
+      throw new Error(
+        `KlarnaService getOrder: ${error.response.data.error_code}`
+      );
     }
   }
 }
