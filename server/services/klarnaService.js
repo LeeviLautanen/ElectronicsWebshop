@@ -18,14 +18,13 @@ class KlarnaService {
   // Create an order with klarna API
   async createOrder(payload) {
     try {
-      console.log(`Basic ${this.username}:${this.password}`);
       const response = await this.axios.post(
-        `${this.base}/checkout/v3/orders`,
+        `https://api.playground.klarna.com/checkout/v3/orders`,
         payload,
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Basic ${this.username}:${this.password}`,
+            Authorization: `Basic ${KLARNA_USERNAME_DEV}:${KLARNA_PASSWORD_DEV}`,
           },
         }
       );
