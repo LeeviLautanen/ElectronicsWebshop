@@ -29,6 +29,8 @@ class KlarnaService {
         }
       );
 
+      console.log(response);
+
       return response.data;
     } catch (error) {
       console.log(error.response.data);
