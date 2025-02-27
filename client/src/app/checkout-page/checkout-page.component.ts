@@ -10,6 +10,8 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapCheck, bootstrapCircle } from '@ng-icons/bootstrap-icons';
 import { Router } from '@angular/router';
 import { ImageUrlService } from '../services/image-url.service';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { OrderService } from '../services/order.service';
 
 @Component({
   selector: 'app-checkout-page',
@@ -27,6 +29,8 @@ import { ImageUrlService } from '../services/image-url.service';
 export class CheckoutPageComponent implements OnInit {
   emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
+  klarnaSnippet: SafeHtml | null = null;
+
   shippingOptions$!: Observable<ShippingOption[]>;
   cart$!: Observable<Cart>;
 
@@ -43,8 +47,10 @@ export class CheckoutPageComponent implements OnInit {
 
   constructor(
     private shoppingCartService: ShoppingCartService,
+    private orderService: OrderService,
     private router: Router,
-    private imageUrlService: ImageUrlService
+    private imageUrlService: ImageUrlService,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
@@ -113,5 +119,16 @@ export class CheckoutPageComponent implements OnInit {
       this.areInputLengthsValid() &&
       this.termsAccepted &&
       cartData.shippingOption != null;
+
+    console.log(this.shippingInfoValid);
+
+    if (this.shippingInfoValid && this.klarnaSnippet === null) {
+      const klarnaHtml = await this.orderService.createKlarnaOrder(
+        this.shippingInfo
+      );
+
+      // Sanitize and store it
+      this.klarnaSnippet = this.sanitizer.bypassSecurityTrustHtml(klarnaHtml);
+    }
   }
 }

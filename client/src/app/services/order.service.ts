@@ -17,6 +17,30 @@ export class OrderService {
     private shoppingCartService: ShoppingCartService
   ) {}
 
+  async createKlarnaOrder(shippingInfo: any): Promise<any> {
+    try {
+      const url = `${this.baseUrl}/api/createOrder`;
+      this.shippingInfo = shippingInfo;
+
+      // Remove spaces from phone number
+      if (this.shippingInfo.phone) {
+        this.shippingInfo.phone = this.shippingInfo.phone.replace(/\s+/g, '');
+      }
+
+      // Get items in cart and compress then before sending to server
+      const cartData = await firstValueFrom(this.shoppingCartService.cart$);
+
+      return await firstValueFrom(
+        this.http.post(url, {
+          cartData: cartData,
+          shippingInfo: shippingInfo,
+        })
+      );
+    } catch (error: any) {
+      throw new Error(`Error creating paypal order: ${error.message}`);
+    }
+  }
+
   // Send a request to server to create a new order
   async createOrder(shippingInfo: any): Promise<any> {
     try {

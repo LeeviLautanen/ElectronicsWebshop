@@ -3,9 +3,113 @@ const router = express.Router();
 const sentry = require("../sentry");
 const orderService = require("../services/orderService");
 const paypalService = require("../services/paypalService");
+const klarnaService = require("../services/klarnaService");
+
+router.post("/createPaypalOrder", async (req, res) => {
+  const { cartData, shippingInfo } = req.body;
+
+  const products = await orderService.getProductsFromDatabase(cartData);
+
+  // Create the "items" array for paypal api request
+  const items = cartData.cartItems.map((item) => {
+    const product = products.rows.find(
+      (row) => row.public_id === item.product.public_id
+    );
+
+    return {
+      name: product.name,
+      quantity: item.quantity.toString(),
+      sku: item.public_id,
+      url: `https://bittiboksi.fi/tuote/${product.slug}`,
+      unit_amount: {
+        currency_code: "EUR",
+        value: parseFloat(product.price).toFixed(2),
+      },
+    };
+  });
+
+  // Get the shipping cost from database
+  const shippingCost = await orderService.getShippingCost(cartData);
+
+  // Calculate the subtotal for order products
+  const subTotal = items.reduce((total, item) => {
+    return total + item.quantity * parseFloat(item.unit_amount.value);
+  }, 0);
+
+  const orderTotal = subTotal + shippingCost;
+
+  // Create the "amount" object for paypal api request
+  const amount = {
+    currency_code: "EUR",
+    value: orderTotal.toFixed(2),
+    breakdown: {
+      item_total: {
+        currency_code: "EUR",
+        value: subTotal.toFixed(2),
+      },
+      shipping: {
+        currency_code: "EUR",
+        value: shippingCost.toFixed(2),
+      },
+    },
+  };
+
+  // Create the "shipping" object for paypal api request
+  const shipping = {
+    name: { full_name: shippingInfo.name },
+    address: {
+      address_line_1: shippingInfo.address_line_1,
+      admin_area_2: shippingInfo.admin_area_2,
+      postal_code: shippingInfo.postal_code,
+      country_code: "FI",
+    },
+  };
+
+  // Add phone to object if provided
+  if (shippingInfo.phone != "") {
+    shipping.phone_number = {
+      country_code: "358",
+      national_number: `358${shippingInfo.phone}`,
+    };
+  }
+
+  const payload = {
+    purchase_country: "FI",
+    purchase_currency: "EUR",
+    locale: "fi-FI",
+    order_amount: 1000,
+    order_tax_amount: 255,
+    order_lines: [
+      {
+        type: "physical",
+        reference: "123",
+        name: "Arduino Nano",
+        quantity: 2,
+        quantity_unit: "pcs",
+        unit_price: 500,
+        tax_rate: 2550,
+        total_amount: 1000,
+        total_tax_amount: 255,
+        product_url: `https://bittiboksi.fi/tuote/123`,
+      },
+    ],
+  };
+
+  try {
+    const orderData = await klarnaService.createOrder(payload);
+
+    console.log(orderData);
+
+    // Return paypay order id to client
+    return res.status(200).send("<div>Klarna Checkout Content</div>");
+  } catch (error) {
+    sentry.captureException(error);
+    return res.status(500).json(error);
+  }
+});
 
 // Create order and send the id back to client
-router.post("/createOrder", async (req, res) => {
+router.post("/createPaypalOrder", async (req, res) => {
   const { cartData, shippingInfo } = req.body;
 
   sentry.captureMessage("Someone created an order");
