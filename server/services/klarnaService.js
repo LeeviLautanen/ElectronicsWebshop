@@ -24,16 +24,14 @@ class KlarnaService {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Basic ${KLARNA_USERNAME_DEV}:${KLARNA_PASSWORD_DEV}`,
+            Authorization: `Basic ${process.env.KLARNA_USERNAME_DEV}:${process.env.KLARNA_PASSWORD_DEV}`,
           },
         }
       );
 
-      console.log(response);
-
       return response.data;
     } catch (error) {
-      console.log(error.response.data);
+      console.log(error.response);
 
       throw new Error(
         `KlarnaService createOrder: ${error.response.data.error_code}`

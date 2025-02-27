@@ -44,7 +44,7 @@ export class OrderService {
 
       return '<h1>Error creating Klarna order</h1>';
     } catch (error: any) {
-      throw new Error(`Error creating paypal order: ${error.message}`);
+      throw new Error(`Error creating klarna order: ${error.message}`);
     }
   }
 
