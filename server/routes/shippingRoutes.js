@@ -12,12 +12,13 @@ router.post("/shippingOptions", async (req, res) => {
     SELECT public_id, name, description, delivery_time, image, price, max_weight_g, max_height_mm 
     FROM shipping_options 
     WHERE max_height_mm >= $1 AND max_weight_g >= $2
+    ORDER BY price ASC
     `;
     const result = await pool.query(query, [cartHeight, cartWeight]);
 
     const shippingOptions = result.rows.map((option) => ({
       ...option,
-      price: parseFloat(option.price),
+      price: parseFloat(option.price).toFixed(2),
     }));
 
     res.status(201).json(shippingOptions);

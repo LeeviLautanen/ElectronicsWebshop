@@ -2,194 +2,129 @@ const express = require("express");
 const router = express.Router();
 const sentry = require("../sentry");
 const orderService = require("../services/orderService");
-const paypalService = require("../services/paypalService");
 const emailService = require("../services/emailService");
 const adminAuth = require("../adminAuth");
-const klarnaService = require("../services/klarnaService");
+const stripe = require("../stripe");
+const pool = require("../db");
 
-router.post("/createOrder", async (req, res) => {
-  const { cartData, shippingInfo } = req.body;
+async function fulfillCheckout(sessionId) {
+  console.log("Fulfilling Checkout Session " + sessionId);
 
-  const payload = {
-    purchase_country: "FI",
-    purchase_currency: "EUR",
-    locale: "fi-FI",
-    order_amount: 1000,
-    order_tax_amount: 0,
-    order_lines: [
-      {
-        type: "physical",
-        reference: "123",
-        name: "Arduino Nano",
-        quantity: 2,
-        quantity_unit: "pcs",
-        unit_price: 500,
-        tax_rate: 0,
-        total_amount: 1000,
-        total_tax_amount: 0,
-        //product_url: `https://bittiboksi.fi/tuote/123`,
-      },
-    ],
-    merchant_urls: {
-      terms: "https://www.example.com/terms.html",
-      checkout:
-        "https://www.example.com/checkout.html?order_id={checkout.order.id}",
-      confirmation:
-        "https://www.example.com/confirmation.html?order_id={checkout.order.id}",
-      push: "https://www.example.com/api/push?order_id={checkout.order.id}",
-    },
-  };
+  const session = await stripe.checkout.sessions.retrieve(sessionId);
+  console.log(session);
 
+  if (session.metadata.fulfilled && session.metadata.fulfilled === "true") {
+    console.log("Already fulfilled");
+    return;
+  }
+
+  // TODO: Make this function safe to run multiple times,
+  // even concurrently, with the same session ID
+
+  // TODO: Make sure fulfillment hasn't already been
+  // peformed for this Checkout Session
+
+  // Retrieve the Checkout Session from the API with line_items expanded
+
+  // Check the Checkout Session's payment_status property
+  // to determine if fulfillment should be peformed
+  if (session.payment_status === "paid") {
+    console.log("It went through");
+  }
+}
+
+// Stripe webhook
+router.post(
+  "/webhook",
+  express.json({ type: "application/json" }),
+  async (request, response) => {
+    try {
+      const event = request.body;
+
+      if (
+        event.type === "checkout.session.completed" ||
+        event.type === "checkout.session.async_payment_succeeded"
+      ) {
+        console.log(event.data.object);
+        fulfillCheckout(event.data.object.id);
+      }
+
+      if (false) {
+        const checkoutSession = await stripe.checkout.sessions.retrieve(
+          sessionId,
+          {
+            expand: ["line_items"],
+          }
+        );
+      }
+
+      // Return a response to acknowledge receipt of the event
+      response.json({ received: true });
+    } catch (error) {
+      sentry.captureException(error);
+    }
+  }
+);
+
+// Create checkout session when user is ready to pay
+router.post("/createCheckoutSession", async (req, res) => {
   try {
-    console.log("Creating order");
+    const { cartData, shippingInfo } = req.body;
 
-    const orderData = await klarnaService.createOrder(payload);
+    sentry.captureMessage("Someone created a checkout session");
 
-    console.log(orderData);
+    const products = await orderService.getProductsFromDatabase(cartData);
 
-    // Return paypay order id to client
-    return res.status(200).send(orderData);
-  } catch (error) {
-    console.log(error);
+    if (await orderService.isOutOfStock(cartData)) {
+      return res.status(400).json({ status: "OUT_OF_STOCK" });
+    }
 
-    sentry.captureException(error);
-    return res.status(500).json(error);
-  }
-});
+    // Create the line_items array for stripe api request
+    const items = await Promise.all(
+      cartData.cartItems.map(async (item) => {
+        const dbProduct = products.rows.find(
+          (row) => row.public_id === item.product.public_id
+        );
 
-// Create order and send the id back to client
-router.post("/createPaypalOrder", async (req, res) => {
-  const { cartData, shippingInfo } = req.body;
+        const stripeProduct = await stripe.products.retrieve(
+          dbProduct.public_id
+        );
 
-  sentry.captureMessage("Someone created an order");
-
-  const products = await orderService.getProductsFromDatabase(cartData);
-
-  if (await orderService.isOutOfStock(cartData)) {
-    return res.status(400).json({ status: "OUT_OF_STOCK" });
-  }
-
-  // Create the "items" array for paypal api request
-  const items = cartData.cartItems.map((item) => {
-    const product = products.rows.find(
-      (row) => row.public_id === item.product.public_id
+        return {
+          price: stripeProduct.default_price,
+          quantity: item.quantity,
+        };
+      })
     );
 
-    return {
-      name: product.name,
-      quantity: item.quantity.toString(),
-      sku: item.public_id,
-      url: `https://bittiboksi.fi/tuote/${product.slug}`,
-      unit_amount: {
-        currency_code: "EUR",
-        value: parseFloat(product.price).toFixed(2),
+    const shippingIdresult = await pool.query(
+      "SELECT stripe_id FROM shipping_options WHERE public_id = $1",
+      [cartData.shippingOption.public_id]
+    );
+    const shippingId = shippingIdresult.rows[0].stripe_id;
+
+    const session = await stripe.checkout.sessions.create({
+      customer_email: shippingInfo.email,
+      line_items: items,
+      shipping_options: [{ shipping_rate: shippingId }],
+      mode: "payment",
+      success_url: `http://localhost:4200/kauppa`,
+      cancel_url: `http://localhost:4200/kassa`,
+      metadata: {
+        shipping_option_public_id: cartData.shippingOption.public_id,
+        address_line_1: shippingInfo.address_line_1,
+        admin_area_2: shippingInfo.admin_area_2,
+        postal_code: shippingInfo.postal_code,
+        email: shippingInfo.email,
+        name: shippingInfo.name,
+        phone: shippingInfo.phone,
       },
-    };
-  });
-
-  // Get the shipping cost from database
-  const shippingCost = await orderService.getShippingCost(cartData);
-
-  // Calculate the subtotal for order products
-  const subTotal = items.reduce((total, item) => {
-    return total + item.quantity * parseFloat(item.unit_amount.value);
-  }, 0);
-
-  const orderTotal = subTotal + shippingCost;
-
-  // Create the "amount" object for paypal api request
-  const amount = {
-    currency_code: "EUR",
-    value: orderTotal.toFixed(2),
-    breakdown: {
-      item_total: {
-        currency_code: "EUR",
-        value: subTotal.toFixed(2),
-      },
-      shipping: {
-        currency_code: "EUR",
-        value: shippingCost.toFixed(2),
-      },
-    },
-  };
-
-  // Create the "shipping" object for paypal api request
-  const shipping = {
-    name: { full_name: shippingInfo.name },
-    address: {
-      address_line_1: shippingInfo.address_line_1,
-      admin_area_2: shippingInfo.admin_area_2,
-      postal_code: shippingInfo.postal_code,
-      country_code: "FI",
-    },
-  };
-
-  // Add phone to object if provided
-  if (shippingInfo.phone != "") {
-    shipping.phone_number = {
-      country_code: "358",
-      national_number: `358${shippingInfo.phone}`,
-    };
-  }
-
-  const payload = {
-    purchase_units: [{ items, amount, shipping }],
-    intent: "CAPTURE",
-  };
-
-  try {
-    const orderData = await paypalService.createOrder(payload);
-
-    const confirmationData = await paypalService.getOrder(orderData.id);
-    if (confirmationData.status != "CREATED") {
-      throw new Error(
-        `Order was not created, status: ${confirmationData.status}`
-      );
-    }
-
-    // Return paypay order id to client
-    return res.status(200).json(orderData.id);
-  } catch (error) {
-    sentry.captureException(error);
-    return res.status(500).json(error);
-  }
-});
-
-// Capture order
-router.post("/captureOrder", async (req, res) => {
-  try {
-    const { paypalOrderId, cartData, shippingInfo } = req.body;
-
-    const confirmationData = await paypalService.getOrder(paypalOrderId);
-    if (confirmationData.status != "APPROVED") {
-      throw new Error(
-        `Order was not approved, status: ${confirmationData.status}`
-      );
-    }
-
-    sentry.captureMessage("Someone paid for an order");
-
-    const result = await orderService.addOrderJob({
-      paypalOrderId: paypalOrderId,
-      cartData: cartData,
     });
 
-    // Save order data to DB if order completed
-    if (result.status == "COMPLETED") {
-      const orderId = await orderService.addOrderToDatabase(
-        paypalOrderId,
-        cartData,
-        shippingInfo
-      );
-      return res.status(200).json({ status: result.status, orderId: orderId });
-    } else if (result.status == "OUT_OF_STOCK") {
-      return res.status(400).json(result);
-    } else {
-      throw new Error(`Unknown capture response: ${result.status}`);
-    }
+    res.send({ checkoutUrl: session.url });
   } catch (error) {
     sentry.captureException(error);
-    return res.status(500).json(error.message);
+    return res.status(500).json({ error: error.message });
   }
 });
 

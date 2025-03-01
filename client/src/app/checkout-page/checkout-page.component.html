@@ -205,10 +205,26 @@
 
   <!-- Payment methods -->
   <section class="checkout-card">
-    <h3 class="text-xl font-semibold text-gray-800 mb-6">Maksutavat</h3>
+    <h3 class="text-xl font-semibold text-gray-800 mb-6">Maksaminen</h3>
 
-    <div *ngIf="shippingInfoValid; else invalidShippingInfo">
-      <div *ngIf="klarnaSnippet" [innerHTML]="klarnaSnippet"></div>
+    <div
+      *ngIf="shippingInfoValid; else invalidShippingInfo"
+      class="flex flex-col items-center"
+    >
+      <button
+        class="py-3 px-6 text-white bg-[#6772e5] font-semibold text-xl rounded-md hover:bg-[#5469d4] focus:outline-none active:bg-[#3e57d2] transition-colors"
+        (click)="startPayment()"
+      >
+        Siirry maksamaan
+      </button>
+
+      <div class="mt-2 text-center">
+        <img
+          src="https://cdn.brandfolder.io/KGT2DTA4/at/rvgw5pc69nhv9wkh7rw8ckv/Powered_by_Stripe_-_blurple.svg"
+          alt="Powered by Stripe"
+          class="mx-auto h-8"
+        />
+      </div>
     </div>
 
     <ng-template #invalidShippingInfo>

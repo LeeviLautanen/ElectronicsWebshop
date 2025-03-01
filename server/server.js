@@ -9,10 +9,10 @@ const fs = require("fs");
 const cors = require("cors");
 
 const developmentRoutes = require("./routes/developmentRoutes");
+const seoRoutes = require("./routes/seoRoutes");
 const productRoutes = require("./routes/productRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const shippingRoutes = require("./routes/shippingRoutes");
-const seoRoutes = require("./routes/seoRoutes");
 
 const app = express();
 app.use(express.json());
@@ -20,13 +20,11 @@ app.use(express.json());
 const isDev = process.env.NODE_ENV !== "production";
 
 // 4201 needed for product editor, etc
-let allowedOrigins = [`http://localhost:4201`];
+let allowedOrigins = [`http://localhost:4201`, `https://checkout.stripe.com`];
 
 if (isDev) {
   allowedOrigins.push(`http://localhost:4200`);
   app.use("/api", developmentRoutes);
-} else {
-  allowedOrigins;
 }
 
 app.use(
@@ -35,10 +33,10 @@ app.use(
   })
 );
 
+app.use("/", seoRoutes);
 app.use("/api", productRoutes);
 app.use("/api", orderRoutes);
 app.use("/api", shippingRoutes);
-app.use("/", seoRoutes);
 
 // Serve product images with a default fallback
 app.use("/uploads", (req, res, next) => {

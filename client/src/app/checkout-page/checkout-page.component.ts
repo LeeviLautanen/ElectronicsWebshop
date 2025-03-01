@@ -1,22 +1,20 @@
 import { Component, OnInit } from '@angular/core';
-import { PaypalCheckoutComponent } from '../paypal-checkout/paypal-checkout.component';
-import { FormsModule, NgForm, NgModel } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ShippingOption } from '../models/ShippingOption.model';
 import { ShoppingCartService } from '../services/shopping-cart.service';
-import { firstValueFrom, Observable, Subscription, timeout } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { Cart } from '../models/Cart.model';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { bootstrapCheck, bootstrapCircle } from '@ng-icons/bootstrap-icons';
 import { Router } from '@angular/router';
 import { ImageUrlService } from '../services/image-url.service';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { OrderService } from '../services/order.service';
 
 @Component({
   selector: 'app-checkout-page',
   standalone: true,
-  imports: [PaypalCheckoutComponent, CommonModule, FormsModule, NgIcon],
+  imports: [CommonModule, FormsModule, NgIcon],
   templateUrl: './checkout-page.component.html',
   styleUrl: './checkout-page.component.css',
   providers: [
@@ -28,8 +26,6 @@ import { OrderService } from '../services/order.service';
 })
 export class CheckoutPageComponent implements OnInit {
   emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
-  klarnaSnippet: SafeHtml | null = null;
 
   shippingOptions$!: Observable<ShippingOption[]>;
   cart$!: Observable<Cart>;
@@ -49,8 +45,7 @@ export class CheckoutPageComponent implements OnInit {
     private shoppingCartService: ShoppingCartService,
     private orderService: OrderService,
     private router: Router,
-    private imageUrlService: ImageUrlService,
-    private sanitizer: DomSanitizer
+    private imageUrlService: ImageUrlService
   ) {}
 
   ngOnInit(): void {
@@ -70,6 +65,16 @@ export class CheckoutPageComponent implements OnInit {
     const cartData = await firstValueFrom(this.shoppingCartService.cart$);
     if (cartData.cartItems.length === 0) {
       this.router.navigate(['/kauppa']);
+    }
+  }
+
+  async startPayment() {
+    if (this.shippingInfoValid) {
+      const checkoutUrl = await this.orderService.createCheckoutSession(
+        this.shippingInfo
+      );
+
+      window.location.href = checkoutUrl;
     }
   }
 
@@ -119,18 +124,5 @@ export class CheckoutPageComponent implements OnInit {
       this.areInputLengthsValid() &&
       this.termsAccepted &&
       cartData.shippingOption != null;
-
-    console.log(this.shippingInfoValid);
-
-    if (this.shippingInfoValid && this.klarnaSnippet === null) {
-      const klarnaHtml = await this.orderService.createKlarnaOrder(
-        this.shippingInfo
-      );
-
-      console.log(klarnaHtml);
-
-      // Sanitize and store it
-      this.klarnaSnippet = this.sanitizer.bypassSecurityTrustHtml(klarnaHtml);
-    }
   }
 }

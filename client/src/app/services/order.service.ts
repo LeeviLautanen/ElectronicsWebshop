@@ -17,10 +17,9 @@ export class OrderService {
     private shoppingCartService: ShoppingCartService
   ) {}
 
-  async createKlarnaOrder(shippingInfo: any): Promise<string> {
+  async createCheckoutSession(shippingInfo: any): Promise<string> {
     try {
-      const url2 = `${this.baseUrl}/api/createOrder`;
-      const url = `${this.baseUrl}/api/createOrder`;
+      const url = `${this.baseUrl}/api/createCheckoutSession`;
       this.shippingInfo = shippingInfo;
 
       // Remove spaces from phone number
@@ -29,7 +28,7 @@ export class OrderService {
       }
 
       // Get items in cart and compress then before sending to server
-      const cartData = firstValueFrom(this.shoppingCartService.cart$);
+      const cartData = await firstValueFrom(this.shoppingCartService.cart$);
 
       const data = await firstValueFrom(
         this.http.post<any>(url, {
@@ -38,11 +37,11 @@ export class OrderService {
         })
       );
 
-      if (data.html_snippet != undefined) {
-        return data.html_snippet;
+      if (data.checkoutUrl != undefined) {
+        return data.checkoutUrl;
       }
 
-      return '<h1>Error creating Klarna order</h1>';
+      return '';
     } catch (error: any) {
       throw new Error(`Error creating klarna order: ${error.message}`);
     }

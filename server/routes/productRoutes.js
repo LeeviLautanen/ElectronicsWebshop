@@ -4,6 +4,7 @@ const pool = require("../db");
 const sentry = require("../sentry");
 const upload = require("../upload.js");
 const adminAuth = require("../adminAuth.js");
+const stripe = require("../stripe");
 
 // Get product data by slug
 router.get("/products/:slug", async (req, res) => {
@@ -86,6 +87,24 @@ router.post("/products", adminAuth, async (req, res) => {
 
     const result = await pool.query(insertQuery, insertValues);
 
+    const product = await stripe.products.create({
+      name: req.body.name,
+      id: result.rows[0].public_id,
+      default_price_data: {
+        currency: "eur",
+        tax_behavior: "inclusive",
+        unit_amount: Math.round(parseFloat(price).toFixed(2) * 100),
+      },
+      url: `https://bittiboksi.fi/tuote/${req.body.slug}`,
+      images: [`https://bittiboksi.fi/uploads/large/${req.body.image}`],
+      tax_code: "txcd_99999999", // General tangible goods
+      metadata: {
+        slug: req.body.slug,
+        weight_g: req.body.weight_g,
+        height_mm: req.body.height_mm,
+      },
+    });
+
     return res.status(201).json(result.rows[0]);
   } catch (error) {
     sentry.captureException(error);
@@ -148,6 +167,69 @@ router.put(
 
       const updatedResult = await pool.query(updateQuery, updateValues);
 
+      // Get current stripe product and price
+      const scaledPrice = Math.round(parseFloat(price).toFixed(2) * 100);
+
+      // Create new product if it doesn't exist
+      let stripeProduct;
+      try {
+        stripeProduct = await stripe.products.retrieve(public_id);
+      } catch (error) {
+        if (error.raw.code === "resource_missing") {
+          await stripe.products.create({
+            name: name,
+            id: updatedResult.rows[0].public_id,
+            default_price_data: {
+              currency: "eur",
+              tax_behavior: "inclusive",
+              unit_amount: scaledPrice,
+            },
+            url: `https://bittiboksi.fi/tuote/${slug}`,
+            images: [`https://bittiboksi.fi/uploads/large/${image}`],
+            tax_code: "txcd_99999999", // General tangible goods
+            metadata: {
+              slug: slug,
+              weight_g: weight_g,
+              height_mm: height_mm,
+            },
+          });
+        }
+        return res.status(200).json(updatedResult.rows[0]);
+      }
+
+      const stripePrice = await stripe.prices.retrieve(
+        stripeProduct.default_price
+      );
+
+      // Generate new stripe product data
+      const stripeProductData = {
+        name: name,
+        url: `https://bittiboksi.fi/tuote/${slug}`,
+        images: [`https://bittiboksi.fi/uploads/large/${image}`],
+        metadata: {
+          slug: slug,
+          weight_g: weight_g,
+          height_mm: height_mm,
+        },
+      };
+
+      // If new price is different, create a new price
+      if (scaledPrice !== stripePrice.unit_amount) {
+        const newPrice = await stripe.prices.create({
+          currency: "eur",
+          unit_amount: scaledPrice,
+          tax_behavior: "inclusive",
+          product: public_id,
+        });
+        stripeProductData.default_price = newPrice.id;
+      }
+
+      // Update stripe product and then disable the old price (order matters)
+      await stripe.products.update(public_id, stripeProductData);
+      await stripe.prices.update(stripePrice.id, {
+        active: false,
+      });
+
       return res.status(200).json(updatedResult.rows[0]);
     } catch (error) {
       return res.status(500).json(error);
@@ -177,7 +259,7 @@ router.delete("/products/:public_id", adminAuth, async (req, res) => {
   }
 });
 
-// Add a new image manually
+// Route for adding a new image manually
 router.post("/images", adminAuth, upload.single("image"), (req, res) => {
   try {
     return res.status(200).send({ message: "Image uploaded" });
