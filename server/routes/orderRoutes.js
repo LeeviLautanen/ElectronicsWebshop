@@ -109,7 +109,7 @@ router.get("/getOrderData/:orderId", async (req, res) => {
       return res.status(400).send("Invalid order id");
     }
 
-    if (session.id) {
+    if (session) {
       const orderIdResult = await pool.query(
         "SELECT public_id FROM orders WHERE stripe_session_id = $1",
         [session.id]

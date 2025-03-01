@@ -3,6 +3,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { OrderService } from '../services/order.service';
 import { CommonModule } from '@angular/common';
 import { OrderData } from '../models/OrderItems.model';
+import { ShoppingCartService } from '../services/shopping-cart.service';
 
 @Component({
   selector: 'app-order-confirmation-page',
@@ -17,10 +18,13 @@ export class OrderConfirmationPageComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private shoppingCartService: ShoppingCartService
   ) {}
 
   ngOnInit(): void {
+    this.shoppingCartService.emptyCart();
+
     const orderId = this.route.snapshot.paramMap.get('orderId');
 
     if (orderId == null || orderId.length == 0) {
