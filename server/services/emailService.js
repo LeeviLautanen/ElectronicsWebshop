@@ -52,7 +52,7 @@ class EmailService {
         return acc + item.total;
       }, 0);
 
-      const orderTotal = subTotal + shippingCost;
+      const orderTotal = (subTotal + parseFloat(shippingCost)).toFixed(2);
 
       const data = {
         orderId: orderId,

@@ -20,7 +20,6 @@ router.post(
         event.type === "checkout.session.completed" ||
         event.type === "checkout.session.async_payment_succeeded"
       ) {
-        console.log(event.data.object);
         orderService.addOrderJob(event.data.object.id);
       }
 
@@ -36,8 +35,6 @@ router.post(
 router.post("/createCheckoutSession", async (req, res) => {
   try {
     const { cartData, shippingInfo, origin } = req.body;
-
-    sentry.captureMessage("Someone created a checkout session");
 
     const products = await orderService.getProductsFromDatabase(cartData);
 
