@@ -40,7 +40,7 @@ export class CartProductCardComponent {
   }
 
   increaseQuantity(): void {
-    if (this.cartItem.product.stock < this.cartItem.quantity) {
+    if (this.cartItem.product.stock <= this.cartItem.quantity) {
       this.toastrService.error(
         `Vain ${this.cartItem.product.stock} kappaletta varastossa.`,
         'Ostoskoriin lisääminen epäonnistui'

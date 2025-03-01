@@ -154,7 +154,7 @@ router.put(
 
       if (existingResult.rowCount === 0) {
         return res.status(404).json({
-          message: `Could not update data: no product found with public id: ${public_id}`,
+          message: `Could not update data: no product found with public id ${public_id}`,
         });
       }
 
@@ -209,10 +209,6 @@ router.put(
         return res.status(200).json(updatedResult.rows[0]);
       }
 
-      const stripePrice = await stripe.prices.retrieve(
-        stripeProduct.default_price
-      );
-
       // Generate new stripe product data
       const stripeProductData = {
         name: name,
@@ -224,6 +220,10 @@ router.put(
           height_mm: height_mm,
         },
       };
+
+      const stripePrice = await stripe.prices.retrieve(
+        stripeProduct.default_price
+      );
 
       // If new price is different, create a new price
       if (scaledPrice !== stripePrice.unit_amount) {
