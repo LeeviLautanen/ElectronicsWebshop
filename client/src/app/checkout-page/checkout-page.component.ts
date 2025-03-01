@@ -71,7 +71,8 @@ export class CheckoutPageComponent implements OnInit {
   async startPayment() {
     if (this.shippingInfoValid) {
       const checkoutUrl = await this.orderService.createCheckoutSession(
-        this.shippingInfo
+        this.shippingInfo,
+        window.location.origin
       );
 
       window.location.href = checkoutUrl;

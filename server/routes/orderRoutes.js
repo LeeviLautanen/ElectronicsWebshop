@@ -6,32 +6,7 @@ const emailService = require("../services/emailService");
 const adminAuth = require("../adminAuth");
 const stripe = require("../stripe");
 const pool = require("../db");
-
-async function fulfillCheckout(sessionId) {
-  console.log("Fulfilling Checkout Session " + sessionId);
-
-  const session = await stripe.checkout.sessions.retrieve(sessionId);
-  console.log(session);
-
-  if (session.metadata.fulfilled && session.metadata.fulfilled === "true") {
-    console.log("Already fulfilled");
-    return;
-  }
-
-  // TODO: Make this function safe to run multiple times,
-  // even concurrently, with the same session ID
-
-  // TODO: Make sure fulfillment hasn't already been
-  // peformed for this Checkout Session
-
-  // Retrieve the Checkout Session from the API with line_items expanded
-
-  // Check the Checkout Session's payment_status property
-  // to determine if fulfillment should be peformed
-  if (session.payment_status === "paid") {
-    console.log("It went through");
-  }
-}
+const { validate } = require("uuid");
 
 // Stripe webhook
 router.post(
@@ -46,16 +21,7 @@ router.post(
         event.type === "checkout.session.async_payment_succeeded"
       ) {
         console.log(event.data.object);
-        fulfillCheckout(event.data.object.id);
-      }
-
-      if (false) {
-        const checkoutSession = await stripe.checkout.sessions.retrieve(
-          sessionId,
-          {
-            expand: ["line_items"],
-          }
-        );
+        orderService.addOrderJob(event.data.object.id);
       }
 
       // Return a response to acknowledge receipt of the event
@@ -69,7 +35,7 @@ router.post(
 // Create checkout session when user is ready to pay
 router.post("/createCheckoutSession", async (req, res) => {
   try {
-    const { cartData, shippingInfo } = req.body;
+    const { cartData, shippingInfo, origin } = req.body;
 
     sentry.captureMessage("Someone created a checkout session");
 
@@ -97,19 +63,19 @@ router.post("/createCheckoutSession", async (req, res) => {
       })
     );
 
-    const shippingIdresult = await pool.query(
+    const shippingIdResult = await pool.query(
       "SELECT stripe_id FROM shipping_options WHERE public_id = $1",
       [cartData.shippingOption.public_id]
     );
-    const shippingId = shippingIdresult.rows[0].stripe_id;
+    const shippingId = shippingIdResult.rows[0].stripe_id;
 
     const session = await stripe.checkout.sessions.create({
       customer_email: shippingInfo.email,
       line_items: items,
       shipping_options: [{ shipping_rate: shippingId }],
       mode: "payment",
-      success_url: `http://localhost:4200/kauppa`,
-      cancel_url: `http://localhost:4200/kassa`,
+      success_url: `${origin}/tilaus/{CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/kassa`,
       metadata: {
         shipping_option_public_id: cartData.shippingOption.public_id,
         address_line_1: shippingInfo.address_line_1,
@@ -128,14 +94,30 @@ router.post("/createCheckoutSession", async (req, res) => {
   }
 });
 
-// Get order data for order confirmation page
+// Get order data for order confirmation page (can be db id or stripe session id)
 router.get("/getOrderData/:orderId", async (req, res) => {
   try {
-    const { orderId } = req.params;
+    let { orderId } = req.params;
+
+    let session;
+    try {
+      session = await stripe.checkout.sessions.retrieve(orderId);
+    } catch (error) {}
 
     // UUIDs are 36 characters
-    if (orderId == null || orderId.length != 36) {
-      return res.status(400).send({ error: "Invalid order id" });
+    if (
+      orderId == null ||
+      (validate(orderId) == false && session == undefined)
+    ) {
+      return res.status(400).send("Invalid order id");
+    }
+
+    if (session.id) {
+      const orderIdResult = await pool.query(
+        "SELECT public_id FROM orders WHERE stripe_session_id = $1",
+        [session.id]
+      );
+      orderId = orderIdResult.rows[0].public_id;
     }
 
     const data = await orderService.getOrderData(orderId);

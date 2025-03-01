@@ -69,39 +69,51 @@ router.get("/products", async (req, res) => {
 // Add a new product
 router.post("/products", adminAuth, async (req, res) => {
   try {
+    const {
+      name,
+      slug,
+      description,
+      image,
+      price,
+      stock,
+      weight_g,
+      height_mm,
+    } = req.body;
+
     const insertQuery = `
       INSERT INTO products (name, slug, description, image, price, stock, weight_g, height_mm)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING *
     `;
     const insertValues = [
-      req.body.name,
-      req.body.slug,
-      req.body.description,
-      req.body.image,
-      req.body.price,
-      req.body.stock,
-      req.body.weight_g,
-      req.body.height_mm,
+      name,
+      slug,
+      description,
+      image,
+      price,
+      stock,
+      weight_g,
+      height_mm,
     ];
 
     const result = await pool.query(insertQuery, insertValues);
 
-    const product = await stripe.products.create({
-      name: req.body.name,
+    await stripe.products.create({
+      name: name,
       id: result.rows[0].public_id,
       default_price_data: {
         currency: "eur",
         tax_behavior: "inclusive",
         unit_amount: Math.round(parseFloat(price).toFixed(2) * 100),
       },
-      url: `https://bittiboksi.fi/tuote/${req.body.slug}`,
-      images: [`https://bittiboksi.fi/uploads/large/${req.body.image}`],
+      url: `https://bittiboksi.fi/tuote/${slug}`,
+      images: [`https://bittiboksi.fi/uploads/large/${image}`],
       tax_code: "txcd_99999999", // General tangible goods
       metadata: {
-        slug: req.body.slug,
-        weight_g: req.body.weight_g,
-        height_mm: req.body.height_mm,
+        public_id: result.rows[0].public_id,
+        slug: slug,
+        weight_g: weight_g,
+        height_mm: height_mm,
       },
     });
 

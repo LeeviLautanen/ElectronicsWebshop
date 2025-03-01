@@ -3,6 +3,7 @@ const paypalService = require("../services/paypalService");
 const emailService = require("../services/emailService");
 const orderQueue = require("../orderQueue");
 const sentry = require("../sentry");
+const stripe = require("../stripe");
 
 class OrderService {
   constructor(pool, paypalService, orderQueue) {
@@ -78,8 +79,6 @@ class OrderService {
         ]);
       });
 
-      console.log("All done");
-
       await Promise.all(updatePromises);
 
       return { status: data.status };
@@ -91,23 +90,100 @@ class OrderService {
   }
 
   // Add and order to queue and return its result
-  async addOrderJob(data) {
+  async addOrderJob(sessionId) {
     try {
-      return await this.tempJob(data);
+      // TODO: Make this function safe to run multiple times,
+      // even concurrently, with the same session ID
+
+      console.log("Fulfilling Checkout Session " + sessionId);
+
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+      if (session.metadata.fulfilled && session.metadata.fulfilled === "true") {
+        console.log("Already fulfilled");
+        return;
+      }
+
+      if (session.payment_status !== "paid") {
+        console.log("Session not paid");
+        return;
+      }
+
+      const sessionItems = await stripe.checkout.sessions.listLineItems(
+        sessionId,
+        { limit: 100 }
+      );
+
+      const cartItems = await Promise.all(
+        sessionItems.data.map(async (item) => {
+          const dbProduct = await pool.query(
+            "SELECT * FROM products WHERE public_id = $1",
+            [item.price.product]
+          );
+
+          return {
+            product: dbProduct.rows[0],
+            quantity: item.quantity,
+          };
+        })
+      );
+
+      const shippingOption = await pool.query(
+        "SELECT * FROM shipping_options WHERE public_id = $1",
+        [session.metadata.shipping_option_public_id]
+      );
+
+      const cartData = {
+        cartItems: cartItems,
+        shippingOption: shippingOption.rows[0],
+      };
+
+      if (await this.isOutOfStock(cartData)) {
+        throw new Error(
+          `Product was unexpectedly out of stock for order ${sessionId}`
+        );
+        return;
+      }
+
+      // Update database stock values
+      const updatePromises = cartData.cartItems.map((item) => {
+        const updateQuery = `
+            UPDATE products
+            SET stock = stock - $1
+            WHERE public_id = $2
+          `;
+        return this.pool.query(updateQuery, [
+          item.quantity,
+          item.product.public_id,
+        ]);
+      });
+
+      await Promise.all(updatePromises);
+
+      const shippingInfo = {
+        name: session.metadata.name,
+        phone: session.metadata.phone,
+        email: session.metadata.email,
+        address_line_1: session.metadata.address_line_1,
+        admin_area_2: session.metadata.admin_area_2,
+        postal_code: session.metadata.postal_code,
+      };
+
+      await this.addOrderToDatabase(sessionId, cartData, shippingInfo);
     } catch (error) {
       sentry.captureException(error);
-      throw new Error(`Failed to add/process order job: ${error.message}`);
+      throw new Error(`Failed to process order job: ${error.message}`);
     }
   }
 
   // Add order data to database
-  async addOrderToDatabase(paypalOrderId, cartData, shippingInfo) {
+  async addOrderToDatabase(stripeSessionId, cartData, shippingInfo) {
     try {
       const { name, email, phone } = shippingInfo;
       const customerId = await this.getCustomerId(name, email, phone);
 
       const { id, public_id } = await this.createNewOrder(
-        paypalOrderId,
+        stripeSessionId,
         customerId
       );
 
@@ -117,7 +193,7 @@ class OrderService {
       await this.createOrderShipping(shippingPublicId, id, shippingInfo);
 
       // Send order confirmation email
-      await emailService.sendOrderConfirmationEmail(email, public_id, cartData);
+      //await emailService.sendOrderConfirmationEmail(email, public_id, cartData);
 
       return public_id;
     } catch (error) {
@@ -166,17 +242,17 @@ class OrderService {
   }
 
   // Create a row in orders
-  async createNewOrder(paypalOrderId, customerId) {
+  async createNewOrder(stripeSessionId, customerId) {
     try {
       // Insert row and return its id
       const orderQuery = `
-        INSERT INTO orders(customer_id, paypal_order_id) 
+        INSERT INTO orders(customer_id, stripe_session_id) 
         VALUES ($1, $2)
         RETURNING id, public_id
       `;
       const orderResult = await this.pool.query(orderQuery, [
         customerId,
-        paypalOrderId,
+        stripeSessionId,
       ]);
       return orderResult.rows[0];
     } catch (error) {

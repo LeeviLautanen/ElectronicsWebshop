@@ -17,7 +17,10 @@ export class OrderService {
     private shoppingCartService: ShoppingCartService
   ) {}
 
-  async createCheckoutSession(shippingInfo: any): Promise<string> {
+  async createCheckoutSession(
+    shippingInfo: any,
+    origin: string
+  ): Promise<string> {
     try {
       const url = `${this.baseUrl}/api/createCheckoutSession`;
       this.shippingInfo = shippingInfo;
@@ -34,6 +37,7 @@ export class OrderService {
         this.http.post<any>(url, {
           cartData: cartData,
           shippingInfo: shippingInfo,
+          origin: origin,
         })
       );
 

@@ -18,7 +18,7 @@ router.post("/shippingOptions", async (req, res) => {
 
     const shippingOptions = result.rows.map((option) => ({
       ...option,
-      price: parseFloat(option.price).toFixed(2),
+      price: parseFloat(option.price),
     }));
 
     res.status(201).json(shippingOptions);
