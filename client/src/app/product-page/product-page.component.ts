@@ -27,7 +27,8 @@ export class ProductPageComponent implements OnInit {
     private sanitizer: DomSanitizer,
     private imageUrlService: ImageUrlService,
     private title: Title,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private meta: Meta
   ) {}
 
   ngOnInit(): void {
@@ -48,8 +49,6 @@ export class ProductPageComponent implements OnInit {
   }
 
   setPageMetaData() {
-    this.title.setTitle(`${this.product.name} - BittiBoksi`);
-
     // Product snippet rich results
     const jsonLd = {
       '@context': 'https://schema.org',
@@ -72,6 +71,21 @@ export class ProductPageComponent implements OnInit {
     script.type = 'application/ld+json';
     script.text = JSON.stringify(jsonLd);
     this.renderer.appendChild(document.head, script);
+
+    // Tab title
+    this.title.setTitle(`${this.product.name} - BittiBoksi`);
+
+    // Meta description
+    this.meta.updateTag({
+      name: 'description',
+      content: this.product.description,
+    });
+
+    // Canonical url
+    this.meta.updateTag({
+      rel: 'canonical',
+      href: `https://bittiboksi.fi/tuote/${this.product.slug}`,
+    });
   }
 
   getImageUrl(imageName: string): string {
