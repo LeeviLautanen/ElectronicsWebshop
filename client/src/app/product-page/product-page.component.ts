@@ -84,7 +84,7 @@ export class ProductPageComponent implements OnInit {
     // Canonical url
     this.meta.updateTag({
       rel: 'canonical',
-      href: `https://bittiboksi.fi/tuote/${this.product.slug}`,
+      href: `https://bittiboksi.fi/kauppa/tuote/${this.product.slug}`,
     });
   }
 
