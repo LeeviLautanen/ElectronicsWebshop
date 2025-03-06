@@ -101,7 +101,15 @@ class EmailService {
         html: emailHtml,
       };
 
+      const duplicateMailOptions = {
+        from: process.env.EMAIL_USER,
+        to: "elektroniikka.osat@gmail.com",
+        subject: `Tilauksesi on käsitelty!`,
+        html: emailHtml,
+      };
+
       await this.transporter.sendMail(mailOptions);
+      await this.transporter.sendMail(duplicateMailOptions);
     } catch (error) {
       throw new Error(`Failed to send order processed email: ${error.message}`);
     }
