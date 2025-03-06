@@ -294,6 +294,10 @@ class OrderService {
     const orderResult = await this.pool.query(orderQuery, [orderId]);
     const orderData = orderResult.rows[0];
 
+    if (!orderData) {
+      throw new Error(`Order not found with id: ${orderId}`);
+    }
+
     // Get name, quantity and price for order items
     const orderItemQuery = `
       SELECT 
