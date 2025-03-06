@@ -238,9 +238,12 @@ router.put(
 
       // Update stripe product and then disable the old price (order matters)
       await stripe.products.update(public_id, stripeProductData);
-      await stripe.prices.update(stripePrice.id, {
-        active: false,
-      });
+
+      if (stripeProductData.default_price) {
+        await stripe.prices.update(stripePrice.id, {
+          active: false,
+        });
+      }
 
       return res.status(200).json(updatedResult.rows[0]);
     } catch (error) {
