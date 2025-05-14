@@ -21,6 +21,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
+          ls -la
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "docker build -f Dockerfile.dev -t leevil/webshop-dev-image:latest . && docker push leevil/webshop-dev-image:latest && docker image prune -f"
 
   deploy:
