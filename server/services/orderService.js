@@ -1,25 +1,11 @@
 const pool = require("../db");
 const emailService = require("../services/emailService");
-const orderQueue = require("../orderQueue");
 const sentry = require("../sentry");
 const stripe = require("../stripe");
 
 class OrderService {
-  constructor(pool, orderQueue) {
+  constructor(pool) {
     this.pool = pool; // Database
-    this.orderQueue = orderQueue; // Bull queue
-    this.orderQueue.process(async (job) => {
-      const { cartData } = job.data;
-
-      if (await this.isOutOfStock(cartData)) {
-        return { status: "OUT_OF_STOCK" };
-      }
-
-      try {
-      } catch (error) {
-        throw new Error(`Queue job failed: ${error.message}`);
-      }
-    });
   }
 
   // Add and order to queue and return its result
@@ -75,7 +61,6 @@ class OrderService {
         throw new Error(
           `Product was unexpectedly out of stock for order ${sessionId}`
         );
-        return;
       }
 
       // Update database stock values
@@ -374,4 +359,4 @@ class OrderService {
   }
 }
 
-module.exports = new OrderService(pool, orderQueue);
+module.exports = new OrderService(pool);
