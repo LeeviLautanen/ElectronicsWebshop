@@ -17,18 +17,25 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and push Docker image
-        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "rm -rf ElectronicsWebshop && git clone git@github.com:LeeviLautanen/ElectronicsWebshop.git && cd ElectronicsWebshop && docker build -f Dockerfile.dev -t leevil/webshop-dev-image:latest . && docker push leevil/webshop-dev-image:latest && docker image prune -f && cd .. && rm -rf ElectronicsWebshop"
+        run: |
+          rm -rf ElectronicsWebshop
+          git clone git@github.com:LeeviLautanen/ElectronicsWebshop.git
+          cd ElectronicsWebshop
+          docker build -f Dockerfile.dev -t leevil/webshop-dev-image:latest .
+          docker push leevil/webshop-dev-image:latest
+          docker image prune -f
+          cd ..
+          rm -rf ElectronicsWebshop
 
   deploy:
     needs: docker-build-push
     runs-on: self-hosted
 
     steps:
-      - name: SSH into server and deploy Docker image
+      - name: Start container
         run: |
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
-          docker pull leevil/webshop-dev-image:latest;
-          docker stop webshop-dev-container || true;
-          docker rm webshop-dev-container || true;
-          docker run -d --restart unless-stopped --env-file .env --name webshop-dev-container -p 1234:1234 -v dev-product-pictures:/app/server/uploads leevil/webshop-dev-image:latest;
-          docker image prune -f"
+          docker pull leevil/webshop-dev-image:latest
+          docker stop webshop-dev-container || true
+          docker rm webshop-dev-container || true
+          docker run -d --restart unless-stopped --env-file /home/leevi/.env --name webshop-dev-container -p 1234:1234 -v /home/leevi/dev-product-pictures:/app/server/uploads leevil/webshop-dev-image:latest
+          docker image prune -f
