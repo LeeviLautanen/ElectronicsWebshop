@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  docker-build-push:
+  docker-build:
     runs-on: self-hosted
 
     steps:
@@ -15,10 +15,10 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -f Dockerfile.dev -t webshop-prod-image .
+          docker build -f Dockerfile.prod -t webshop-prod-image .
 
   deploy:
-    needs: docker-build-push
+    needs: docker-build
     runs-on: self-hosted
 
     steps:
