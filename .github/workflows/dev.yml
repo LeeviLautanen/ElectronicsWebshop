@@ -6,7 +6,7 @@ on:
       - dev
 
 jobs:
-  docker-build-push:
+  docker-build:
     runs-on: self-hosted
 
     steps:
@@ -15,19 +15,15 @@ jobs:
 
       - name: Build Docker image
         run: |
-          ls
-          cd ElectronicsWebshop
-          docker build -f Dockerfile.dev -t leevil/webshop-dev-image:latest .
-          docker image prune -f
-          cd ..
-          rm -rf ElectronicsWebshop
+          docker build -f Dockerfile.dev -t leevil/webshop-dev-image .
 
   deploy:
-    needs: docker-build-push
+    needs: docker-build
     runs-on: self-hosted
 
     steps:
-      - name: Start container
+      - name: Deploy Docker image
         run: |
           docker rm -f webshop-dev-container || true
-          docker run -d --restart unless-stopped --env-file /home/leevi/.env --name webshop-dev-container -p 1234:1234 -v /home/leevi/dev-pictures:/app/server/uploads leevil/webshop-dev-image:latest
+          docker run -d --restart unless-stopped --env-file /home/leevi/.env --name webshop-dev-container -p 1234:1234 -v /home/leevi/dev-pictures:/app/server/uploads webshop-dev-image:latest
+          docker image prune -f
