@@ -10,10 +10,12 @@ jobs:
     runs-on: self-hosted
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Build Docker image
         run: |
-          rm -rf ElectronicsWebshop
-          git clone git@github.com:LeeviLautanen/ElectronicsWebshop.git
+          ls
           cd ElectronicsWebshop
           docker build -f Dockerfile.dev -t leevil/webshop-dev-image:latest .
           docker image prune -f
@@ -28,4 +30,4 @@ jobs:
       - name: Start container
         run: |
           docker rm -f webshop-dev-container || true
-          docker run -d --restart unless-stopped --env-file /home/leevi/.env --name webshop-dev-container -p 1234:1234 -v /home/leevi/dev-product-pictures:/app/server/uploads leevil/webshop-dev-image:latest
+          docker run -d --restart unless-stopped --env-file /home/leevi/.env --name webshop-dev-container -p 1234:1234 -v /home/leevi/dev-pictures:/app/server/uploads leevil/webshop-dev-image:latest
