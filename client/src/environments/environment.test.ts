@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  baseUrl: `https://${window.location.hostname}`,
+  baseUrl: 'https://dev.bittiboksi.fi',
 };
