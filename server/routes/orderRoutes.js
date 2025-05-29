@@ -110,13 +110,10 @@ router.get("/getOrderData/:orderId", async (req, res) => {
     }
 
     if (session) {
-      console.log(session);
-      console.log(session.id);
       const orderIdResult = await pool.query(
         "SELECT public_id FROM orders WHERE stripe_session_id = $1",
         [session.id]
       );
-      console.log(orderIdResult);
       orderId = orderIdResult.rows[0].public_id;
     }
 
